@@ -7,6 +7,7 @@ Run:  python3 ch03_examples.py
 
 from __future__ import annotations
 
+
 def best_tutoring_income(offers: list[int]) -> int:
     """A tutor gets offers for consecutive days but can't work two days in a row. Maximum income?
     1. STATE      best[i] = most money using only days 0..i-1
