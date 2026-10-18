@@ -26,5 +26,5 @@ Python 3.10 or newer. No third-party packages.
 python3 run_tests.py                 # all tests
 python3 run_tests.py volume_01       # one volume
 python3 volume_01_foundations/chapter_09_first_real_algorithms/ch09_examples.py   # run a chapter's demos
-python3 tools/check_book.py /root/projects/kmg/docs/books/algorithms/kmg-book     # check the book
+python3 tools/check_book.py /root/projects/kmg/books/algorithms/kmg-book     # check the book
 ```

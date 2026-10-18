@@ -1,7 +1,7 @@
 # AGENTS.md
 
-Companion code for the "Algorithms Simplified" book series. Book Markdown lives in
-`/root/projects/kmg/docs/books/algorithms/kmg-book` (series plan in its `README.md`).
+Companion code for the "Algorithms Simplified" book series. Book Markdown lives in the `books` repo at
+`/root/projects/kmg/books/algorithms/kmg-book` (series plan in its `README.md`).
 
 ## Conventions
 - Python 3.10+, standard library only (pytest is NOT installed; tests use `unittest`).
@@ -12,6 +12,6 @@ Companion code for the "Algorithms Simplified" book series. Book Markdown lives 
 
 ## Verification
 - `python3 run_tests.py` — all chapter tests.
-- `python3 tools/check_book.py /root/projects/kmg/docs/books/algorithms/kmg-book` — Mermaid
+- `python3 tools/check_book.py /root/projects/kmg/books/algorithms/kmg-book` — Mermaid
   syntax/section checks. (`mmdc` is installed but broken: Node 10 is too old, so rendering is not verified.)
 - Run each `chNN_examples.py` / `chNN_solutions.py` directly to confirm the demos execute.
