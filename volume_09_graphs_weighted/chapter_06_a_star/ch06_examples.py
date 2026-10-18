@@ -16,15 +16,16 @@ Neighbours = Callable[[Hashable], Iterable[tuple[Hashable, float]]]
 def a_star(start: Hashable, goal: Hashable, neighbours: Neighbours, h: Callable[[Hashable], float]
            ) -> tuple[float, list[Hashable], int]:
     """Dijkstra, but the heap is ordered by f = g + h: cost so far + estimated cost still to go.
-    If h never overestimates (admissible) the answer is optimal. Returns (cost, path, vertices expanded)."""
+    Ties in f go to the smaller h (closer to the goal). If h never overestimates (admissible) the answer
+    is optimal. Returns (cost, path, vertices expanded)."""
     g: dict[Hashable, float] = {start: 0.0}
     parent: dict[Hashable, Hashable | None] = {start: None}
     closed: set[Hashable] = set()
     tie = itertools.count()
-    heap = [(h(start), next(tie), start)]
+    heap = [(h(start), h(start), next(tie), start)]
     expanded = 0
     while heap:
-        _, _, u = heapq.heappop(heap)
+        _, _, _, u = heapq.heappop(heap)
         if u in closed:
             continue
         if u == goal:
@@ -40,7 +41,8 @@ def a_star(start: Hashable, goal: Hashable, neighbours: Neighbours, h: Callable[
             ng = g[u] + w
             if ng < g.get(v, math.inf):
                 g[v], parent[v] = ng, u
-                heapq.heappush(heap, (ng + h(v), next(tie), v))
+                hv = h(v)
+                heapq.heappush(heap, (ng + hv, hv, next(tie), v))
     return math.inf, [], expanded
 
 
