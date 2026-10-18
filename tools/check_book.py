@@ -4,6 +4,7 @@ Checks performed on every chapter file:
   * Mermaid blocks start with a known diagram type and have balanced brackets.
   * Flowchart node labels that contain risky characters are wrapped in quotes.
   * Required chapter sections exist (comparison, exercises, solutions, FAQ, summary).
+  * Every volume folder has a preface.md.
   * Reports which diagram types each chapter uses.
 
 Usage:
@@ -101,6 +102,10 @@ def check_file(path: Path) -> list[str]:
 def main() -> int:
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     failures = 0
+    for volume in sorted(root.glob("volume-*")):
+        if volume.is_dir() and not (volume / "preface.md").exists():
+            failures += 1
+            print(f"  PROBLEM {volume.name}: missing preface.md")
     for path in sorted(root.rglob("*.md")):
         for problem in check_file(path):
             failures += 1
