@@ -80,7 +80,7 @@ def check_block(block: str) -> tuple[str, list[str]]:
     return kind, problems
 
 
-def check_file(path: Path) -> list[str]:
+def check_file(path: Path, root: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
     problems: list[str] = []
     kinds: set[str] = set()
@@ -95,7 +95,7 @@ def check_file(path: Path) -> list[str]:
             if section not in headings:
                 problems.append(f"missing section heading containing '{section}'")
     count = len(MERMAID_BLOCK.findall(text))
-    print(f"{path.name}: {count} diagrams, types = {sorted(kinds)}")
+    print(f"{path.relative_to(root)}: {count} diagrams, types = {sorted(kinds)}")
     return problems
 
 
@@ -107,7 +107,7 @@ def main() -> int:
             failures += 1
             print(f"  PROBLEM {volume.name}: missing preface.md")
     for path in sorted(root.rglob("*.md")):
-        for problem in check_file(path):
+        for problem in check_file(path, root):
             failures += 1
             print(f"  PROBLEM {path.relative_to(root)}: {problem}")
     print(f"\n{failures} problem(s) found")
