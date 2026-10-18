@@ -103,5 +103,5 @@ if __name__ == "__main__":
     print("fib(500) bottom-up has", len(str(fib_bottom_up(500))), "digits")
     print("top-down 5000 deep:", deep_top_down_fails(5000))
     print("sparse top-down for 10**6:", sparse_top_down_count(10 ** 6))
-    print({k: f"{v * 1000:.1f} ms" for k, v in race(400).items()})
+    print({k: f"{v * 1e6:.0f} us" for k, v in race(400).items()})
     print("shipping 1-10 kg:", shipping_cost_table(10, {1: 60, 2: 100, 5: 220})[1:])
