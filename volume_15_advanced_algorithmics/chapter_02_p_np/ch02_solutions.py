@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import itertools
-
 
 def check_hamiltonian_cycle(adj: dict[int, set[int]], cycle: list[int]) -> bool:
     """Exercise 1: verify a Hamiltonian cycle certificate - every vertex once, consecutive vertices adjacent."""
