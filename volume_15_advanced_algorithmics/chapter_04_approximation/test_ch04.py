@@ -40,7 +40,7 @@ class TestApproximation(unittest.TestCase):
             ex.greedy_set_cover({1, 2}, {"A": {1}})
         self.assertEqual(ex.place_cell_towers(set(range(8)), {"hill": {0, 1, 2, 3}, "river": {3, 4, 5}, "farm": {5, 6, 7}, "school": {1, 6}}),
                          ["hill", "farm", "river"])
-        self.assertEqual(sol.load_balancing_lpt([7, 5, 4, 4, 3, 3], 3), 10)   # optimum is 9; 10 <= 4/3 x 9
+        self.assertEqual(sol.load_balancing_lpt([7, 5, 4, 4, 3, 3], 3), 10)   # also the optimum here
 
 
 if __name__ == "__main__":
