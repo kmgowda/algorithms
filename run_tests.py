@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 import sys
+import time
 import unittest
 from pathlib import Path
 
@@ -36,12 +37,19 @@ def forget_chapter_modules() -> None:
 
 def main() -> int:
     filter_text = sys.argv[1] if len(sys.argv) > 1 else ""
-    suite = unittest.TestSuite()
+    runner = unittest.TextTestRunner(verbosity=1)
+    result = runner._makeResult()
+    start = time.perf_counter()
     for folder in chapter_dirs(filter_text):
         forget_chapter_modules()
         # Each chapter folder is its own "top level" so its modules import each other simply.
-        suite.addTests(unittest.defaultTestLoader.discover(str(folder), top_level_dir=str(folder)))
-    result = unittest.TextTestRunner(verbosity=1).run(suite)
+        # Run the folder right away, while its modules are still the ones in sys.modules
+        # (process pools pickle functions by module name).
+        unittest.defaultTestLoader.discover(str(folder), top_level_dir=str(folder)).run(result)
+    result.printErrors()
+    print("-" * 70)
+    print(f"Ran {result.testsRun} tests in {time.perf_counter() - start:.3f}s\n")
+    print("OK" if result.wasSuccessful() else f"FAILED (failures={len(result.failures)}, errors={len(result.errors)})")
     return 0 if result.wasSuccessful() else 1
 
 
