@@ -19,7 +19,7 @@ class TestArraysHashing(unittest.TestCase):
                 self.assertEqual(ex.product_except_self(nums), [math.prod(nums[:i] + nums[i + 1:]) for i in range(len(nums))])
             s = "".join(rng.choice("abc") for _ in range(rng.randint(0, 12)))
             subs = [s[i:j] for i in range(len(s)) for j in range(i, len(s) + 1)]
-            self.assertEqual(ex.longest_unique_substring(s), max(len(x) for x in subs if len(set(x)) == len(x)))
+            self.assertEqual(ex.longest_unique_substring(s), max((len(x) for x in subs if len(set(x)) == len(x)), default=0))
             t = "".join(rng.choice("abc") for _ in range(rng.randint(1, 3)))
             covers = [x for x in subs if not Counter(t) - Counter(x)]
             got = ex.min_window(s, t)
