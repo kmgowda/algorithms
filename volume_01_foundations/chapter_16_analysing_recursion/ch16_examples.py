@@ -28,7 +28,8 @@ def master(a: int, b: int, d: int) -> str:
 
 
 if __name__ == "__main__":
-    for r in ("T(n-1)+1", "T(n/2)+1", "T(n/2)+n", "2T(n/2)+n"):
+    print("T(n-1)+1", unroll("T(n-1)+1", 300))
+    for r in ("T(n/2)+1", "T(n/2)+n", "2T(n/2)+n"):
         print(r, unroll(r, 512))
     print("2T(n-1)+1", unroll("2T(n-1)+1", 10))
     print(master(1, 2, 1), master(2, 2, 1), master(4, 2, 1), master(3, 3, 1))
