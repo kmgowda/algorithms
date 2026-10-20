@@ -100,9 +100,15 @@ class BST:
         return out
 
     def height(self) -> int:
-        def h(n):
-            return -1 if n is None else 1 + max(h(n.left), h(n.right))
-        return h(self.root)
+        """Iterative, so that degenerate trees thousands of levels deep do not overflow the call stack."""
+        best, stack = -1, [(self.root, 0)] if self.root else []
+        while stack:
+            n, d = stack.pop()
+            best = max(best, d)
+            for c in (n.left, n.right):
+                if c:
+                    stack.append((c, d + 1))
+        return best
 
     def average_depth(self) -> float:
         total, count, stack = 0, 0, [(self.root, 0)] if self.root else []
