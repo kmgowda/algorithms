@@ -7,6 +7,25 @@ import ch26_examples as ex
 
 
 class TestChapter55(unittest.TestCase):
+    def test_every_case(self) -> None:
+        for a, swaps, out in [([], 0, []), ([7], 0, [7]), ([1, 2, 3, 4, 5, 6, 7], 0, [1, 2, 3, 4, 5, 6, 7]),
+                              ([7, 6, 5, 4, 3, 2, 1], 4, [1, 3, 2, 4, 6, 7, 5]), ([3, 3, 3], 0, [3, 3, 3])]:
+            b = list(a)
+            self.assertEqual((ex.heapify(b), b), (swaps, out))
+        s = [58, 25, 91, 12, 70, 47, 84, 31, 63]
+        self.assertEqual([ex.top_k(s, k) for k in (3, 0, 20)], [[91, 84, 70], [], sorted(s, reverse=True)])
+        self.assertEqual((ex.top_k([], 3), ex.top_k([5, 5, 5, 1], 2)), ([], [5, 5]))
+        self.assertEqual([ex.merge_k(x) for x in ([], [[], []], [[1, 2, 3]], [[1, 4], [2, 5], [3, 6]], [[1, 1], [1]])],
+                         [[], [], [1, 2, 3], [1, 2, 3, 4, 5, 6], [1, 1, 1]])
+        m = ex.RunningMedian()
+        with self.assertRaises(IndexError):
+            m.median()
+        out = []
+        for x in (5, 1, 9, 3, 3):
+            m.add(x)
+            out.append(m.median())
+        self.assertEqual(out, [5, 3.0, 5, 4.0, 3])
+
     def test_against_brute_force(self) -> None:
         rng = random.Random(1)
         for _ in range(200):

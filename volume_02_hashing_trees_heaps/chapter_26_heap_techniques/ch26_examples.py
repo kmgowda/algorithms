@@ -36,7 +36,7 @@ def top_k(stream, k: int) -> list:
     for x in stream:
         if len(best) < k:
             heapq.heappush(best, x)
-        elif x > best[0]:
+        elif best and x > best[0]:
             heapq.heapreplace(best, x)        # the weakest of the k leaves
     return sorted(best, reverse=True)
 
