@@ -1,0 +1,33 @@
+import math
+import random
+import unittest
+
+import ch02_examples as ex
+
+
+class TestChapter02(unittest.TestCase):
+    def test_trolley(self) -> None:
+        t = []
+        self.assertEqual(ex.smallest_capacity(ex.BOXES, 3, t), 16)
+        self.assertEqual(t, [(9, 44, 26, True), (9, 26, 17, True), (9, 17, 13, False), (14, 17, 15, False),
+                             (16, 17, 16, True)])
+        self.assertEqual([ex.smallest_capacity(ex.BOXES, k) for k in (2, 3, 4, 8)], [24, 16, 14, 9])
+        self.assertEqual(ex.loads(ex.BOXES, 16), [[5, 9], [3, 7, 4], [8, 2, 6]])
+
+    def test_against_brute_force(self) -> None:
+        rng = random.Random(1)
+        for _ in range(200):
+            boxes = [rng.randint(1, 20) for _ in range(rng.randint(1, 12))]
+            for k in range(1, len(boxes) + 1):
+                self.assertEqual(ex.smallest_capacity(boxes, k), ex.brute_capacity(boxes, k))
+
+    def test_reading_speed(self) -> None:
+        books = [300, 120, 450, 210]
+        s = ex.slowest_reading_speed(books, 8)
+        self.assertEqual(s, 150)
+        self.assertLessEqual(sum(math.ceil(p / s) for p in books), 8)
+        self.assertGreater(sum(math.ceil(p / (s - 1)) for p in books), 8)
+
+
+if __name__ == "__main__":
+    unittest.main()
