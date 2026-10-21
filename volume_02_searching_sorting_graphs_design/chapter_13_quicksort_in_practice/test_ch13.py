@@ -1,0 +1,32 @@
+import random
+import sys
+import unittest
+
+import ch13_examples as ex
+
+
+class TestChapter13(unittest.TestCase):
+    def test_sorts(self) -> None:
+        sys.setrecursionlimit(5000)
+        rng = random.Random(1)
+        for _ in range(300):
+            a = [rng.randint(0, rng.choice([3, 50])) for _ in range(rng.randint(0, 60))]
+            for fn in (ex.quicksort_random, ex.quicksort_practical):
+                b = list(a)
+                fn(b)
+                self.assertEqual(b, sorted(a))
+
+    def test_partition3(self) -> None:
+        b = [3, 1, 3, 2, 3, 1, 2, 3]
+        self.assertEqual(ex.partition3(b, 0, 7), (4, 7))
+        self.assertEqual(b[4:], [3, 3, 3, 3])
+        self.assertEqual(ex.median_of_three(list(ex.PILE), 0, 8), 8)
+
+    def test_equal_keys_fast(self) -> None:
+        c = {"comparisons": 0}
+        ex.quicksort_practical([7] * 1000, counter=c)
+        self.assertLessEqual(c["comparisons"], 1000)
+
+
+if __name__ == "__main__":
+    unittest.main()
