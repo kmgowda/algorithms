@@ -6,6 +6,15 @@ import ch04_examples as ex
 
 
 class TestChapter33(unittest.TestCase):
+    def test_every_case(self) -> None:
+        self.assertEqual((ex.group_anagrams([]), ex.group_anagrams(["a"])), ({}, {"a": ["a"]}))
+        self.assertEqual(len(ex.group_anagrams(["Listen", "silent"])), 2)
+        self.assertEqual([ex.pair_for_card(p, 30) for p in ([], [15], [15, 15], [12, 18, 5, 25])], [None, None, (15, 15), (12, 18)])
+        self.assertIsNone(ex.pair_for_card([4, 9, 20, 6], 100))
+        self.assertEqual([ex.first_unique(s) for s in ("", "A", "AABB", "LIBRARY", "SWISSCHEESE")], [None, "A", None, "L", "W"])
+        self.assertEqual([ex.dedupe(a) for a in ([], [7, 7, 7], [1, 2, 3], [47, 12, 47, 63, 12, 91])],
+                         [[], [7], [1, 2, 3], [47, 12, 63, 91]])
+
     def test_patterns(self) -> None:
         rng = random.Random(1)
         for _ in range(300):
