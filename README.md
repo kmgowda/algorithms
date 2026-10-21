@@ -12,6 +12,7 @@ One folder per volume of the six-volume series, one folder per chapter inside it
 | `volume_01_foundations/` | Volume 1, Foundations |
 | `volume_02_hashing_trees_heaps/` | Volume 2, Data Structures |
 | `volume_03_searching_sorting_graphs/` | Volume 3, Searching, Sorting, and Graph Exploration |
+| `volume_04_paths_and_design/` | Volume 4, Shortest Paths and Algorithm Design |
 
 ```
 volume_01_foundations/

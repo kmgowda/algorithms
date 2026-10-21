@@ -4,7 +4,8 @@ Companion code for the "Algorithms Simplified" book series. Book Markdown lives 
 `/root/projects/kmg/books/algorithms/kmg-book` (series plan in its `README.md`, authoring rules in its `AGENTS.md`).
 
 Six volumes; chapter numbers restart in each. Written so far: `volume_01_foundations` (29 chapters),
-`volume_02_hashing_trees_heaps` (35), `volume_03_searching_sorting_graphs` (in progress).
+`volume_02_hashing_trees_heaps` (35), `volume_03_searching_sorting_graphs` (31), `volume_04_paths_and_design` (32).
+From Volume 3 on, chapter folders hold only `chNN_examples.py` and `test_chNN.py` (each test has `test_every_case`).
 
 ## Conventions
 - Python 3.10+, standard library only (pytest is NOT installed; tests use `unittest`).
