@@ -19,7 +19,8 @@ class TestChapter23(unittest.TestCase):
             ex.first_fit_decreasing([11], 10)
         roads = [("Market", "Station")] + [x for x in ex.ROADS if x != ("Market", "Station")]
         self.assertEqual((len(ex.cover_by_matching(roads)), ex.first_fit_decreasing([6, 5, 5, 4], 10)), (8, [[6, 4], [5, 5]]))
-        self.assertEqual(ex.cover_by_matching([("a", "b"), ("c", "d")]), ["a", "b", "c", "d"])
+        tri = [("a", "b"), ("b", "c"), ("a", "c")]
+        self.assertEqual((len(ex.cover_by_matching(tri)), len(ex.smallest_cover(["a", "b", "c"], tri))), (2, 2))
         r = random.Random(23)
         for _ in range(150):
             vs = list(range(7))
