@@ -24,6 +24,8 @@ class Fenwick:
 
     def add(self, i: int, delta: int) -> list[int]:
         """Add delta to day i: climb to every box responsible for it (Figure 29.3)."""
+        if i < 1:                                     # lowbit(0) is 0: the climb would never move
+            raise IndexError("days are numbered from 1")
         touched = []
         while i <= self.n:
             self.tree[i] += delta

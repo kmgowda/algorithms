@@ -5,6 +5,16 @@ import ch29_examples as ex
 
 
 class TestChapter58(unittest.TestCase):
+    def test_every_case(self) -> None:
+        v = [3, 1, 4, 1, 5, 9, 2, 6]
+        f = ex.Fenwick(v)
+        self.assertEqual((f.prefix(0), f.prefix(8), f.prefix(7)), ((0, []), (31, [8]), (25, [7, 6, 4])))
+        self.assertEqual((f.range_sum(4, 4), f.range_sum(1, 8), f.range_sum(5, 2)), (1, 31, -5))
+        self.assertEqual([ex.Fenwick(v).add(i, 0) for i in (1, 8, 5, 9)], [[1, 2, 4, 8], [8], [5, 6, 8], []])
+        with self.assertRaises(IndexError):
+            ex.Fenwick(v).add(0, 5)
+        self.assertEqual((ex.Fenwick([]).prefix(0)[0], ex.Fenwick([7]).prefix(1)[0]), (0, 7))
+
     def test_against_plain_sums(self) -> None:
         rng = random.Random(1)
         for n in (1, 5, 8, 13, 50):
