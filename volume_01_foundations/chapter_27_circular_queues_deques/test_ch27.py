@@ -6,6 +6,27 @@ import ch27_examples as ex
 
 
 class TestChapter27(unittest.TestCase):
+    def test_every_case(self) -> None:
+        r = ex.RingBuffer(3)
+        with self.assertRaises(IndexError):
+            r.dequeue()
+        for x in "ABC":
+            r.enqueue(x)
+        with self.assertRaises(OverflowError):
+            r.enqueue("D")
+        self.assertEqual((r.front, r.back, r.count), (0, 0, 3))
+        self.assertEqual((r.dequeue(), r.front), ("A", 1))
+        r.enqueue("D")
+        self.assertEqual((r.slots, r.items()), (["D", "B", "C"], ["B", "C", "D"]))
+        one = ex.RingBuffer(1)
+        one.enqueue(1)
+        self.assertEqual((one.dequeue(), one.front, one.back), (1, 0, 0))
+        v = [3, 1, 4, 1, 5, 9, 2, 6]
+        self.assertEqual((ex.window_max(v, 1), ex.window_max(v, 8), ex.window_max(v, 9), ex.window_max([], 3)),
+                         (v, [9], [], []))
+        self.assertEqual((ex.window_max([5, 5, 5], 2), ex.window_max([1, 2, 3, 4], 2), ex.window_max([4, 3, 2, 1], 2)),
+                         ([5, 5], [2, 3, 4], [4, 3, 2]))
+
     def test_ring(self) -> None:
         rng = random.Random(1)
         ring, ref = ex.RingBuffer(5), collections.deque()
