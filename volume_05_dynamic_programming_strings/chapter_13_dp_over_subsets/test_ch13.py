@@ -18,6 +18,8 @@ class TestChapter13(unittest.TestCase):
     def test_every_case(self) -> None:
         self.assertEqual((ex.held_karp([[0]])[0], ex.held_karp([[0, 4], [4, 0]])[:2], ex.held_karp([[0, 1, 2], [1, 0, 5], [2, 5, 0]])[0]),
                          (0, (8, [0, 1, 0]), 8))
+        d = ex.matrix(ex.BRANCHES, ex.TRAVEL)
+        self.assertEqual((d[0][2] + d[2][4], d[0][1] + d[1][4]), (14, 5))
         r = random.Random(1)
         for _ in range(30):
             n = r.randint(2, 7)
