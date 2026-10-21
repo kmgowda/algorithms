@@ -4,6 +4,17 @@ import ch06_examples as ex
 
 
 class TestChapter6(unittest.TestCase):
+    def test_every_case(self) -> None:
+        shelf = [12, 25, 31, 47, 58, 63, 70, 84, 91]
+        self.assertEqual([ex.search_comparisons(shelf, t) for t in (12, 58, 91, 50)], [1, 5, 9, 9])
+        self.assertEqual(ex.search_comparisons([], 5), 0)
+        self.assertEqual([ex.pair_comparisons(n) for n in (0, 1, 2, 3, 10)], [0, 0, 1, 3, 45])
+        sizes = [1000, 2000, 4000, 8000]
+        self.assertEqual(ex.doubling_ratios([5] * 4), [1.0] * 3)
+        self.assertEqual(ex.doubling_ratios(sizes), [2.0] * 3)
+        self.assertEqual(ex.doubling_ratios([n * (n - 1) // 2 for n in sizes]), [4.0] * 3)
+        self.assertEqual(ex.doubling_ratios([n ** 3 for n in sizes]), [8.0] * 3)
+
     def test_counts(self) -> None:
         shelf = [12, 25, 31, 47, 58, 63, 70, 84, 91]
         self.assertEqual(ex.search_comparisons(shelf, 63), 6)
