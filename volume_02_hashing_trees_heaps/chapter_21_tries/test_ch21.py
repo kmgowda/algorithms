@@ -5,6 +5,22 @@ import ch21_examples as ex
 
 
 class TestChapter50(unittest.TestCase):
+    def test_every_case(self) -> None:
+        t = ex.Trie()
+        self.assertEqual((t.starting_with("a"), ex.count_nodes(t)), ([], 1))
+        for w in ("map", "maps", "mat", "me"):
+            t.insert(w)
+        self.assertEqual([t.starting_with(p) for p in ("ma", "map", "maps", "mapsx", "z", "")],
+                         [["map", "maps", "mat"], ["map", "maps"], ["maps"], [], [], ["map", "maps", "mat", "me"]])
+        self.assertEqual(ex.count_nodes(t), 7)
+        t.insert("map")
+        self.assertEqual(ex.count_nodes(t), 7)
+        t.insert("")
+        self.assertEqual(t.starting_with("")[0], "")
+        c = ex.Trie()
+        c.insert("Map")
+        self.assertEqual((c.starting_with("ma"), c.starting_with("Ma")), ([], ["Map"]))
+
     def test_trie(self) -> None:
         t = ex.Trie()
         for w in ["CAT", "CAR", "CART", "CARD", "DOG", "DOT"]:
