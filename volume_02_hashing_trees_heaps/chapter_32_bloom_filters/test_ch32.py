@@ -4,6 +4,24 @@ import ch32_examples as ex
 
 
 class TestChapter61(unittest.TestCase):
+    def test_every_case(self) -> None:
+        b = ex.BloomFilter(64, 3)
+        self.assertFalse(b.might_contain("Maps"))
+        b.add("Maps")
+        self.assertEqual((b.might_contain("Maps"), b.might_contain("maps")), (True, False))
+        b.add("Maps")
+        self.assertEqual(sum(b.bits), 3)
+        full = ex.BloomFilter(8, 3)
+        for w in "abcdefghij":
+            full.add(w)
+        self.assertEqual((sum(full.bits), full.might_contain("zzz")), (8, True))
+        self.assertEqual(ex.false_positive_rate(1000, 0, 3), 0.0)
+        self.assertAlmostEqual(ex.false_positive_rate(1000, 100, 7), 0.0082, places=4)
+        self.assertEqual((ex.best_k(1000, 100), ex.best_k(10, 100)), (7, 1))
+        for m, k in ((64, 0), (0, 3)):
+            with self.assertRaises(ValueError):
+                ex.BloomFilter(m, k)
+
     def test_filter(self) -> None:
         b = ex.BloomFilter(16, 3)
         for t in ("Maps", "Ocean", "Clocks"):

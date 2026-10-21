@@ -13,6 +13,8 @@ class BloomFilter:
     """m bits and k hash functions: 'definitely not present' or 'probably present' (Figure 32.1)."""
 
     def __init__(self, m: int, k: int):
+        if m < 1 or k < 1:                            # with k = 0, every item would "probably" be present
+            raise ValueError("need at least one bit and one hash function")
         self.m, self.k = m, k
         self.bits = bytearray(m)
 
