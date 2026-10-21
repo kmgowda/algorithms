@@ -4,6 +4,20 @@ import ch20_examples as ex
 
 
 class TestChapter20(unittest.TestCase):
+    def test_every_case(self) -> None:
+        self.assertEqual([len(ex.neighbours(r, c, 3, 5)) for r, c in [(0, 0), (0, 2), (1, 2)]], [2, 3, 4])
+        self.assertEqual((ex.neighbours(0, 0, 1, 1), ex.neighbours(0, 2, 1, 5)), ([], [(0, 1), (0, 3)]))
+        self.assertEqual((ex.address(0, 0, 5), ex.address(2, 4, 5)), (1000, 1014))
+        self.assertEqual(ex.totals(ex.SEATS), ([2, 3, 2], [1, 1, 2, 1, 2]))
+        self.assertEqual(ex.totals([[7]]), ([7], [7]))
+        self.assertEqual(ex.lonely_seats(ex.SEATS), [(0, 1), (0, 4), (1, 0), (2, 4)])
+        self.assertEqual((ex.lonely_seats([[1]]), ex.lonely_seats([[1, 1]])), ([(0, 0)], []))
+        bad = [[0] * 3] * 2
+        bad[0][0] = 1
+        good = ex.make_grid(2, 3)
+        good[0][0] = 1
+        self.assertEqual((bad, good), ([[1, 0, 0], [1, 0, 0]], [[1, 0, 0], [0, 0, 0]]))
+
     def test_grid(self) -> None:
         self.assertEqual(ex.address(1, 3, 5), 1008)
         self.assertEqual(ex.address(2, 2, 5), 1012)
