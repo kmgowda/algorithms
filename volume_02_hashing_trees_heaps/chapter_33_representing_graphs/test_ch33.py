@@ -4,6 +4,22 @@ import ch33_examples as ex
 
 
 class TestChapter62(unittest.TestCase):
+    def test_every_case(self) -> None:
+        v = ["A", "B", "C"]
+        self.assertEqual((ex.adjacency_matrix([], []), ex.adjacency_list([], [])), ([], {}))
+        self.assertEqual(ex.degrees(ex.adjacency_list(v, [])), {"A": 0, "B": 0, "C": 0})
+        self.assertEqual(ex.adjacency_matrix(v, [("A", "A")])[0][0], 1)
+        self.assertEqual(ex.degrees(ex.adjacency_list(v, [("A", "A")]))["A"], 2)
+        twice = [("A", "B"), ("A", "B")]
+        self.assertEqual((ex.adjacency_matrix(v, twice)[0], ex.adjacency_list(v, twice)["A"]), ([0, 1, 0], ["B", "B"]))
+        for build in (ex.adjacency_matrix, ex.adjacency_list):
+            with self.assertRaises(KeyError):
+                build(v, [("A", "Z")])
+        self.assertEqual(ex.weighted_adjacency([("A", "B", 5), ("A", "B", 3)]), {"A": {"B": 3}, "B": {}})
+        g = ["...", ".#.", "..."]
+        self.assertEqual((ex.grid_neighbours(g, 0, 0), ex.grid_neighbours(g, 1, 0), ex.grid_neighbours(["."], 0, 0)),
+                         ([(1, 0), (0, 1)], [(0, 0), (2, 0)], []))
+
     def test_courier_map(self) -> None:
         m = ex.adjacency_matrix(ex.BRANCHES, ex.ROUTES)
         adj = ex.adjacency_list(ex.BRANCHES, ex.ROUTES)
