@@ -30,6 +30,35 @@ class TestChapter03(unittest.TestCase):
         self.assertIsNone(ex.staircase_search(ex.GRID, 50, t))
         self.assertEqual(len(t), 7)
 
+    def test_every_case(self) -> None:
+        r, s = ex.ROTATED, sorted(ex.ROTATED)
+        rows = [(s, 63, 5, 3), ([91] + s[:-1], 25, 2, 3), (r, 70, 2, 3), (r, 31, 7, 3), (r, 91, 4, 1), (r, 65, -1, 4),
+                ([47], 47, 0, 1)]
+        for a, key, pos, looks in rows:
+            t = []
+            self.assertEqual(ex.search_rotated(a, key, t), pos)
+            self.assertEqual(len(t), looks)
+        dup = [47, 12, 47, 47, 47]
+        self.assertEqual(ex.search_rotated(dup, 12), -1)                 # the documented failure
+        self.assertEqual(ex.search_rotated_with_duplicates(dup, 12), 1)  # and its fix
+        for key, cell, looks in [(47, (0, 3), 1), (35, (3, 0), 7), (12, (0, 0), 4), (91, (3, 3), 4), (50, None, 7),
+                                 (5, None, 4), (99, None, 4)]:
+            t = []
+            self.assertEqual(ex.staircase_search(ex.GRID, key, t), cell)
+            self.assertEqual(len(t), looks)
+
+    def test_duplicates_fix_random(self) -> None:
+        rng = random.Random(4)
+        for _ in range(500):
+            base = sorted(rng.randint(0, 5) for _ in range(rng.randint(1, 12)))
+            k = rng.randrange(len(base))
+            a = base[k:] + base[:k]
+            for key in range(-1, 7):
+                i = ex.search_rotated_with_duplicates(a, key)
+                self.assertEqual(i != -1, key in a)
+                if i != -1:
+                    self.assertEqual(a[i], key)
+
     def test_staircase_random(self) -> None:
         rng = random.Random(2)
         for _ in range(100):

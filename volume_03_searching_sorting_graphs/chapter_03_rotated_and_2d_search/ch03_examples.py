@@ -46,6 +46,28 @@ def search_rotated(a: list, key, trace: list | None = None) -> int:
     return -1
 
 
+def search_rotated_with_duplicates(a: list, key) -> int:
+    """Section 3.7: when a[lo] = a[mid] = a[hi] the drop could be on either side, so shrink by one (worst case O(n))."""
+    lo, hi = 0, len(a) - 1
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if a[mid] == key:
+            return mid
+        if a[lo] == a[mid] == a[hi]:
+            lo, hi = lo + 1, hi - 1
+        elif a[lo] <= a[mid]:
+            if a[lo] <= key < a[mid]:
+                hi = mid - 1
+            else:
+                lo = mid + 1
+        else:
+            if a[mid] < key <= a[hi]:
+                lo = mid + 1
+            else:
+                hi = mid - 1
+    return -1
+
+
 def staircase_search(grid: list[list], key, trace: list | None = None):
     """Start at the top-right corner; each look removes a row or a column (Figure 3.5)."""
     r, c = 0, len(grid[0]) - 1
