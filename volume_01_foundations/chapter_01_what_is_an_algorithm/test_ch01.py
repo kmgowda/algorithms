@@ -5,6 +5,15 @@ import ch01_examples as ex
 
 
 class TestChapter1(unittest.TestCase):
+    def test_every_case(self) -> None:
+        for heights, best in [([161, 142, 155, 138, 150, 158], 161), ([142, 155, 138, 150, 158, 161], 161),
+                              ([150, 161, 140, 161], 161), ([147], 147)]:
+            self.assertEqual(ex.tallest(heights), best)
+        with self.assertRaises(IndexError):
+            ex.tallest([])
+        for wanted, a, b in [(12, 1, 3), (58, 5, 1), (91, 9, 4), (50, 9, 4), (5, 9, 3), (95, 9, 4)]:
+            self.assertEqual((ex.looks_one_by_one(ex.SHELF, wanted), ex.looks_by_halving(ex.SHELF, wanted)), (a, b))
+
     def test_tallest(self) -> None:
         rng = random.Random(1)
         self.assertEqual(ex.tallest(ex.HEIGHTS), 161)
