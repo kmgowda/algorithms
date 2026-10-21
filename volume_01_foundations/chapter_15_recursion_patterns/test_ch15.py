@@ -6,6 +6,16 @@ import ch15_examples as ex
 
 
 class TestChapter15(unittest.TestCase):
+    def test_every_case(self) -> None:
+        self.assertEqual([ex.power(3, n) for n in (0, 1, 13)], [1, 3, 1594323])
+        self.assertEqual((ex.power(0, 0), ex.power(0, 5), ex.power(-2, 3)), (1, 0, -8))
+        self.assertEqual([len(ex.permutations(list("ABCD")[:k])) for k in range(5)], [1, 1, 2, 6, 24])
+        aab = ex.permutations(list("AAB"))
+        self.assertEqual((len(aab), len({tuple(p) for p in aab})), (6, 3))
+        self.assertEqual([len(ex.subsets(list("ABCD")[:k])) for k in range(5)], [1, 2, 4, 8, 16])
+        self.assertEqual([ex.search(ex.SHELF, t, 0, 8) for t in (12, 58, 91, 50)], [0, 4, 8, -1])
+        self.assertEqual(ex.search([], 5, 0, -1), -1)
+
     def test_patterns(self) -> None:
         for x in range(-3, 5):
             for n in range(0, 30):
