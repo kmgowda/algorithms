@@ -5,6 +5,14 @@ import ch11_examples as ex
 
 
 class TestChapter40(unittest.TestCase):
+    def test_every_case(self) -> None:
+        s = [12, 25, 31, 47, 58, 63, 70, 84, 91]
+        self.assertEqual([ex.present_sorted(s, x) for x in (12, 91, 50, 5, 95)], [True, True, False, False, False])
+        self.assertFalse(ex.present_sorted([], 5))
+        for a, b, want in [(30, 60, [31, 47, 58]), (58, 58, [58]), (60, 30, []), (0, 100, s), (92, 99, [])]:
+            self.assertEqual((ex.range_sorted(s, a, b), ex.range_hashed(set(s), a, b)), (want, want))
+        self.assertEqual((ex.range_sorted([], 1, 5), ex.range_hashed(set(), 1, 5)), ([], []))
+
     def test_all_agree(self) -> None:
         rng = random.Random(1)
         for _ in range(200):
