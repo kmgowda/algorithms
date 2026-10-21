@@ -5,6 +5,19 @@ import ch08_examples as ex
 
 
 class TestChapter37(unittest.TestCase):
+    def test_every_case(self) -> None:
+        p = ex.prefix_sums(ex.VISITS)
+        self.assertEqual(ex.prefix_sums([]), [0])
+        self.assertEqual([ex.range_sum(p, a, b) for a, b in ((0, 9), (4, 4), (0, 0), (9, 9))], [39, 5, 3, 3])
+        self.assertEqual(ex.chairs_in_use([], 5), [0] * 5)
+        self.assertEqual(ex.chairs_in_use([(0, 4, 2)], 5), [2] * 5)
+        self.assertEqual(ex.chairs_in_use([(2, 2, 1)], 5), [0, 0, 1, 0, 0])
+        self.assertEqual(ex.chairs_in_use([(0, 1, 1), (1, 2, 1)], 3), [1, 2, 1])
+        self.assertEqual([ex.count_stretches_with_sum(a, k) for a, k in (([], 0), ([0, 0], 0), ([1, -1, 1], 0),
+                                                                       (ex.VISITS, 100), (ex.VISITS, 10))], [0, 3, 2, 0, 1])
+        gp = ex.grid_prefix([[1, 0, 2], [0, 3, 1], [2, 1, 0]])
+        self.assertEqual((ex.block_sum(gp, 0, 0, 2, 2), ex.block_sum(gp, 1, 1, 1, 1), ex.block_sum(gp, 0, 2, 2, 2)), (10, 3, 3))
+
     def test_against_brute_force(self) -> None:
         rng = random.Random(1)
         for _ in range(300):
