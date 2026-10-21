@@ -1,9 +1,9 @@
 import unittest
 
-import ch62_examples as ex
+import ch64_examples as ex
 
 
-class TestChapter62(unittest.TestCase):
+class TestChapter64(unittest.TestCase):
     def test_library(self) -> None:
         got = {job: ex.recommend(**needs) for job, needs in ex.LIBRARY_JOBS.items()}
         self.assertEqual(got, {"catalogue by call number": "hash table", "subject browsing": "B-tree",

@@ -1,7 +1,7 @@
-"""Volume 1, Chapter 62 - Choosing a Data Structure.
+"""Volume 1, Chapter 64 - Choosing a Data Structure.
 
-The five questions of Figure 62.3 written as a small function.
-Run:  python3 ch62_examples.py
+The five questions of Figure 64.3 written as a small function.
+Run:  python3 ch64_examples.py
 """
 
 from __future__ import annotations
