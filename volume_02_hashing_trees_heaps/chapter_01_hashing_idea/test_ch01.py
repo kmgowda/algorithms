@@ -5,6 +5,17 @@ import ch01_examples as ex
 
 
 class TestChapter30(unittest.TestCase):
+    def test_every_case(self) -> None:
+        self.assertEqual((ex.letter_sum_hash("", 8), ex.multiply_add_hash("", 8)), (0, 0))
+        self.assertEqual((ex.letter_sum_hash("ART", 8), ex.letter_sum_hash("RAT", 8)), (7, 7))
+        self.assertEqual((ex.multiply_add_hash("ART", 8), ex.multiply_add_hash("RAT", 8)), (3, 5))
+        self.assertEqual((ex.letter_sum_hash("MAYA", 1), ex.multiply_add_hash("MAYA", 1)), (0, 0))
+        self.assertEqual((ex.letter_sum_hash("Maya", 8), ex.letter_sum_hash("MAYA", 8)), (0, 0))
+        self.assertEqual([ex.duplicates_hashed(a) for a in ([], [7], [5, 5, 5], [1, 2, 3])],
+                         [(set(), 0), (set(), 1), ({5}, 3), (set(), 3)])
+        self.assertEqual((ex.birthday_shared(1), ex.birthday_shared(366, trials=200)), (0.0, 1.0))
+        self.assertAlmostEqual(ex.birthday_shared(23), 0.5, delta=0.03)
+
     def test_hashes(self) -> None:
         self.assertEqual(ex.letter_sum_hash("MAYA", 8), 0)
         self.assertEqual(ex.letter_sum_hash("BEN", 8), 5)
