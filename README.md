@@ -23,8 +23,8 @@ volume_01_foundations/
 run_tests.py            # runs every chapter's tests
 ```
 
-Chapter numbers restart at 1 in every volume, matching the books. The other `volume_NN_*` folders hold first-draft
-code from an earlier plan and will be replaced as the remaining volumes are written.
+Chapter numbers restart at 1 in every volume, matching the books. Folders for Volumes 4-6 are added as those volumes are
+written.
 
 ## Requirements
 

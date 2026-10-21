@@ -4,8 +4,7 @@ Companion code for the "Algorithms Simplified" book series. Book Markdown lives 
 `/root/projects/kmg/books/algorithms/kmg-book` (series plan in its `README.md`, authoring rules in its `AGENTS.md`).
 
 Six volumes; chapter numbers restart in each. Written so far: `volume_01_foundations` (29 chapters),
-`volume_02_hashing_trees_heaps` (35), `volume_03_searching_sorting_graphs` (in progress). Other `volume_NN_*` folders
-are first-draft code from an earlier plan.
+`volume_02_hashing_trees_heaps` (35), `volume_03_searching_sorting_graphs` (in progress).
 
 ## Conventions
 - Python 3.10+, standard library only (pytest is NOT installed; tests use `unittest`).
