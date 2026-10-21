@@ -17,6 +17,7 @@ class TestChapter26(unittest.TestCase):
 
     def test_every_case(self) -> None:
         self.assertEqual((ex.majority("A"), ex.majority("AB"), ex.misra_gries([], 3), ex.distinct_estimate([]), ex.distinct_estimate("aab")), ("A", None, {}, 0.0, 2.0))
+        self.assertEqual((ex.majority("ABBCB"), ex.misra_gries("abca", 3)), ("B", {"a": 1}))
         r = random.Random(1)
         for _ in range(100):
             s = [r.choice("abcde") for _ in range(r.randint(0, 60))]
