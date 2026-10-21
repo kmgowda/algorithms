@@ -10,7 +10,7 @@ from __future__ import annotations
 def recommend(*, newest_first=False, oldest_first=False, exact_keys=False, needs_order=False, extreme_only=False,
               range_totals=False, range_extremes=False, values_change=True, groups=False, on_disk=False,
               prefixes=False, tiny_memory_ok_errors=False) -> str:
-    """Return the structure the five questions point to (Section 33.5)."""
+    """Return the structure the five questions point to (Section 35.5)."""
     if groups:
         return "union-find"
     if range_totals:
