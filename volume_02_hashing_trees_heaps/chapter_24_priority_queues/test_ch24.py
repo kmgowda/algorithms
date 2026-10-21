@@ -5,6 +5,23 @@ import ch24_examples as ex
 
 
 class TestChapter53(unittest.TestCase):
+    def test_every_case(self) -> None:
+        for cls, err, ties in ((ex.UnsortedPQ, ValueError, list("adcb")), (ex.SortedPQ, IndexError, list("abcd")),
+                               (ex.FairHeapPQ, IndexError, list("abcd"))):
+            with self.assertRaises(err):
+                cls().extract_min()
+            q = cls()
+            for it in "abcd":
+                q.insert(1, it)
+            self.assertEqual([q.extract_min()[1] for _ in range(4)], ties)
+            q = cls()
+            for p in (5, -2, 9, 0):
+                q.insert(p)
+            self.assertEqual([q.extract_min()[0] for _ in range(4)], [-2, 0, 5, 9])
+        self.assertEqual([ex.shortest_first(j) for j in ([], [4], [3, 1, 2], [2, 2, 1])], [[], [4], [1, 2, 3], [1, 2, 2]])
+        self.assertEqual((ex.finish_times([1, 2, 3]), ex.finish_times([3, 1, 2]), ex.finish_times([1, 2, 2])),
+                         ([1, 3, 6], [3, 4, 6], [1, 3, 5]))
+
     def test_all_agree(self) -> None:
         rng = random.Random(1)
         for cls in (ex.UnsortedPQ, ex.SortedPQ, ex.FairHeapPQ):
