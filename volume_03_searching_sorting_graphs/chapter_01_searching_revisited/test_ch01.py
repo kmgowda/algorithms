@@ -30,6 +30,16 @@ class TestChapter01(unittest.TestCase):
         self.assertEqual(ex.lower_bound(c, 63, t), 8)
         self.assertEqual([x[:3] for x in t], [(0, 12, 6), (7, 12, 9), (7, 9, 8), (7, 8, 7)])
 
+    def test_every_case(self) -> None:
+        c = ex.CATALOGUE
+        table = [([], 7, 0, 0), (c, 5, 0, 0), (c, 95, 12, 12), (c, 31, 3, 4), (c, 47, 4, 7), (c, 50, 7, 7)]
+        for a, key, lo, hi in table:
+            self.assertEqual((ex.lower_bound(a, key), ex.upper_bound(a, key)), (lo, hi))
+            self.assertEqual(ex.contains(a, key), hi > lo)
+            t = []
+            ex.lower_bound(a, key, t)
+            self.assertLessEqual(len(t), 4)
+
     def test_due_dates(self) -> None:
         rng = random.Random(2)
         due = sorted(rng.randint(1, 365) for _ in range(40_000))
