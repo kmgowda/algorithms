@@ -4,7 +4,20 @@ import unittest
 import ch11_examples as ex
 
 
+PILE9 = [58, 25, 91, 12, 70, 47, 84, 31, 63]
+CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 58, 12, 25, 47, 58, 12, 47], [47], []]
+
+
 class TestChapter11(unittest.TestCase):
+    def test_every_case(self) -> None:
+        got = []
+        for a in CASES:
+            c = {"comparisons": 0}
+            result = ex.merge_sort(list(a), c)
+            self.assertEqual(result, sorted(a))
+            got.append(c["comparisons"])
+        self.assertEqual(got, [21, 13, 16, 13, 20, 0, 0])
+
     def test_sorts_and_stable(self) -> None:
         rng = random.Random(1)
         for _ in range(300):

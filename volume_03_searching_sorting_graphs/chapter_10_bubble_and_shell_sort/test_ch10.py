@@ -8,7 +8,15 @@ def inversions(a):
     return sum(1 for i in range(len(a)) for j in range(i + 1, len(a)) if a[i] > a[j])
 
 
+PILE9 = [58, 25, 91, 12, 70, 47, 84, 31, 63]
+CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 58, 12, 25, 47, 58, 12, 47], [47], []]
+
+
 class TestChapter10(unittest.TestCase):
+    def test_every_case(self) -> None:
+        self.assertEqual([tuple(ex.bubble_sort(list(a)).values()) for a in CASES], [(33, 17), (8, 0), (36, 36), (8, 0), (35, 17), (0, 0), (0, 0)])
+        self.assertEqual([tuple(ex.shell_sort(list(a), [4, 1]).values()) for a in CASES], [(27, 17), (13, 0), (20, 12), (13, 0), (24, 13), (0, 0), (0, 0)])
+
     def test_sorts(self) -> None:
         rng = random.Random(1)
         for _ in range(300):

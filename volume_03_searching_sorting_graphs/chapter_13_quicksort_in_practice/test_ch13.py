@@ -5,7 +5,21 @@ import unittest
 import ch13_examples as ex
 
 
+PILE9 = [58, 25, 91, 12, 70, 47, 84, 31, 63]
+CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 58, 12, 25, 47, 58, 12, 47], [47], []]
+
+
 class TestChapter13(unittest.TestCase):
+    def test_every_case(self) -> None:
+        got = []
+        for a in CASES:
+            c = {"comparisons": 0}
+            b = list(a)
+            ex.quicksort_practical(b, cutoff=1, counter=c)
+            self.assertEqual(b, sorted(a))
+            got.append(c["comparisons"])
+        self.assertEqual(got, [20, 21, 21, 9, 18, 0, 0])
+
     def test_sorts(self) -> None:
         sys.setrecursionlimit(5000)
         rng = random.Random(1)
