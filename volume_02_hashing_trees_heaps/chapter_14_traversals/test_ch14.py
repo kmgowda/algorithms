@@ -1,9 +1,34 @@
+import sys
 import unittest
 
 import ch14_examples as ex
 
 
 class TestChapter43(unittest.TestCase):
+    def test_every_case(self) -> None:
+        T = ex.TreeNode
+        fns = (ex.preorder, ex.inorder, ex.postorder, ex.level_order, ex.inorder_iterative)
+        self.assertEqual([f(None) for f in fns], [[]] * 5)
+        self.assertEqual([f(T(5)) for f in fns], [[5]] * 5)
+        left = T(3, T(2, T(1)))
+        self.assertEqual([f(left) for f in fns[:4]], [[3, 2, 1], [1, 2, 3], [1, 2, 3], [3, 2, 1]])
+        right = T(1, None, T(2, None, T(3)))
+        self.assertEqual([f(right) for f in fns[:4]], [[1, 2, 3], [1, 2, 3], [3, 2, 1], [1, 2, 3]])
+        full = ex.from_array([58, 25, 84, 12, 47, 70, 91])
+        self.assertEqual(ex.postorder(full), [12, 47, 25, 70, 91, 84, 58])
+        root = None
+        for v in range(5000):
+            root = T(v, root)
+        old = sys.getrecursionlimit()
+        sys.setrecursionlimit(1000)
+        try:
+            with self.assertRaises(RecursionError):
+                ex.inorder(root)
+        finally:
+            sys.setrecursionlimit(old)
+        self.assertEqual(len(ex.inorder_iterative(root)), 5000)
+        self.assertEqual(ex.folder_totals({"r": 0, "a": 3, "b": 4}, {"r": ["a", "b"]}, "r")["r"], 7)
+
     def test_orders(self) -> None:
         t = ex.from_array([58, 25, 84, 12, 47, 70, 91])
         self.assertEqual(ex.preorder(t), [58, 25, 12, 47, 84, 70, 91])
