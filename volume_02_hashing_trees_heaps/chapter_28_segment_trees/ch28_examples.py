@@ -17,7 +17,8 @@ class SegmentTree:
         self.n = len(values)
         self.t = [0] * (4 * max(1, self.n))
         self.visited = 0
-        self._build(1, 0, self.n - 1, values)
+        if self.n:                                    # an empty list has nothing to build
+            self._build(1, 0, self.n - 1, values)
 
     def _build(self, node, lo, hi, values):
         if lo == hi:

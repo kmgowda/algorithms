@@ -5,6 +5,20 @@ import ch28_examples as ex
 
 
 class TestChapter57(unittest.TestCase):
+    def test_every_case(self) -> None:
+        v = [3, 1, 4, 1, 5, 9, 2, 6]
+        s = ex.SegmentTree(v)
+        self.assertEqual((s.query(0, 7), s.visited), (31, 1))
+        self.assertEqual([s.query(i, i) for i in (3, 0, 7)], [1, 3, 6])
+        self.assertEqual(s.query(2, 5), 19)
+        self.assertEqual((s.query(1, 6), s.visited, s.used_nodes(1, 6)), (22, 11, [(1, 1), (2, 3), (4, 5), (6, 6)]))
+        self.assertEqual((s.query(5, 2), s.query(0, 20)), (0, 31))
+        self.assertEqual(s.update(3, 10), [1, 2, 5, 11])
+        self.assertEqual(s.query(0, 7), 40)
+        self.assertEqual([ex.SegmentTree(v).update(i, 0) for i in (0, 7)], [[1, 2, 4, 8], [1, 3, 7, 15]])
+        self.assertEqual(ex.SegmentTree([7]).query(0, 0), 7)
+        self.assertEqual(ex.SegmentTree([]).query(0, 0), 0)
+
     def test_against_plain_sums(self) -> None:
         rng = random.Random(1)
         for n in (1, 2, 5, 8, 13, 40):
