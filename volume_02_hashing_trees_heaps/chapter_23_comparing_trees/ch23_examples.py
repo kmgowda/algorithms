@@ -53,7 +53,7 @@ def measure(keys: list[int], lookups: list[int]) -> dict[str, dict]:
                          "height": height(s), "found": found}
 
     run("plain BST", lambda: bst.BST(keys), lambda s, k: s.contains(k), lambda s: s.height())
-    run("AVL", lambda: avl.build(keys), _avl_contains, lambda s: s.height)
+    run("AVL", lambda: avl.build(keys), _avl_contains, avl.h)
     run("red-black", lambda: rb.RedBlackTree(keys), _rb_contains, lambda s: s.height())
     run("B-tree (63 keys/node)", lambda: bt.BTree(63, keys), lambda s, k: s.search(k)[0], lambda s: s.height())
     run("hash set", lambda: set(keys), lambda s, k: k in s, lambda s: None)
