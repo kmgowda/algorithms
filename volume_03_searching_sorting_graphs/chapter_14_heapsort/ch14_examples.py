@@ -46,7 +46,7 @@ def heapsort(a: list, counter: dict | None = None, log: list | None = None) -> N
 
 
 def top_k_by_heapsort(a: list, k: int, counter: dict | None = None) -> list:
-    """Section 14.6: build a max-heap, then run only k rounds of phase 2; returns the k largest, largest first."""
+    """Section 14.7: build a max-heap, then run only k rounds of phase 2; returns the k largest, largest first."""
     a = list(a)
     n = len(a)
     for i in range(n // 2 - 1, -1, -1):

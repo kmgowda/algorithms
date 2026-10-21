@@ -65,7 +65,7 @@ def insertion_sort(a: list) -> None:
 
 
 def mixup_timing(n: int = 5000, seed: int = 1) -> dict:
-    """Section 10.7: comparisons for neighbour swaps versus a few far-moved books."""
+    """Section 10.8: comparisons for neighbour swaps versus a few far-moved books."""
     rng = random.Random(seed)
     near = list(range(n))
     for _ in range(5):

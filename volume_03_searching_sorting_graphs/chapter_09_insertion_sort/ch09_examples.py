@@ -31,7 +31,7 @@ def insertion_sort(a: list, steps: list | None = None) -> dict:
 
 
 def nightly_catalogue(n: int = 20_000, new: int = 50, near_end: bool = True, seed: int = 1) -> dict:
-    """Section 9.7: a sorted catalogue plus new entries appended at the end, re-sorted by insertion sort."""
+    """Section 9.8: a sorted catalogue plus new entries appended at the end, re-sorted by insertion sort."""
     rng = random.Random(seed)
     cat = sorted(rng.sample(range(10 * n), n))
     if near_end:

@@ -31,7 +31,7 @@ def selection_sort(a: list, passes: list | None = None) -> dict:
 
 
 def insertion_moves(a: list) -> int:
-    """Section 8.7: shifts made by insertion sort, equal to the number of inversions."""
+    """Section 8.8: shifts made by insertion sort, equal to the number of inversions."""
     a = list(a)
     moves = 0
     for i in range(1, len(a)):

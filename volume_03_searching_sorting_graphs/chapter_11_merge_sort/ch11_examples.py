@@ -41,7 +41,7 @@ def merge_sort(a: list, counter: dict | None = None, log: list | None = None, de
 
 
 def merge_branch_lists(lists: list[list], counter: dict | None = None) -> list:
-    """Section 11.8: merge already-sorted lists in pairs, level by level."""
+    """Section 11.9: merge already-sorted lists in pairs, level by level."""
     while len(lists) > 1:
         lists = [merge(lists[i], lists[i + 1], counter) if i + 1 < len(lists) else lists[i]
                  for i in range(0, len(lists), 2)]

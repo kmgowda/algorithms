@@ -49,7 +49,7 @@ def group_counts(a: list) -> list[tuple]:
 
 
 def overdue_pairs(days: list[int]) -> tuple[bool, tuple]:
-    """Section 7.7: any equal pair, and the closest pair, by sorting then one pass."""
+    """Section 7.8: any equal pair, and the closest pair, by sorting then one pass."""
     return has_duplicate_by_sorting(days), closest_pair(days)
 
 

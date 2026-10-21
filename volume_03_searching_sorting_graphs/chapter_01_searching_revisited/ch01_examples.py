@@ -51,7 +51,7 @@ def contains(a: list, key) -> bool:
 
 
 def due_date_report(due: list[int], today: int, week_end: int, new_day: int) -> tuple[int, int, int]:
-    """Section 1.7: (due today, due this week, insertion position for a new loan)."""
+    """Section 1.8: (due today, due this week, insertion position for a new loan)."""
     return (count(due, today), count_between(due, today, week_end), upper_bound(due, new_day))
 
 

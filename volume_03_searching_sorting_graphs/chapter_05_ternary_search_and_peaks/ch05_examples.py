@@ -48,7 +48,7 @@ def is_peak(a: list, i: int) -> bool:
 
 
 def is_unimodal(a: list) -> bool:
-    """Section 5.7: strictly rises then strictly falls (either part may be empty)."""
+    """Section 5.8: strictly rises then strictly falls (either part may be empty)."""
     i = 0
     while i + 1 < len(a) and a[i] < a[i + 1]:
         i += 1

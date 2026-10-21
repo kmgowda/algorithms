@@ -85,7 +85,7 @@ def staircase_search(grid: list[list], key, trace: list | None = None):
 
 
 def first_at_or_after(ring: list, t) -> int | None:
-    """Section 3.7: in a rotated sorted log, the index of the first entry >= t (in time order), or None."""
+    """Section 3.8: in a rotated sorted log, the index of the first entry >= t (in time order), or None."""
     start = find_rotation(ring)
     n = len(ring)
     lo, hi = 0, n                                 # search positions in time order: index (start + k) % n
