@@ -6,6 +6,17 @@ import ch05_examples as ex
 
 
 class TestChapter34(unittest.TestCase):
+    def test_every_case(self) -> None:
+        for a, want in [([], []), ([7], [7]), ([5, 5, 5], [5]), ([1, 2, 3], [1, 2, 3]),
+                        ([12, 12, 25, 31, 31, 31, 47, 63, 63], [12, 25, 31, 47, 63])]:
+            b = list(a)
+            self.assertEqual(b[:ex.dedupe_sorted(b)], want)
+        self.assertEqual([ex.merge_sorted(a, b) for a, b in [([], [1, 2]), ([], []), ([1, 2], [3, 4]), ([3, 4], [1, 2]), ([5, 5], [5])]],
+                         [([1, 2], 0), ([], 0), ([1, 2, 3, 4], 2), ([1, 2, 3, 4], 2), ([5, 5, 5], 2)])
+        self.assertEqual([ex.best_bookends(h)[0] for h in ([], [4], [4, 4], [1, 2, 3, 4], [5, 5, 5, 5])], [0, 0, 4, 4, 15])
+        self.assertEqual([ex.common_sorted(a, b) for a, b in [([], [1]), ([1, 2], [3, 4]), ([1, 2, 3], [1, 2, 3]), ([2, 2, 3], [2, 3, 3])]],
+                         [[], [], [1, 2, 3], [2, 3]])
+
     def test_against_brute_force(self) -> None:
         rng = random.Random(1)
         for _ in range(300):
