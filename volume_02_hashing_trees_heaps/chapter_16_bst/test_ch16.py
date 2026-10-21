@@ -5,6 +5,23 @@ import ch16_examples as ex
 
 
 class TestChapter45(unittest.TestCase):
+    def test_every_case(self) -> None:
+        keys = [58, 25, 84, 12, 47, 70, 91]
+        t = ex.BST(keys); t.delete(12)
+        self.assertEqual(t.inorder(), [25, 47, 58, 70, 84, 91])
+        t.delete(25)
+        self.assertEqual(t.inorder(), [47, 58, 70, 84, 91])
+        t = ex.BST(keys); t.delete(58)
+        self.assertEqual((t.inorder(), t.root.key), ([12, 25, 47, 70, 84, 91], 70))
+        t = ex.BST(keys); t.delete(99)
+        self.assertEqual(t.inorder(), sorted(keys))
+        t = ex.BST([5]); t.delete(5)
+        self.assertIsNone(t.root)
+        t = ex.BST(); t.delete(3)
+        self.assertEqual((t.inorder(), t.contains(3), t.search_path(3)), ([], False, []))
+        self.assertEqual(ex.BST([5, 5, 5]).inorder(), [5])
+        self.assertEqual((ex.BST([58, 25, 84]).range(30, 60), ex.BST([58, 25, 84]).range(60, 30)), ([58], []))
+
     def test_against_sorted_set(self) -> None:
         rng = random.Random(1)
         for _ in range(100):
