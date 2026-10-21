@@ -31,6 +31,21 @@ class TestChapter04(unittest.TestCase):
         self.assertEqual(ex.interpolation_search([12, 25, 31, 47, 58, 63, 70, 84, 91], 70, t), 6)
         self.assertEqual(t, [(0, 8, 5, 63), (6, 8, 6, 70)])
 
+    def test_every_case(self) -> None:
+        reel_values = list(range(3, 3000, 3))
+        for key, pos, reads in [(3, 0, 3), (6, 1, 3), (1, -1, 3), (88, -1, 11), (2997, 998, 21), (3000, -1, 21)]:
+            r = ex.Reel(reel_values)
+            self.assertEqual(ex.exponential_search(r, key), pos)
+            self.assertEqual(r.reads, reads)
+        empty = ex.Reel([])
+        self.assertEqual((ex.exponential_search(empty, 5), empty.reads), (-1, 3))
+        shelf = [12, 25, 31, 47, 58, 63, 70, 84, 91]
+        for key, pos, guesses in [(12, 0, 1), (91, 8, 1), (50, -1, 1), (5, -1, 0), (95, -1, 0)]:
+            t = []
+            self.assertEqual(ex.interpolation_search(shelf, key, t), pos)
+            self.assertEqual(len(t), guesses)
+        self.assertEqual(ex.interpolation_search([7, 7, 7, 7], 7), 0)
+
     def test_uniform_beats_binary(self) -> None:
         rng = random.Random(1)
         a = sorted(rng.sample(range(1_000_000), 50_000))
