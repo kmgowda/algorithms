@@ -5,6 +5,13 @@ import ch12_examples as ex
 
 
 class TestChapter12(unittest.TestCase):
+    def test_every_case(self) -> None:
+        self.assertEqual([ex.gauss_sum(n) for n in (0, 1, 2, 10, 100)], [0, 1, 3, 55, 5050])
+        self.assertEqual([ex.powers_of_two_sum(k) for k in (0, 1, 2, 5, 10)], [0, 1, 3, 31, 1023])
+        self.assertEqual([ex.halving_total(s) for s in (0, 1, 3, 8, 1000, 1024)], [0, 1, 4, 15, 1994, 2047])
+        for s in range(1, 3000):
+            self.assertLess(ex.halving_total(s), 2 * s)
+
     def test_formulas(self) -> None:
         self.assertTrue(all(ex.check_formulas(n) for n in range(1, 400)))
         self.assertEqual(ex.gauss_sum(100), 5050)
