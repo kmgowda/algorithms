@@ -6,6 +6,12 @@ import ch06_examples as ex
 
 
 class TestChapter35(unittest.TestCase):
+    def test_every_case(self) -> None:
+        for a, d in [([1, 1], 1), ([2, 2, 2], 2), ([3, 1, 3, 4, 2], 3), ([1, 3, 4, 2, 2], 2),
+                     ([2, 5, 9, 6, 9, 3, 8, 9, 7, 1], 9), ([1, 4, 4, 2, 4, 3], 4)]:
+            self.assertEqual(ex.find_duplicate(a), d)
+        self.assertEqual([ex.is_happy(n) for n in (1, 7, 10, 19, 100, 2, 4)], [True] * 5 + [False] * 2)
+
     def test_find_duplicate(self) -> None:
         self.assertEqual(ex.find_duplicate([3, 1, 3, 4, 2]), 3)
         self.assertEqual(ex.find_duplicate([1, 3, 4, 2, 2]), 2)
