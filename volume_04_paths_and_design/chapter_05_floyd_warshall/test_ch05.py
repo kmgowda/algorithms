@@ -11,6 +11,8 @@ class TestChapter5(unittest.TestCase):
         self.assertEqual([ex.PLACES[i] for i in ex.path(nxt, 0, 7)], ["Library", "Park", "Hospital", "Museum", "Harbour"])
         self.assertEqual([max(r) for r in dist], [15, 14, 12, 9, 10, 12, 12, 15])
         self.assertEqual([sum(r) for r in dist], [59, 61, 47, 43, 46, 49, 53, 66])
+        inf = float("inf")
+        self.assertEqual(ex.entry_history(0, 7), [inf, inf, inf, inf, inf, 16, 16, 15, 15])
         self.assertTrue(all(dist[i][j] == dist[j][i] for i in range(8) for j in range(8)))
 
     def test_every_case(self) -> None:

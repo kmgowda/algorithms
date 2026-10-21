@@ -46,6 +46,22 @@ def town_table() -> tuple[list, list]:
     return floyd_warshall(len(PLACES), [(index[a], index[b], w) for a, b, w in ROADS])
 
 
+def entry_history(i: int, j: int) -> list:
+    """The town's i-to-j entry after allowing each place in turn (Figure 5.3)."""
+    index = {p: n for n, p in enumerate(PLACES)}
+    n = len(PLACES)
+    dist = [[0 if a == b else INF for b in range(n)] for a in range(n)]
+    for a, b, w in ROADS:
+        dist[index[a]][index[b]] = dist[index[b]][index[a]] = w
+    history = [dist[i][j]]
+    for k in range(n):
+        for a in range(n):
+            for b in range(n):
+                dist[a][b] = min(dist[a][b], dist[a][k] + dist[k][b])
+        history.append(dist[i][j])
+    return history
+
+
 def has_negative_cycle(dist: list) -> bool:
     return any(dist[i][i] < 0 for i in range(len(dist)))
 
