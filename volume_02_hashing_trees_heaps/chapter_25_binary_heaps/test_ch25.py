@@ -6,6 +6,20 @@ import ch25_examples as ex
 
 
 class TestChapter54(unittest.TestCase):
+    def test_every_case(self) -> None:
+        for f in ("pop", "peek"):
+            with self.assertRaises(IndexError):
+                getattr(ex.MinHeap(), f)()
+        rows = [([7], [7], 0), ([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 0), ([5, 4, 3, 2, 1], [1, 2, 4, 5, 3], 6), ([3, 3, 3], [3, 3, 3], 0),
+                ([58, 25, 91, 12, 70, 47, 84, 31, 63], [12, 25, 47, 31, 70, 91, 84, 58, 63], None)]
+        for items, arr, swaps in rows:
+            h = ex.MinHeap(items)
+            self.assertEqual(h.a, arr)
+            if swaps is not None:
+                self.assertEqual(len(h.trace), swaps)
+            self.assertEqual([h.pop() for _ in items], sorted(items))
+        self.assertEqual([ex.is_heap(a) for a in ([], [1], [1, 3, 2], [2, 1], [1, 1, 1])], [True, True, True, False, True])
+
     def test_against_heapq(self) -> None:
         rng = random.Random(1)
         h, ref = ex.MinHeap(), []
