@@ -21,6 +21,13 @@ class TestChapter02(unittest.TestCase):
             for k in range(1, len(boxes) + 1):
                 self.assertEqual(ex.smallest_capacity(boxes, k), ex.brute_capacity(boxes, k))
 
+    def test_every_case(self) -> None:
+        table = [(ex.BOXES, 8, 9, 6), (ex.BOXES, 1, 44, 5), (ex.BOXES, 3, 16, 5), ([7], 1, 7, 0), ([5, 5, 5, 5], 2, 10, 4)]
+        for boxes, trips, answer, checks in table:
+            t = []
+            self.assertEqual(ex.smallest_capacity(boxes, trips, t), answer)
+            self.assertEqual(len(t), checks)
+
     def test_reading_speed(self) -> None:
         books = [300, 120, 450, 210]
         s = ex.slowest_reading_speed(books, 8)
