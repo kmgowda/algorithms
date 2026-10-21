@@ -3,8 +3,8 @@
 Companion code for the "Algorithms Simplified" book series. Book Markdown lives in the `books` repo at
 `/root/projects/kmg/books/algorithms/kmg-book` (series plan in its `README.md`, authoring rules in its `AGENTS.md`).
 
-Six volumes; chapter numbers restart in each. Written so far: `volume_01_foundations` (29 chapters),
-`volume_02_hashing_trees_heaps` (35), `volume_03_searching_sorting_graphs` (31), `volume_04_paths_and_design` (32), `volume_05_dynamic_programming_strings` (30).
+Six volumes; chapter numbers restart in each. All six volumes are written: `volume_01_foundations` (29 chapters),
+`volume_02_hashing_trees_heaps` (35), `volume_03_searching_sorting_graphs` (31), `volume_04_paths_and_design` (32), `volume_05_dynamic_programming_strings` (30), `volume_06_math_and_advanced` (30).
 From Volume 3 on, chapter folders hold only `chNN_examples.py` and `test_chNN.py` (each test has `test_every_case`).
 
 ## Conventions

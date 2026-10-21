@@ -14,6 +14,7 @@ One folder per volume of the six-volume series, one folder per chapter inside it
 | `volume_03_searching_sorting_graphs/` | Volume 3, Searching, Sorting, and Graph Exploration |
 | `volume_04_paths_and_design/` | Volume 4, Shortest Paths and Algorithm Design |
 | `volume_05_dynamic_programming_strings/` | Volume 5, Dynamic Programming and Strings |
+| `volume_06_math_and_advanced/` | Volume 6, Mathematics and Advanced Algorithms |
 
 ```
 volume_01_foundations/
