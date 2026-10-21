@@ -22,6 +22,8 @@ class TestChapter15(unittest.TestCase):
         self.assertEqual((ex.lcs_two_rows("", "ABC"), ex.hirschberg("", "ABC"), ex.hirschberg("A", "XAY"), ex.hirschberg("ABC", "ABC")),
                          ((0, 8), "", "A", "ABC"))
         self.assertEqual(len(ex.hirschberg("ABC", "CBA")), 1)
+        left, right = ex.last_row("REA", "TRADING"), ex.last_row("GNID", "GNIDART")[::-1]
+        self.assertEqual(max(range(8), key=lambda j: left[j] + right[j]), 3)
         r = random.Random(3)
         for _ in range(200):
             a = "".join(r.choice("ABC") for _ in range(r.randint(0, 9)))
