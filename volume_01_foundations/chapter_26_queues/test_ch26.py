@@ -6,6 +6,22 @@ import ch26_examples as ex
 
 
 class TestChapter26(unittest.TestCase):
+    def test_every_case(self) -> None:
+        q = ex.Queue()
+        with self.assertRaises(IndexError):
+            q.dequeue()
+        q.enqueue(1)
+        self.assertEqual((q.dequeue(), q.is_empty(), q._tail), (1, True, None))
+        q.enqueue(2)
+        q.enqueue(3)
+        self.assertEqual((q.dequeue(), q.dequeue()), (2, 3))
+        self.assertEqual(ex.round_robin({}), [])
+        self.assertEqual(ex.round_robin({"Ana": 1}), [(1, "Ana", True)])
+        self.assertEqual([s for _, s, _ in ex.round_robin({"Ana": 3})], ["Ana"] * 3)
+        self.assertEqual(ex.round_robin({"Ana": 1, "Ben": 1}), [(1, "Ana", True), (2, "Ben", True)])
+        self.assertEqual([(s, f) for _, s, f in ex.round_robin({"Ana": 3, "Ben": 1, "Cai": 2})],
+                         [("Ana", False), ("Ben", True), ("Cai", False), ("Ana", False), ("Cai", True), ("Ana", True)])
+
     def test_queue_against_deque(self) -> None:
         rng = random.Random(1)
         q, ref = ex.Queue(), collections.deque()
