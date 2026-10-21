@@ -5,6 +5,33 @@ import ch29_examples as ex
 
 
 class TestChapter29(unittest.TestCase):
+    def test_every_case(self) -> None:
+        s = ex.MinStack()
+        for v in (47, 63, 12, 25):
+            s.push(v)
+        mins = [s.min()]
+        s.pop(); mins.append(s.min()); s.pop(); mins.append(s.min())
+        self.assertEqual(mins, [12, 12, 47])
+        d = ex.MinStack()
+        for v in (5, 5, 5):
+            d.push(v)
+        d.pop()
+        self.assertEqual(d.min(), 5)
+        with self.assertRaises(IndexError):
+            ex.MinStack().min()
+        b = ex.BrowserHistory("home")
+        self.assertEqual((b.back(), b.forward()), ("home", "home"))
+        b.visit("a"); b.visit("b")
+        self.assertEqual([b.back(), b.back(), b.back(), b.forward()], ["a", "home", "home", "a"])
+        b.visit("c")
+        self.assertEqual(b.forward(), "c")
+        q = ex.MinQueue()
+        for v in (5, 3, 8):
+            q.enqueue(v)
+        self.assertEqual([q.min(), q.dequeue(), q.min(), q.dequeue(), q.min()], [3, 5, 3, 3, 8])
+        with self.assertRaises(ValueError):
+            ex.MinQueue().min()
+
     def test_min_stack_against_reference(self) -> None:
         rng = random.Random(1)
         s, ref = ex.MinStack(), []
