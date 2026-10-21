@@ -39,6 +39,19 @@ def best_tour(start="Library") -> tuple[int, list]:
     return min((tour_length([start, *p, start]), [start, *p, start]) for p in itertools.permutations(others))
 
 
+def two_opt(tour: list) -> tuple[int, list]:
+    """Challenge 1: reverse a stretch of the round whenever that shortens it, until no reversal helps."""
+    tour, better = list(tour), True
+    while better:
+        better = False
+        for i in range(1, len(tour) - 2):
+            for j in range(i + 1, len(tour) - 1):
+                new = tour[:i] + tour[i:j + 1][::-1] + tour[j + 1:]
+                if tour_length(new) < tour_length(tour):
+                    tour, better = new, True
+    return tour_length(tour), tour
+
+
 def greedy_cover(universe: set, sets: dict) -> list:
     """Set cover, greedy: repeatedly pick the set covering the most still-uncovered items."""
     left, chosen = set(universe), []

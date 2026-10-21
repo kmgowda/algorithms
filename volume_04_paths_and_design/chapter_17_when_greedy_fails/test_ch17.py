@@ -17,6 +17,7 @@ class TestChapter17(unittest.TestCase):
         self.assertEqual(ex.greedy_cover({"opera"}, ex.SUPPLIERS), ["(cannot cover everything)"])
         self.assertEqual([ex.nearest_neighbour(s)[0] for s in ex.BRANCHES], [23, 24, 21, 23, 21])
         self.assertEqual({ex.best_tour(s)[0] for s in ex.BRANCHES}, {21})
+        self.assertEqual(ex.two_opt(ex.nearest_neighbour()[1]), (21, ["Library", "North", "South", "West", "East", "Library"]))
 
 
 if __name__ == "__main__":
