@@ -5,16 +5,26 @@ Companion code for the book series **Algorithms Simplified**.
 
 ## Layout
 
+One folder per volume of the six-volume series, one folder per chapter inside it:
+
+| Folder | Book |
+|---|---|
+| `volume_01_foundations/` | Volume 1, Foundations |
+| `volume_02_hashing_trees_heaps/` | Volume 2, Data Structures |
+| `volume_03_searching_sorting_graphs/` | Volume 3, Searching, Sorting, and Graph Exploration |
+
 ```
 volume_01_foundations/
   chapter_01_what_is_an_algorithm/
     ch01_examples.py    # every program shown in the chapter
-    ch01_solutions.py   # solutions to the chapter's exercises
+    ch01_solutions.py   # solutions to the chapter's exercises (where the chapter has them)
     test_ch01.py        # unittest tests (standard library only)
   ...
 run_tests.py            # runs every chapter's tests
-tools/check_book.py     # static checks for the book's Markdown (Mermaid syntax, required sections)
 ```
+
+Chapter numbers restart at 1 in every volume, matching the books. The other `volume_NN_*` folders hold first-draft
+code from an earlier plan and will be replaced as the remaining volumes are written.
 
 ## Requirements
 
@@ -24,7 +34,6 @@ Python 3.10 or newer. No third-party packages.
 
 ```bash
 python3 run_tests.py                 # all tests
-python3 run_tests.py volume_01       # one volume
+python3 run_tests.py volume_02_hashing   # one volume (any part of the folder name)
 python3 volume_01_foundations/chapter_09_first_real_algorithms/ch09_examples.py   # run a chapter's demos
-python3 tools/check_book.py /root/projects/kmg/books/algorithms/kmg-book     # check the book
 ```
