@@ -5,6 +5,21 @@ import ch19_examples as ex
 
 
 class TestChapter48(unittest.TestCase):
+    def test_every_case(self) -> None:
+        T = ex.RedBlackTree
+        self.assertEqual((T([]).height(), T([5]).shape()), (-1, ((5, "B"), None, None)))
+        t = T([5, 3])
+        self.assertEqual((t.recolours, t.rotations, t.shape()[1][0]), (0, 0, (3, "R")))
+        t = T([2, 1, 3, 4])
+        self.assertEqual((t.recolours, t.rotations, t.height()), (1, 0, 2))
+        small = ((2, "B"), ((1, "R"), None, None), ((3, "R"), None, None))
+        for keys, rot in (([3, 2, 1], 1), ([1, 2, 3], 1), ([3, 1, 2], 2), ([1, 3, 2], 2)):
+            t = T(keys)
+            self.assertEqual((t.shape(), t.rotations, t.recolours), (small, rot, 0))
+        self.assertEqual(T([5, 5]).inorder(), [5])
+        big = T(range(1, 101))
+        self.assertEqual((big.height(), big.recolours, big.rotations, big.valid()), (10, 87, 89, True))
+
     def test_red_black(self) -> None:
         t = ex.RedBlackTree([12, 25, 31, 47, 58, 63, 70])
         self.assertEqual(t.shape()[0], (25, "B"))
