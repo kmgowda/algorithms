@@ -5,6 +5,17 @@ import ch18_examples as ex
 
 
 class TestChapter47(unittest.TestCase):
+    def test_every_case(self) -> None:
+        balanced = (2, (1, None, None), (3, None, None))
+        for keys, case in [([3, 2, 1], [("LL", 3)]), ([1, 2, 3], [("RR", 1)]), ([3, 1, 2], [("LR", 3)]),
+                           ([1, 3, 2], [("RL", 1)]), ([2, 1, 3], [])]:
+            log = []
+            self.assertEqual((ex.shape(ex.build(keys, log)), log), (balanced, case))
+        self.assertEqual((ex.h(ex.build([])), ex.h(ex.build([5]))), (-1, 0))
+        self.assertEqual(ex.inorder(ex.build([5, 5])), [5])
+        big = ex.build(range(1, 101))
+        self.assertEqual((ex.h(big), ex.is_avl(big), ex.inorder(big)), (6, True, list(range(1, 101))))
+
     def test_avl(self) -> None:
         log = []
         t = ex.build([12, 25, 31, 47, 58, 63, 70], log)
