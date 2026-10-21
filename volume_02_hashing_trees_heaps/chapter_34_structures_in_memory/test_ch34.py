@@ -4,6 +4,13 @@ import ch34_examples as ex
 
 
 class TestChapter63(unittest.TestCase):
+    def test_every_case(self) -> None:
+        self.assertEqual([ex.sum_chain(ex.build_chain(v, s)) for v, s in (([], False), ([7], False), ([1, 2, 3], True),
+                                                                           (list(range(100)), False), (list(range(100)), True))],
+                         [0, 7, 6, 4950, 4950])
+        self.assertEqual([ex.grid_sums(g) for g in ([[1, 2], [3, 4]], [[5]], [[1, 2, 3]], [[1], [2], [3]], [], [[]])],
+                         [(10, 10), (5, 5), (6, 6), (6, 6), (0, 0), (0, 0)])
+
     def test_chains_and_grid(self) -> None:
         values = list(range(1, 501))
         for shuffled in (False, True):

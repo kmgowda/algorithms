@@ -42,6 +42,8 @@ def sum_chain(head) -> int:
 
 def grid_sums(grid) -> tuple[int, int]:
     """Row by row (along memory) and column by column (jumping between rows)."""
+    if not grid:                                      # no rows: nothing to add, and no grid[0] to measure
+        return 0, 0
     rows, cols = len(grid), len(grid[0])
     by_rows = sum(grid[r][c] for r in range(rows) for c in range(cols))
     by_cols = sum(grid[r][c] for c in range(cols) for r in range(rows))
