@@ -5,6 +5,35 @@ import ch22_examples as ex
 
 
 class TestChapter22(unittest.TestCase):
+    def test_every_case(self) -> None:
+        for v, ok, left in [(12, True, [25, 47, 63]), (47, True, [12, 25, 63]), (63, True, [12, 25, 47]),
+                            (99, False, [12, 25, 47, 63])]:
+            s = ex.LinkedList([12, 25, 47, 63])
+            self.assertEqual((s.delete(v), s.values()), (ok, left))
+        s = ex.LinkedList()
+        self.assertFalse(s.delete(5))
+        s = ex.LinkedList([7])
+        self.assertEqual((s.delete(7), s.values()), (True, []))
+        s = ex.LinkedList([47, 12, 47])
+        s.delete(47)
+        self.assertEqual(s.values(), [12, 47])
+        s = ex.LinkedList()
+        s.push_front(9)
+        self.assertEqual(s.values(), [9])
+        s = ex.LinkedList([12, 25])
+        s.insert_after(s.find(25), 30)
+        self.assertEqual(s.values(), [12, 25, 30])
+        w = ex.WaitingList()
+        for n in ("Ana", "Ben", "Cai"):
+            w.join(n)
+        w.cancel("Cai")
+        w.join("Dev")
+        self.assertEqual((w.names(), w.serve(), w.names()), (["Ana", "Ben", "Dev"], "Ana", ["Ben", "Dev"]))
+        w.cancel("Dev")
+        self.assertEqual((w.serve(), w.names()), ("Ben", []))
+        with self.assertRaises(AttributeError):
+            w.serve()
+
     def test_against_python_list(self) -> None:
         rng = random.Random(1)
         for _ in range(200):
