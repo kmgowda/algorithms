@@ -5,6 +5,15 @@ import ch07_examples as ex
 
 
 class TestChapter36(unittest.TestCase):
+    def test_every_case(self) -> None:
+        v = ex.VISITS
+        self.assertEqual((ex.window_totals(v, 1), ex.window_totals(v, 10), ex.window_totals(v, 11), ex.window_totals([], 1)),
+                         (v, [39], [], []))
+        self.assertEqual([ex.shortest_stretch(v, t) for t in (1, 15, 20, 10 ** 6)], [1, 3, 4, 0])
+        self.assertEqual((ex.shortest_stretch([], 5), ex.shortest_stretch([5], 5), ex.shortest_stretch([0, 0, 0], 0)), (0, 1, 1))
+        self.assertEqual([ex.longest_without_repeats(s)[0] for s in ("", "A", "AAAA", "ABCD", "ABBA")], [0, 1, 1, 4, 2])
+        self.assertEqual([ex.longest_quiet(a, k)[0] for a, k in (([], 5), ([9], 5), ([1, 1, 1], 5), ([0, 0], 0))], [0, 0, 3, 2])
+
     def test_against_brute_force(self) -> None:
         rng = random.Random(1)
         for _ in range(400):

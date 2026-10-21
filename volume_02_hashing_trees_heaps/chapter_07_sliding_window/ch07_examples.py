@@ -26,7 +26,7 @@ def shortest_stretch(counts: list[int], target: int) -> int:
     left, total, best = 0, 0, 0
     for right, c in enumerate(counts):
         total += c                                  # grow on the right
-        while total - counts[left] >= target:       # shrink while still big enough
+        while left < right and total - counts[left] >= target:   # shrink while still big enough
             total -= counts[left]
             left += 1
         if total >= target and (best == 0 or right - left + 1 < best):
