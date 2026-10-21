@@ -1,3 +1,4 @@
+import sys
 import unittest
 
 import ch24_examples as ex
@@ -29,8 +30,13 @@ class TestChapter24(unittest.TestCase):
         loop = ex.dfs(ex.adjacency(["A", "B"], [("A", "A"), ("A", "B")]), "A")
         self.assertIn(("A", "A", "back"), loop["edges"])
         chain = ex.adjacency(list(range(5000)), [(i, i + 1) for i in range(4999)])
-        with self.assertRaises(RecursionError):
-            ex.dfs(chain, 0)
+        old = sys.getrecursionlimit()
+        sys.setrecursionlimit(1000)                 # Python's default; other modules may have raised it
+        try:
+            with self.assertRaises(RecursionError):
+                ex.dfs(chain, 0)
+        finally:
+            sys.setrecursionlimit(old)
         self.assertEqual(len(ex.dfs_iterative(chain, 0)), 5000)
         self.assertEqual(len(ex.find_path(ex.adjacency(), "Library", "Harbour")) - 1, 6)
 
