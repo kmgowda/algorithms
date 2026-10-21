@@ -11,6 +11,21 @@ def random_tree(rng, values, depth=6):
 
 
 class TestChapter51(unittest.TestCase):
+    def test_every_case(self) -> None:
+        N = ex.Node
+        for tree, text in [(None, "#"), (N(5), "5 # #"), (N(3, N(2, N(1))), "3 2 1 # # # #"), (N(2, N(1), N(3)), "2 1 # # 3 # #")]:
+            self.assertEqual(ex.save(tree), text)
+            self.assertEqual(ex.preorder(ex.load(text)), ex.preorder(tree))
+        self.assertIsNone(ex.from_pre_in([], []))
+        self.assertEqual(ex.preorder(ex.from_pre_in([5], [5])), [5])
+        left, right = ex.from_pre_in([1, 2, 3], [3, 2, 1]), ex.from_pre_in([1, 2, 3], [1, 2, 3])
+        self.assertEqual((left.left.value, left.right, right.right.value, right.left), (2, None, 2, None))
+        with self.assertRaises(StopIteration):
+            ex.from_pre_in([1, 1], [1, 1])
+        for keys, h, root in [([], -1, None), ([5], 0, 5), ([1, 2], 1, 1), (list(range(1, 8)), 2, 4), (list(range(1, 101)), 6, 50)]:
+            r = ex.balanced_from_sorted(keys)
+            self.assertEqual((ex.height(r), r.value if r else None, ex.inorder(r)), (h, root, keys))
+
     def test_round_trips(self) -> None:
         rng = random.Random(1)
         for _ in range(500):
