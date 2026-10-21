@@ -16,6 +16,9 @@ class TestChapter14(unittest.TestCase):
         self.assertEqual([ex.convex_hull(p) for p in ([], [(1, 1)], [(1, 1), (1, 1)], [(0, 0), (1, 1), (2, 2)])], [[], [(1, 1)], [(1, 1)], [(0, 0), (2, 2)]])
         self.assertEqual(ex.convex_hull([(0, 0), (4, 0), (4, 4), (0, 4), (2, 2), (2, 0)]), [(0, 0), (4, 0), (4, 4), (0, 4)])
         self.assertEqual(ex.perimeter([(1, 1)]), 0.0)
+        import itertools, math
+        h = ex.convex_hull(ex.BOXES)
+        self.assertEqual(max((math.dist(a, b), a, b) for a, b in itertools.combinations(h, 2))[1:], ((2, 3), (40, 50)))
         r = random.Random(1)
         for _ in range(200):
             pts = [(r.randint(0, 9), r.randint(0, 9)) for _ in range(r.randint(3, 15))]
