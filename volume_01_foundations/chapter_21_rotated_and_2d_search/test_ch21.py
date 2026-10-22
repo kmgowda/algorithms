@@ -46,6 +46,9 @@ class TestChapter03(unittest.TestCase):
             t = []
             self.assertEqual(ex.staircase_search(ex.GRID, key, t), cell)
             self.assertEqual(len(t), looks)
+        self.assertIsNone(ex.staircase_search([], 5))          # empty grid: no corner, no looks
+        self.assertIsNone(ex.staircase_search([[]], 5))
+        self.assertEqual(ex.staircase_search([[7]], 7), (0, 0))
 
     def test_duplicates_fix_random(self) -> None:
         rng = random.Random(4)

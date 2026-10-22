@@ -86,7 +86,7 @@ def search_rotated_with_duplicates(a: list, key) -> int:
 
 def staircase_search(grid: list[list], key, trace: list | None = None):
     """Start at the top-right corner; each look removes a row or a column (Figure 21.5)."""
-    r, c = 0, len(grid[0]) - 1
+    r, c = 0, len(grid[0]) - 1 if grid else -1     # an empty grid has no corner: the walk ends at once
     while r < len(grid) and c >= 0:
         v = grid[r][c]
         if trace is not None:

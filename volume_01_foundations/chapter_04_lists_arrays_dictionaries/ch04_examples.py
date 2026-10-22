@@ -28,7 +28,10 @@ def insert_sorted(shelf: list[int], new: int) -> int:
 
 
 def remove_at(shelf: list[int], index: int) -> int:
-    """Remove the item at `index` by shifting later items left (Figure 4.3). Returns the number of shifts."""
+    """Remove the item at `index` by shifting later items left (Figure 4.3). Returns the number of shifts.
+    An index outside 0 .. len(shelf) - 1 raises IndexError instead of removing the wrong book."""
+    if not 0 <= index < len(shelf):
+        raise IndexError("no item at that position")
     shifts = 0
     for i in range(index, len(shelf) - 1):
         shelf[i] = shelf[i + 1]

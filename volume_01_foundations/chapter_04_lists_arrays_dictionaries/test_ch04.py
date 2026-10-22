@@ -19,6 +19,11 @@ class TestChapter4(unittest.TestCase):
         self.assertEqual((ex.remove_at(s, 0), s), (0, []))
         with self.assertRaises(IndexError):
             ex.remove_at([], 0)
+        for bad in (9, -1):
+            s = list(ex.SHELF)
+            with self.assertRaises(IndexError):
+                ex.remove_at(s, bad)
+            self.assertEqual(s, ex.SHELF)
         self.assertIsNone(ex.TITLES.get(47))
         with self.assertRaises(KeyError):
             ex.TITLES[47]
