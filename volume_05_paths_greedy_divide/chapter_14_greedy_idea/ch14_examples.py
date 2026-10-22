@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 13 - The Greedy Idea: giving change with as few coins as possible.
+"""Volume 5, Chapter 14 - The Greedy Idea: giving change with as few coins as possible.
 
-Run:  python3 ch13_examples.py
+Run:  python3 ch14_examples.py
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ ODD = [4, 3, 1]                                       # an imaginary coin set wh
 
 
 def greedy_change(amount: int, coins: list) -> list:
-    """Take the largest coin that fits, again and again (Figure 13.2)."""
+    """Take the largest coin that fits, again and again (Figure 14.2)."""
     out = []
     for c in sorted(coins, reverse=True):
         while amount >= c:
@@ -40,7 +40,7 @@ def first_failure(coins: list, limit: int = 500) -> int | None:
 
 
 def largest_smaller_total(coins: list, c: int, limit: int = 1000) -> tuple[int, list]:
-    """Section 13.5's test of the greedy-choice property: the largest amount whose fewest-coin answer uses only
+    """Section 14.5's test of the greedy-choice property: the largest amount whose fewest-coin answer uses only
     coins smaller than c (with the fewest coins found by the exact method). If it is below c, every best answer for an
     amount of at least c must contain a coin of at least c. Returns (amount, those coins)."""
     small = [x for x in coins if x < c]

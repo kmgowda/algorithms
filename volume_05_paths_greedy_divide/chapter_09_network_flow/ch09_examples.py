@@ -13,39 +13,45 @@ PIPES = [("Warehouse", "Docks", 10), ("Warehouse", "Mill", 8), ("Docks", "Mill",
          ("Mill", "Square", 9), ("Bridge", "Library", 7), ("Square", "Bridge", 3), ("Square", "Library", 6)]
 
 
+def shortest_augmenting_path(adj: dict, room: dict, s, t) -> list | None:
+    """Breadth-first search for a path s -> t using only edges with room > 0, so with the fewest roads.
+    Returns the edges of the path in order, or None if there is none."""
+    parent, queue = {s: None}, deque([s])
+    while queue and t not in parent:
+        v = queue.popleft()
+        for w in adj[v]:
+            if w not in parent and room[(v, w)] > 0:
+                parent[w] = v
+                queue.append(w)
+    if t not in parent:
+        return None
+    path, v = [], t
+    while parent[v] is not None:
+        path.append((parent[v], v))
+        v = parent[v]
+    return path[::-1]
+
+
 def max_flow(nodes: list, edges: list, s, t, log: list | None = None) -> tuple[int, dict]:
-    """Edmonds-Karp (Figure 9.2): push flow along shortest augmenting paths in the residual graph.
+    """Edmonds-Karp (Section 9.4): push flow along shortest augmenting paths in the residual graph.
     Returns (total flow, flow on each original edge)."""
-    cap = {}
+    room = {}
     for a, b, c in edges:
-        cap[(a, b)] = cap.get((a, b), 0) + c
-        cap.setdefault((b, a), 0)                      # room to push flow back
+        room[(a, b)] = room.get((a, b), 0) + c
+        room.setdefault((b, a), 0)                      # reverse room starts empty
     adj = {v: [] for v in nodes}
-    for a, b in cap:
+    for a, b in room:
         adj[a].append(b)
     total = 0
-    while True:
-        parent, queue = {s: None}, deque([s])
-        while queue and t not in parent:               # breadth-first search for a path with spare room
-            v = queue.popleft()
-            for w in adj[v]:
-                if w not in parent and cap[(v, w)] > 0:
-                    parent[w] = v
-                    queue.append(w)
-        if t not in parent:
-            break
-        path, v = [], t
-        while parent[v] is not None:
-            path.append((parent[v], v))
-            v = parent[v]
-        push = min(cap[e] for e in path)
+    while (path := shortest_augmenting_path(adj, room, s, t)) is not None:
+        push = min(room[e] for e in path)
         for a, b in path:
-            cap[(a, b)] -= push
-            cap[(b, a)] += push
+            room[(a, b)] -= push
+            room[(b, a)] += push                       # sending back is now possible
         total += push
         if log is not None:
-            log.append(([a for a, _ in reversed(path)] + [t], push))
-    flow = {(a, b): c - cap[(a, b)] for a, b, c in edges}
+            log.append(([a for a, _ in path] + [t], push))
+    flow = {(a, b): c - room[(a, b)] for a, b, c in edges}
     return total, flow
 
 

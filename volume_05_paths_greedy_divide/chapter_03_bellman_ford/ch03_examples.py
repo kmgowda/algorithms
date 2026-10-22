@@ -12,7 +12,7 @@ LEGS = [("A", "B", 6), ("A", "C", 7), ("B", "C", 8), ("B", "D", 5), ("B", "E", -
 
 
 def bellman_ford(vertices: list, edges: list, start, log: list | None = None) -> tuple[dict, dict, bool]:
-    """Shortest distances with negative weights allowed (Figure 3.2).
+    """Shortest distances with negative weights allowed (the rounds table of Section 3.4).
     Returns (dist, parent, has_negative_cycle). Up to V - 1 rounds, then one extra round to detect a cycle."""
     inf = float("inf")
     dist = {v: inf for v in vertices}

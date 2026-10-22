@@ -2,7 +2,7 @@ import math
 import random
 import unittest
 
-import ch19_examples as ex
+import ch21_examples as ex
 
 
 class TestChapter19(unittest.TestCase):

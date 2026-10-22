@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 23 - Transform and Conquer: change the problem into an easier one first.
+"""Volume 5, Chapter 26 - Transform and Conquer: change the problem into an easier one first.
 
-Run:  python3 ch23_examples.py
+Run:  python3 ch26_examples.py
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ def has_repeat_pairs(values: list, counter: list) -> bool:
 
 
 def has_repeat_sorted(values: list, counter: list) -> bool:
-    """Transform first: sort, then repeats sit next to each other (Figure 23.2)."""
+    """Transform first: sort, then repeats sit next to each other (Figure 26.2)."""
     s = sorted(values)
     for a, b in zip(s, s[1:]):
         counter[0] += 1
@@ -48,7 +48,7 @@ def mode(values: list):
 
 
 def horner(coeffs: list, x: float, counter: list) -> float:
-    """Evaluate c0 x^k + ... + ck by rewriting it as (((c0) x + c1) x + ...) (Figure 23.3): k multiplications."""
+    """Evaluate c0 x^k + ... + ck by rewriting it as (((c0) x + c1) x + ...) (Figure 26.3): k multiplications."""
     total = 0
     for c in coeffs:
         counter[0] += 1
@@ -75,7 +75,7 @@ def k_smallest(values: list, k: int) -> list:
 
 
 def break_even(n: int) -> int:
-    """Section 23.4: the fewest membership questions for which sorting once (about n log2 n comparisons) plus a
+    """Section 26.4: the fewest membership questions for which sorting once (about n log2 n comparisons) plus a
     binary search per question beats a fresh linear scan per question (about n / 2 comparisons on average)."""
     import math
     sort_cost = n * math.log2(n)
@@ -85,14 +85,14 @@ def break_even(n: int) -> int:
     return q
 
 
-# Section 23.5: three orders of novels (x), atlases (y), and comics (z), with their totals in pounds.
+# Section 26.5: three orders of novels (x), atlases (y), and comics (z), with their totals in pounds.
 ORDERS = [[1, 1, 1], [2, 1, 3], [1, 3, 2]]
 TOTALS = [20, 36, 43]
 
 
 def gaussian(A: list, b: list, log: list | None = None, counter: list | None = None) -> list:
     """Solve A x = b exactly: transform to a triangular system by subtracting multiples of rows, then back-substitute
-    (Figure 23.4). A zero pivot is replaced by swapping in a lower row; raises ValueError when there is no single
+    (Figure 26.4). A zero pivot is replaced by swapping in a lower row; raises ValueError when there is no single
     solution. counter[0] counts multiplications."""
     from fractions import Fraction
     n = len(A)
@@ -123,7 +123,7 @@ def gaussian(A: list, b: list, log: list | None = None, counter: list | None = N
 
 
 def elimination_cost(n: int, seed: int = 1) -> int:
-    """Multiplications Gaussian elimination makes on a random n x n system (Section 23.5: about n^3 / 3)."""
+    """Multiplications Gaussian elimination makes on a random n x n system (Section 26.5: about n^3 / 3)."""
     import random
     rng = random.Random(seed)
     A = [[rng.randint(1, 9) for _ in range(n)] for _ in range(n)]
@@ -139,7 +139,7 @@ def mat_mult(P: list, Q: list) -> list:
 
 
 def mat_power(M: list, k: int) -> list:
-    """M to the k by Chapter 22's squaring: about 2 log2 k matrix multiplications."""
+    """M to the k by Chapter 25's squaring: about 2 log2 k matrix multiplications."""
     n = len(M)
     result = [[int(i == j) for j in range(n)] for i in range(n)]
     base = [row[:] for row in M]
@@ -177,7 +177,7 @@ def count_walks_brute(places: list, roads: list, start: str, goal: str, k: int) 
 
 
 def lcm(a: int, b: int) -> int:
-    """Lowest common multiple, reduced to Chapter 22's Euclid: a b / gcd(a, b)."""
+    """Lowest common multiple, reduced to Chapter 25's Euclid: a b / gcd(a, b)."""
     import math
     if a == 0 or b == 0:
         return 0

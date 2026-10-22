@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 10 - Matching and Assignment: pair people with jobs.
+"""Volume 5, Chapter 11 - Matching and Assignment: pair people with jobs.
 
-Run:  python3 ch10_examples.py
+Run:  python3 ch11_examples.py
 """
 
 from __future__ import annotations
@@ -13,9 +13,9 @@ CAN_DO = {"Ana": ["Tickets", "Cafe"], "Ben": ["Tickets"], "Cai": ["Cafe", "Stage
 
 
 def max_matching(can_do: dict, log: list | None = None, calls: list | None = None) -> dict:
-    """Augmenting paths (Figure 10.2): give each volunteer a desk, moving earlier volunteers along if needed.
+    """Augmenting paths (Figure 11.2): give each volunteer a desk, moving earlier volunteers along if needed.
     Returns {desk: volunteer}. calls, if given, records (newcomer, depth, person, desk, what happened) for every desk
-    a TryAssign call looks at (Figure 10.3)."""
+    a TryAssign call looks at (Figure 11.3)."""
     owner: dict = {}
 
     def try_assign(person, seen, depth, newcomer):
@@ -81,7 +81,7 @@ def greedy_assignment(cost: list) -> tuple[int, list]:
 
 
 def konig_cover(can_do: dict) -> tuple[dict, list]:
-    """A maximum matching and a smallest vertex cover of the same size (Konig's theorem, Figure 10.6).
+    """A maximum matching and a smallest vertex cover of the same size (Konig's theorem, Figure 11.6).
     From every unmatched person, follow alternating paths (any trained desk, then that desk's owner). Z = everyone
     and every desk reached. The cover is the people NOT in Z plus the desks in Z."""
     owner = max_matching(can_do)
@@ -105,7 +105,7 @@ def konig_cover(can_do: dict) -> tuple[dict, list]:
 
 
 def hopcroft_karp(can_do: dict, log: list | None = None) -> dict:
-    """Hopcroft-Karp (Figure 10.4): in each phase, a breadth-first search finds the length of the shortest augmenting
+    """Hopcroft-Karp (Figure 11.4): in each phase, a breadth-first search finds the length of the shortest augmenting
     paths, then depth-first searches use a whole set of such paths that share no vertex. O(E sqrt V).
     Returns {desk: person}; log gets one list of augmenting paths per phase."""
     owner: dict = {}                                   # desk -> person
@@ -155,7 +155,7 @@ def hopcroft_karp(can_do: dict, log: list | None = None) -> dict:
 
 
 def hungarian(cost: list, log: list | None = None) -> tuple[int, list]:
-    """The Hungarian method on a square table (Figures 10.8 and 10.9), in its table-and-lines form.
+    """The Hungarian method on a square table (Figures 11.7 and 11.8), in its table-and-lines form.
     1. Subtract each row's smallest number, then each column's. 2. Find the largest set of zeros with no two in a
     row or column. 3. If it has n zeros, they are the answer. Otherwise cover every zero with the fewest lines,
     subtract the smallest uncovered number from every uncovered cell, add it where two lines cross, and repeat.

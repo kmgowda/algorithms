@@ -201,7 +201,7 @@ def harmonic(n: int) -> float:
     return sum(1 / i for i in range(1, n + 1))
 
 
-# The library's suppliers and the titles each can provide (Volume 5, Chapter 17's greedy example, rebuilt).
+# The library's suppliers and the titles each can provide (Volume 5, Chapter 18's greedy example, rebuilt).
 TITLES = set(range(1, 15))
 GRID_SETS = {"row A": set(range(1, 8)), "row B": set(range(8, 15)),
              "block 1": {1, 2, 3, 4, 8, 9, 10, 11}, "block 2": {5, 6, 12, 13}, "block 3": {7, 14}}

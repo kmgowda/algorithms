@@ -147,8 +147,9 @@ def heaviest_on_loops(places: list, roads: list) -> list:
 
 
 def clusters(places: list, roads: list, k: int) -> tuple[list, float]:
-    """Split the places into k groups with the largest spacing (Section 8.7): run Kruskal and stop when k groups
-    remain. Returns (groups, spacing), where spacing is the cheapest road between two different groups."""
+    """Split the places into k groups with the largest spacing: run Kruskal and stop when k groups remain
+    (Section 8.5, Figure 8.7). Returns (groups, spacing), where spacing is the cheapest road between two different
+    groups."""
     group = {p: p for p in places}
 
     def find(x):
@@ -185,7 +186,7 @@ def random_map(n: int, m: int, seed: int = 1) -> list:
 
 
 def race(n: int, m: int, seed: int = 1) -> dict:
-    """Milliseconds for Kruskal, heap Prim, and array Prim on the same random map (Figure 8.6)."""
+    """Milliseconds for Kruskal, heap Prim, and array Prim on the same random map (Figure 8.5)."""
     places, roads = list(range(n)), random_map(n, m, seed)
     out, totals = {}, set()
     for name, f in (("Kruskal", lambda: kruskal(places, roads)), ("Prim, heap", lambda: prim(places, roads, 0)),

@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 17 - When Greedy Fails: a gallery of counterexamples, each checked against an exact answer.
+"""Volume 5, Chapter 18 - When Greedy Fails: a gallery of counterexamples, each checked against an exact answer.
 
-Run:  python3 ch17_examples.py
+Run:  python3 ch18_examples.py
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ def tour_length(tour: list) -> int:
 
 
 def nearest_neighbour(start="Library") -> tuple[int, list]:
-    """Greedy tour: always drive to the closest branch not yet visited (Figure 17.1)."""
+    """Greedy tour: always drive to the closest branch not yet visited (Figure 18.1)."""
     tour, left = [start], set(BRANCHES) - {start}
     while left:
         nxt = min(sorted(left), key=lambda b: minutes(tour[-1], b))
@@ -80,13 +80,13 @@ SUPPLIERS2 = {"Everything Ltd": {"poetry", "maps", "science", "crime"}, "North S
               "South Shop": {"science", "crime", "travel"}}
 
 
-# Section 17.6: the desk's reserve shelf holds 3 books; readers ask for books in this order (a day's requests).
+# Section 18.6: the desk's reserve shelf holds 3 books; readers ask for books in this order (a day's requests).
 REQUESTS = ["A", "B", "C", "D", "A", "B", "E", "A", "B", "C", "D", "E"]
 SHELF = 3
 
 
 def farthest_in_future(requests: list, k: int, log: list | None = None) -> int:
-    """Belady's rule (Figure 17.4): on a miss with a full shelf, remove the book whose next request is farthest away
+    """Belady's rule (Figure 18.4): on a miss with a full shelf, remove the book whose next request is farthest away
     (or never comes). Returns the number of misses; log gets (request, hit or miss, book removed or None)."""
     shelf, misses = [], 0
     for i, book in enumerate(requests):

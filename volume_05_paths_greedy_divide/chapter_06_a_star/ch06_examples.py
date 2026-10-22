@@ -35,10 +35,8 @@ def speed_limit() -> float:
 
 
 def a_star(adj: dict, start, goal, h, reopen: bool = False) -> tuple[float, list | None, list]:
-    """A* search (Figure 6.2): always expand the place with the smallest g + h.
-    reopen=False is the usual closed-set version, correct when h is consistent (Section 6.4);
-    reopen=True lets an expanded place be expanded again if a cheaper route to it appears, which keeps
-    any admissible guess correct. Returns (minutes, route, places expanded in order)."""
+    """Expand the place with the smallest g + h (Section 6.4). reopen=True lets an expanded place be expanded again
+    if a cheaper route to it appears. Returns (minutes, route, places expanded in order)."""
     g, parent = {start: 0}, {start: None}
     heap, done, expanded = [(h(start), start)], set(), []
     while heap:
@@ -48,11 +46,7 @@ def a_star(adj: dict, start, goal, h, reopen: bool = False) -> tuple[float, list
         done.add(v)
         expanded.append(v)
         if v == goal:
-            out = []
-            while v is not None:
-                out.append(v)
-                v = parent[v]
-            return g[goal], out[::-1], expanded
+            return g[goal], route(parent, goal), expanded
         for w, m in adj[v].items():
             if w in done and not reopen:
                 continue                              # closed for good
@@ -62,6 +56,14 @@ def a_star(adj: dict, start, goal, h, reopen: bool = False) -> tuple[float, list
                 done.discard(w)                       # reopened (only possible when reopen=True)
                 heapq.heappush(heap, (g[w] + h(w), w))
     return float("inf"), None, expanded
+
+
+def route(parent: dict, goal) -> list:
+    out = []
+    while goal is not None:
+        out.append(goal)
+        goal = parent[goal]
+    return out[::-1]
 
 
 def inconsistent_roads(adj: dict, h) -> list:
@@ -74,7 +76,7 @@ def reduced_costs(adj: dict, h) -> dict:
     return {v: {w: m + h(w) - h(v) for w, m in adj[v].items()} for v in adj}
 
 
-# A small one-way map where an admissible guess that is not consistent fools the closed-set version (Figure 6.4).
+# A small one-way map where an admissible guess that is not consistent fools the closed-set version (Figure 6.3).
 TRAP = {"Start": {"A": 1, "C": 3}, "A": {"C": 1}, "C": {"Goal": 3}, "Goal": {}}
 TRAP_H = {"Start": 0, "A": 4, "C": 0, "Goal": 0}
 
@@ -112,7 +114,7 @@ def grid_graph(n: int, walls: set) -> dict:
     return adj
 
 
-# Figure 6.3: a wall with a gap at the top; Figure 6.5 (cases): a wall straight across the line of sight.
+# Figure 6.4: a wall with a gap at the top (left two panels) and a wall straight across the line of sight (right).
 GAP_WALLS = {(r, 25) for r in range(8, 40)}
 GAP_START, GAP_GOAL = (32, 5), (4, 36)
 POCKET_WALLS = {(r, 20) for r in range(10, 31)}

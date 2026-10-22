@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 12 - Four Ways to Design an Algorithm, on the reading club's book budget.
+"""Volume 5, Chapter 13 - Four Ways to Design an Algorithm, on the reading club's book budget.
 
-Run:  python3 ch12_examples.py
+Run:  python3 ch13_examples.py
 """
 
 from __future__ import annotations

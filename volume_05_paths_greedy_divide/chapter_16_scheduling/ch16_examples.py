@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 15 - Scheduling and Intervals: earliest finish first, and counting rooms.
+"""Volume 5, Chapter 16 - Scheduling and Intervals: earliest finish first, and counting rooms.
 
-Run:  python3 ch15_examples.py
+Run:  python3 ch16_examples.py
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ def by_rule(requests: list, key) -> list:
 
 
 def earliest_finish(requests: list) -> list:
-    """The greedy rule that is always best (Figure 15.2): next, the request that ends soonest."""
+    """The greedy rule that is always best (Figure 16.2): next, the request that ends soonest."""
     kept, free_at = [], float("-inf")
     for r in sorted(requests, key=lambda r: r[2]):
         if r[1] >= free_at:
@@ -43,7 +43,7 @@ def most_by_brute_force(requests: list) -> int:
 
 
 def rooms_needed(requests: list) -> tuple[int, dict]:
-    """Give every request a room, reusing a room as soon as it is free (Figure 15.5). Returns (rooms, room of each)."""
+    """Give every request a room, reusing a room as soon as it is free (Figure 16.5). Returns (rooms, room of each)."""
     free, room_of, busy = [], {}, []                     # busy: (end, room)
     count = 0
     for name, s, e in sorted(requests, key=lambda r: r[1]):
@@ -68,7 +68,7 @@ def max_overlap(requests: list) -> int:
     return best
 
 
-# Section 15.6: four volunteers rank four desks, and each desk leader ranks the volunteers (best first).
+# Section 16.6: four volunteers rank four desks, and each desk leader ranks the volunteers (best first).
 VOLUNTEERS = {"Ana": ["Cafe", "Tickets", "Stage", "Signs"], "Ben": ["Cafe", "Stage", "Tickets", "Signs"],
               "Cai": ["Tickets", "Cafe", "Signs", "Stage"], "Dev": ["Cafe", "Tickets", "Signs", "Stage"]}
 DESKS = {"Tickets": ["Ben", "Dev", "Ana", "Cai"], "Cafe": ["Cai", "Ana", "Dev", "Ben"],
@@ -76,7 +76,7 @@ DESKS = {"Tickets": ["Ben", "Dev", "Ana", "Cai"], "Cafe": ["Cai", "Ana", "Dev", 
 
 
 def gale_shapley(proposers: dict, receivers: dict, log: list | None = None) -> dict:
-    """Stable matching (Figure 15.6): a free proposer asks the best receiver not yet asked; the receiver keeps
+    """Stable matching (Figure 16.6): a free proposer asks the best receiver not yet asked; the receiver keeps
     whichever of the asker and its current partner it ranks higher. Returns {proposer: receiver}."""
     rank = {r: {p: i for i, p in enumerate(prefs)} for r, prefs in receivers.items()}
     next_choice = {p: 0 for p in proposers}

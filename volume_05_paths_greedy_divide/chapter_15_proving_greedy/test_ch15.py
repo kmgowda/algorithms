@@ -1,7 +1,7 @@
 import unittest
 from fractions import Fraction as F
 
-import ch14_examples as ex
+import ch15_examples as ex
 
 
 class TestChapter14(unittest.TestCase):

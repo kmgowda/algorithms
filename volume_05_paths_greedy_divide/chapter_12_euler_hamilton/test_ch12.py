@@ -1,9 +1,9 @@
 import unittest
 
-import ch11_examples as ex
+import ch12_examples as ex
 
 
-class TestChapter11(unittest.TestCase):
+class TestChapter12(unittest.TestCase):
     def test_town(self) -> None:
         deg = ex.degrees(ex.PLACES, ex.ROADS)
         self.assertEqual(sorted(p for p, d in deg.items() if d % 2), ["Park", "School"])

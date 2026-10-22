@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 16 - Huffman Coding: short codes for common letters, built greedily.
+"""Volume 5, Chapter 17 - Huffman Coding: short codes for common letters, built greedily.
 
-Run:  python3 ch16_examples.py
+Run:  python3 ch17_examples.py
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ MESSAGE = "LIBRARY BOOK SALE"
 
 
 def huffman_codes(text: str, log: list | None = None) -> dict:
-    """Repeatedly join the two rarest groups (Figure 16.2); the joins form a tree whose paths are the codes."""
+    """Repeatedly join the two rarest groups (Figure 17.2); the joins form a tree whose paths are the codes."""
     counts = Counter(text)
     if not counts:
         return {}                                     # nothing to encode
@@ -54,7 +54,7 @@ def fixed_bits(text: str) -> int:
 
 
 def entropy_bits(text: str) -> float:
-    """Shannon's lower limit (Section 16.5): no code that spells each symbol separately can use fewer bits in total
+    """Shannon's lower limit (Section 17.5): no code that spells each symbol separately can use fewer bits in total
     than the sum over symbols of count x log2(length / count). Huffman is always less than one bit per symbol above."""
     from math import log2
     n = len(text)

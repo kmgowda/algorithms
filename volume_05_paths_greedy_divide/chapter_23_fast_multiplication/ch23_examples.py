@@ -1,13 +1,13 @@
-"""Volume 5, Chapter 21 - Fast Multiplication: Karatsuba's three half-size products instead of four.
+"""Volume 5, Chapter 23 - Fast Multiplication: Karatsuba's three half-size products instead of four.
 
-Run:  python3 ch21_examples.py
+Run:  python3 ch23_examples.py
 """
 
 from __future__ import annotations
 
 
 def school(x: int, y: int, counter: list) -> int:
-    """Schoolbook long multiplication: every digit of x times every digit of y (Figure 21.1)."""
+    """Schoolbook long multiplication: every digit of x times every digit of y (Figure 23.1)."""
     xs, ys = [int(d) for d in str(x)][::-1], [int(d) for d in str(y)][::-1]
     total = 0
     for i, a in enumerate(xs):
@@ -18,7 +18,7 @@ def school(x: int, y: int, counter: list) -> int:
 
 
 def split_four(x: int, y: int, counter: list) -> int:
-    """Divide and conquer with four half-size products: no faster than school (Section 21.4)."""
+    """Divide and conquer with four half-size products: no faster than school (Section 23.4)."""
     if x < 10 or y < 10:
         counter[0] += 1
         return x * y
@@ -31,7 +31,7 @@ def split_four(x: int, y: int, counter: list) -> int:
 
 
 def karatsuba(x: int, y: int, counter: list) -> int:
-    """Karatsuba (Figures 21.2 and 21.3): ad + bc = (a + b)(c + d) - ac - bd, so three products are enough."""
+    """Karatsuba (Figures 23.2 and 23.3): ad + bc = (a + b)(c + d) - ac - bd, so three products are enough."""
     if x < 0 or y < 0:
         raise ValueError("whole numbers of 0 or more only")
     if x < 10 or y < 10:
@@ -47,7 +47,7 @@ def karatsuba(x: int, y: int, counter: list) -> int:
 
 
 def karatsuba_calls(x: int, y: int) -> tuple:
-    """The call tree of Karatsuba (Figure 21.3): (x, y, [children]) with leaves for single-digit factors."""
+    """The call tree of Karatsuba (Figure 23.3): (x, y, [children]) with leaves for single-digit factors."""
     if x < 10 or y < 10:
         return (x, y, [])
     m = max(len(str(x)), len(str(y))) // 2
@@ -66,7 +66,7 @@ def school_ops(x: int, y: int) -> int:
 
 
 def karatsuba_ops(x: int, y: int, threshold: int = 1) -> int:
-    """Digit operations of Karatsuba (Section 21.7): single-digit products at the bottom, plus the digits of every
+    """Digit operations of Karatsuba (Section 23.7): single-digit products at the bottom, plus the digits of every
     addition and subtraction made by the splits. Below `threshold` digits it switches to the schoolbook method."""
     if x < 10 or y < 10 or max(digits(x), digits(y)) < threshold:
         return school_ops(x, y) if threshold > 1 else 1
@@ -82,7 +82,7 @@ def karatsuba_ops(x: int, y: int, threshold: int = 1) -> int:
 
 
 def ops_table(sizes=(16, 32, 64, 128, 256, 512, 1024), seed: int = 3, threshold: int = 32) -> list:
-    """Figure 21.7: (digits, schoolbook ops, pure Karatsuba ops, Karatsuba with schoolbook below `threshold`)."""
+    """Figure 23.7: (digits, schoolbook ops, pure Karatsuba ops, Karatsuba with schoolbook below `threshold`)."""
     import random
     rng = random.Random(seed)
     out = []
@@ -93,7 +93,7 @@ def ops_table(sizes=(16, 32, 64, 128, 256, 512, 1024), seed: int = 3, threshold:
 
 
 def strassen(A: list, B: list, counter: list) -> list:
-    """Strassen's seven products for square matrices whose size is a power of two (Section 21.5, Figure 21.5).
+    """Strassen's seven products for square matrices whose size is a power of two (Section 23.5, Figure 23.5).
     counter[0] counts scalar multiplications."""
     n = len(A)
     if n == 1:

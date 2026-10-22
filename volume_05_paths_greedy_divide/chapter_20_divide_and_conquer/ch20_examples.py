@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 18 - Divide and Conquer: split, solve the halves, combine.
+"""Volume 5, Chapter 20 - Divide and Conquer: split, solve the halves, combine.
 
-Run:  python3 ch18_examples.py
+Run:  python3 ch20_examples.py
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ VISITORS = [12, 7, 21, 15, 3, 18, 9, 26]
 
 
 def total(values: list, depth: int = 0, log: list | None = None) -> int:
-    """Sum by splitting in half (Figure 18.1): each half could be counted by a different volunteer."""
+    """Sum by splitting in half (Figure 20.1): each half could be counted by a different volunteer."""
     if log is not None:
         log.append((depth, list(values)))
     if len(values) == 0:
@@ -22,7 +22,9 @@ def total(values: list, depth: int = 0, log: list | None = None) -> int:
 
 
 def min_max(values: list, counter: list) -> tuple:
-    """Smallest and largest together (Figure 18.2): about 3n/2 comparisons instead of 2n - 2."""
+    """Smallest and largest together (Figure 20.2): about 3n/2 comparisons instead of 2n - 2."""
+    if not values:
+        raise ValueError("an empty list has no smallest or largest value")
     if len(values) == 1:
         return values[0], values[0]
     if len(values) == 2:
@@ -44,7 +46,7 @@ def min_max_simple(values: list, counter: list) -> tuple:
 
 
 def best_stretch(values: list) -> tuple[int, int, int]:
-    """The busiest run of consecutive hours by total (Figures 18.3 and 18.4; values may be negative): best left, best right, or across the middle.
+    """The busiest run of consecutive hours by total (Figures 20.3 and 20.4; values may be negative): best left, best right, or across the middle.
     Returns (total, start, end)."""
     if len(values) == 1:
         return values[0], 0, 0
@@ -67,7 +69,7 @@ def best_stretch(values: list) -> tuple[int, int, int]:
 
 
 def crossing(values: list, lo: int, mid: int, hi: int) -> int:
-    """Section 18.5's Crossing: the best run containing positions mid - 1 and mid."""
+    """Section 20.5's Crossing: the best run containing positions mid - 1 and mid."""
     run, best_left = 0, float("-inf")
     for i in range(mid - 1, lo - 1, -1):
         run += values[i]

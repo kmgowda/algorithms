@@ -1,7 +1,7 @@
 import math
 import unittest
 
-import ch22_examples as ex
+import ch25_examples as ex
 
 
 class TestChapter22(unittest.TestCase):

@@ -15,7 +15,7 @@ INF = float("inf")
 
 
 def floyd_warshall(n: int, edges: list, directed: bool = False) -> tuple[list, list]:
-    """Shortest distances between every pair of vertices 0..n-1 (Figure 5.2).
+    """Shortest distances between every pair of vertices 0..n-1 (Figure 5.1).
     Returns (dist, nxt): nxt[i][j] is the first step on a shortest route from i to j."""
     dist = [[0 if i == j else INF for j in range(n)] for i in range(n)]
     nxt = [[j if i == j else None for j in range(n)] for i in range(n)]
@@ -49,7 +49,7 @@ def town_table() -> tuple[list, list]:
 
 
 def entry_history(i: int, j: int) -> list:
-    """The town's i-to-j entry after allowing each place in turn (Figure 5.3)."""
+    """The town's i-to-j entry after allowing each place in turn (the table of Section 5.5)."""
     index = {p: n for n, p in enumerate(PLACES)}
     n = len(PLACES)
     dist = [[0 if a == b else INF for b in range(n)] for a in range(n)]

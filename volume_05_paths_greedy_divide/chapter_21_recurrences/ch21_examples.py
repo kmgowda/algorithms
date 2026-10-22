@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 19 - Recurrences in Practice: predict a divide-and-conquer cost, then count it.
+"""Volume 5, Chapter 21 - Recurrences in Practice: predict a divide-and-conquer cost, then count it.
 
-Run:  python3 ch19_examples.py
+Run:  python3 ch21_examples.py
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import random
 
 
 def merge_sort(values: list, counter: list) -> list:
-    """Merge sort, counting comparisons (Volume 4, Chapter 5)."""
+    """Merge sort, counting comparisons (Volume 4, Chapter 8)."""
     if len(values) <= 1:
         return list(values)
     mid = len(values) // 2
@@ -26,7 +26,7 @@ def merge_sort(values: list, counter: list) -> list:
 
 
 def recursion_tree(n: int, a: int, b: int, f) -> list:
-    """Work at each level of the tree for T(n) = a T(n/b) + f(n), down to size 1 (Figure 19.2)."""
+    """Work at each level of the tree for T(n) = a T(n/b) + f(n), down to size 1 (Figure 21.2)."""
     levels, size, count = [], n, 1
     while size >= 1:
         levels.append((count, size, count * f(size)))
@@ -51,7 +51,7 @@ def count_calls(n: int, a: int, b: int) -> int:
 
 
 def measured_ratios(sizes, seed: int = 1) -> list:
-    """Figure 19.1: (n, comparisons on random data, comparisons / (n log2 n), the estimate n log2 n - 1.2645 n)."""
+    """Figure 21.1: (n, comparisons on random data, comparisons / (n log2 n), the estimate n log2 n - 1.2645 n)."""
     rng = random.Random(seed)
     out = []
     for n in sizes:
@@ -102,7 +102,7 @@ def solve(n: int, terms: list, f, base: float = 1.0, memo: dict | None = None) -
 
 
 def uneven_levels(n: int) -> list:
-    """Work at each level of T(n) = T(n/3) + T(2n/3) + n (Figure 19.5), splitting a size s into s // 3 and s - s // 3,
+    """Work at each level of T(n) = T(n/3) + T(2n/3) + n (Figure 21.5), splitting a size s into s // 3 and s - s // 3,
     with sizes below 3 as leaves of constant work."""
     levels, sizes = [], [n]
     while sizes:

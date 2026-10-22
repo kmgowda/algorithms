@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 11 - Euler Tours and Hamiltonian Paths: every road once, or every place once.
+"""Volume 5, Chapter 12 - Euler Tours and Hamiltonian Paths: every road once, or every place once.
 
-Run:  python3 ch11_examples.py
+Run:  python3 ch12_examples.py
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ def one_piece(roads: list) -> bool:
 
 
 def euler_kind(places: list, roads: list) -> str:
-    """'circuit', 'trail', or 'none' (Figure 11.2): the roads must form one piece, and the number of odd-degree places
+    """'circuit', 'trail', or 'none' (Euler's rule, Section 12.4): the roads must form one piece, and the number of odd-degree places
     must be 0 (a circuit) or 2 (a trail)."""
     if not one_piece(roads):
         return "none"
@@ -50,7 +50,7 @@ def euler_kind(places: list, roads: list) -> str:
 
 
 def euler_walk(places: list, roads: list) -> list | None:
-    """Hierholzer's method, stack form (Section 11.4): walk until stuck, then splice in side loops. None if impossible."""
+    """Hierholzer's method, stack form (Section 12.4): walk until stuck, then splice in side loops. None if impossible."""
     kind = euler_kind(places, roads)
     if kind == "none" or not roads:
         return None if kind == "none" else []
@@ -90,7 +90,7 @@ MINUTES = {("Library", "School"): 4, ("Library", "Park"): 3, ("School", "Market"
 
 
 def postman_extra(roads: list) -> tuple[int, list]:
-    """Section 11.7: the cheapest way to pair up the odd places, repeating quickest routes between pairs."""
+    """Section 12.7: the cheapest way to pair up the odd places, repeating quickest routes between pairs."""
     places = sorted({p for r in roads for p in r})
     inf = float("inf")
     d = {(a, b): 0 if a == b else inf for a in places for b in places}
@@ -115,7 +115,7 @@ def postman_extra(roads: list) -> tuple[int, list]:
 
 
 def hierholzer_pieces(places: list, roads: list) -> tuple[list, list]:
-    """Hierholzer's method by splicing (Figure 11.3): walk from the start until stuck, trying each place's roads in
+    """Hierholzer's method by splicing (Figure 12.2): walk from the start until stuck, trying each place's roads in
     list order; then, while some place on the
     walk still has unused roads, walk a side loop from it and splice the loop in at that place.
     Returns (the pieces walked, in order, the final walk)."""
@@ -154,7 +154,7 @@ def hierholzer_pieces(places: list, roads: list) -> tuple[list, list]:
 
 
 def euler_walk_directed(places: list, streets: list) -> list | None:
-    """Every one-way street exactly once (Section 11.4): possible when the streets form one piece and every place has
+    """Every one-way street exactly once (Section 12.4): possible when the streets form one piece and every place has
     as many streets in as out (a circuit), or one place has one extra out (the start) and one has one extra in (the
     end). Hierholzer's method, following streets forwards only. None if impossible."""
     out_deg = {p: 0 for p in places}

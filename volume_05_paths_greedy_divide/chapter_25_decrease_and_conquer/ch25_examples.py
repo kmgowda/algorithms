@@ -1,13 +1,15 @@
-"""Volume 5, Chapter 22 - Decrease and Conquer: shrink the problem by one, by half, or by a variable amount.
+"""Volume 5, Chapter 25 - Decrease and Conquer: shrink the problem by one, by half, or by a variable amount.
 
-Run:  python3 ch22_examples.py
+Run:  python3 ch25_examples.py
 """
 
 from __future__ import annotations
 
 
 def power(x: int, n: int, counter: list) -> int:
-    """x to the n by halving n (Figure 22.2): about 2 log2 n multiplications instead of n - 1."""
+    """x to the n by halving n (Figure 25.2): about 2 log2 n multiplications instead of n - 1."""
+    if n < 0:
+        raise ValueError("the power must be 0 or more")
     if n == 0:
         return 1
     half = power(x, n // 2, counter)
@@ -20,7 +22,7 @@ def power(x: int, n: int, counter: list) -> int:
 
 
 def peasant(a: int, b: int, log: list | None = None) -> int:
-    """Russian peasant multiplication (Figure 22.3): halve a, double b, add b whenever a is odd."""
+    """Russian peasant multiplication (Figure 25.3): halve a, double b, add b whenever a is odd."""
     total = 0
     while a > 0:
         if log is not None:
@@ -56,7 +58,7 @@ def euclid(a: int, b: int, log: list | None = None) -> int:
 
 
 def power_steps(n: int) -> list:
-    """The exponents built by Power on the way back up (Figure 22.2), smallest first, e.g. 13 -> [1, 3, 6, 13]."""
+    """The exponents built by Power on the way back up (Figure 25.2), smallest first, e.g. 13 -> [1, 3, 6, 13]."""
     steps = []
     while n:
         steps.append(n)
@@ -79,7 +81,7 @@ def insertion_sort_rec(values: list, counter: list) -> list:
 
 
 def josephus_order(n: int) -> list:
-    """Section 22.5: readers 1..n sit in a circle; going round, every second reader leaves. The order they leave."""
+    """Section 25.5: readers 1..n sit in a circle; going round, every second reader leaves. The order they leave."""
     circle, out, i = list(range(1, n + 1)), [], 1
     while len(circle) > 1:
         i %= len(circle)

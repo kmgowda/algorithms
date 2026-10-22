@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 14 - Proving a Greedy Choice: the exchange argument, on the fractional budget.
+"""Volume 5, Chapter 15 - Proving a Greedy Choice: the exchange argument, on the fractional budget.
 
-Run:  python3 ch14_examples.py
+Run:  python3 ch15_examples.py
 """
 
 from __future__ import annotations
@@ -8,12 +8,12 @@ from __future__ import annotations
 import itertools
 from fractions import Fraction
 
-# The club's books from Chapter 12; this time a subscription can be bought in part (half a year, a third...).
+# The club's books from Chapter 13; this time a subscription can be bought in part (half a year, a third...).
 BOOKS = [("Atlas", 9, 6), ("Novel", 6, 4), ("Poems", 5, 6), ("Comic", 5, 2), ("Cookbook", 10, 7)]
 
 
 def fractional(books: list, budget) -> tuple[Fraction, list]:
-    """Fill the budget in order of votes per pound, taking part of the last item (Figure 14.2)."""
+    """Fill the budget in order of votes per pound, taking part of the last item (Figure 15.2)."""
     left, votes, taken = Fraction(budget), Fraction(0), []
     for name, price, v in sorted(books, key=lambda b: Fraction(b[2], b[1]), reverse=True):
         if left <= 0:
@@ -26,7 +26,7 @@ def fractional(books: list, budget) -> tuple[Fraction, list]:
 
 
 def exchange_gain(books: list, plan: dict, budget) -> list:
-    """Every swap of spending from a lower-ratio item to a higher-ratio item, with the votes it gains (Figure 14.3)."""
+    """Every swap of spending from a lower-ratio item to a higher-ratio item, with the votes it gains (Figure 15.3)."""
     ratio = {n: Fraction(v, p) for n, p, v in books}
     price = {n: p for n, p, _ in books}
     out = []
@@ -48,7 +48,7 @@ def best_fraction_check(books: list, budget, steps: int = 4) -> Fraction:
     return best
 
 
-# Section 14.6: book repairs at the bindery desk, one at a time: (book, hours of work, hours until it is due).
+# Section 15.6: book repairs at the bindery desk, one at a time: (book, hours of work, hours until it is due).
 REPAIRS = [("Atlas", 3, 6), ("Novel", 2, 8), ("Poems", 1, 9), ("Comic", 4, 9), ("Cookbook", 2, 14)]
 
 
@@ -67,7 +67,7 @@ def total_lateness(order: list) -> int:
 
 
 def earliest_deadline_first(jobs: list) -> list:
-    """Greedy: do the job that is due soonest first (Figure 14.4). Ties keep the input order."""
+    """Greedy: do the job that is due soonest first (Figure 15.4). Ties keep the input order."""
     return sorted(jobs, key=lambda j: j[2])
 
 
@@ -77,7 +77,7 @@ def inversions(order: list) -> int:
 
 
 def remove_inversions(order: list) -> list:
-    """The exchange argument as a procedure (Figure 14.5): swap neighbouring jobs that are due in the wrong order,
+    """The exchange argument as a procedure (Figure 15.5): swap neighbouring jobs that are due in the wrong order,
     one swap at a time, recording (order, largest lateness) after each swap. The lateness never goes up."""
     order, steps = list(order), [(list(order), lateness(order)[0])]
     swapped = True

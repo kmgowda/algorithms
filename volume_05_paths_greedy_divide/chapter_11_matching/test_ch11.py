@@ -2,10 +2,10 @@ import itertools
 import random
 import unittest
 
-import ch10_examples as ex
+import ch11_examples as ex
 
 
-class TestChapter10(unittest.TestCase):
+class TestChapter11(unittest.TestCase):
     def test_festival(self) -> None:
         log = []
         m = ex.max_matching(ex.CAN_DO, log)

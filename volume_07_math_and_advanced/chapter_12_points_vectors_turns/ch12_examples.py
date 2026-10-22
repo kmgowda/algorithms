@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 
-# Drop boxes on the town grid (hundreds of metres east, north), from Volume 5, Chapter 20.
+# Drop boxes on the town grid (hundreds of metres east, north), from Volume 5, Chapter 22.
 LIBRARY, PARK, MARKET = (0, 0), (4, 1), (2, 5)
 
 

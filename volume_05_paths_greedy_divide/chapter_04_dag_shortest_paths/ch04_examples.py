@@ -5,6 +5,8 @@ Run:  python3 ch04_examples.py
 
 from __future__ import annotations
 
+from collections import deque
+
 # The book-festival trail: one-way paths downhill from the Gate; minutes for each path (some are shortcuts on bikes).
 STOPS = ["Gate", "Poetry", "Maps", "Science", "Stories", "Cafe", "Stage"]
 PATHS = [("Gate", "Poetry", 5), ("Gate", "Maps", 3), ("Maps", "Poetry", 1), ("Poetry", "Science", 6),
@@ -13,40 +15,41 @@ PATHS = [("Gate", "Poetry", 5), ("Gate", "Maps", 3), ("Maps", "Poetry", 1), ("Po
 
 
 def topological_order(vertices: list, edges: list) -> list | None:
-    """Kahn's method (Volume 4, Chapter 21); None if the graph has a cycle."""
-    indeg = {v: 0 for v in vertices}
-    for _, b, _ in edges:
+    """Kahn's method (Volume 4, Chapter 24); None if the graph has a cycle. O(V + E) with out-lists."""
+    indeg, out = {v: 0 for v in vertices}, {v: [] for v in vertices}
+    for a, b, _ in edges:
         indeg[b] += 1
-    ready = [v for v in vertices if indeg[v] == 0]
+        out[a].append(b)
+    ready = deque(v for v in vertices if indeg[v] == 0)
     order = []
     while ready:
-        v = ready.pop(0)
+        v = ready.popleft()
         order.append(v)
-        for a, b, _ in edges:
-            if a == v:
-                indeg[b] -= 1
-                if indeg[b] == 0:
-                    ready.append(b)
+        for b in out[v]:
+            indeg[b] -= 1
+            if indeg[b] == 0:
+                ready.append(b)
     return order if len(order) == len(vertices) else None
 
 
 def dag_shortest(vertices: list, edges: list, start, longest: bool = False) -> tuple[dict, dict, list]:
-    """Relax each vertex's edges once, in topological order (Figure 4.2). longest=True finds longest paths instead.
+    """Relax each vertex's edges once, in topological order (Section 4.4). longest=True finds longest paths.
     Returns (dist, parent, order)."""
     order = topological_order(vertices, edges)
     if order is None:
         raise ValueError("the graph has a cycle")
-    inf = float("inf")
-    worse = -inf if longest else inf
-    dist = {v: worse for v in vertices}
-    parent = {v: None for v in vertices}
-    dist[start] = 0
+    worse = float("-inf") if longest else float("inf")
     better = (lambda x, y: x > y) if longest else (lambda x, y: x < y)
+    dist, parent = {v: worse for v in vertices}, {v: None for v in vertices}
+    dist[start] = 0
+    out = {v: [] for v in vertices}
+    for a, b, w in edges:
+        out[a].append((b, w))
     for v in order:
         if dist[v] == worse:
-            continue                                  # not reachable from the start (yet, or ever)
-        for a, b, w in edges:
-            if a == v and better(dist[v] + w, dist[b]):
+            continue                                  # not reachable from the start
+        for b, w in out[v]:
+            if better(dist[v] + w, dist[b]):
                 dist[b] = dist[v] + w
                 parent[b] = v
     return dist, parent, order
@@ -60,7 +63,7 @@ def route(parent: dict, goal) -> list:
     return out[::-1]
 
 
-# The festival build (Section 4.5, Figure 4.4): hours for each task, and which tasks must finish before it starts.
+# The festival build (Section 4.5, Figure 4.3): hours for each task, and which tasks must finish before it starts.
 BUILD = {"frame": 3, "tents": 5, "lights": 2, "sound": 4, "signs": 1, "rehearsal": 2}
 BEFORE = [("frame", "lights"), ("frame", "sound"), ("tents", "signs"), ("lights", "rehearsal"),
           ("sound", "rehearsal"), ("signs", "rehearsal")]

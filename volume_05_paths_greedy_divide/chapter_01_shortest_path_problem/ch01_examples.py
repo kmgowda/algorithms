@@ -33,7 +33,7 @@ def route_length(adj: dict, route: list) -> float:
 
 
 def all_routes(adj: dict, start, goal, path=None):
-    """Every route from start to goal that never repeats a place (Figure 1.3)."""
+    """Every route from start to goal that never repeats a place (the table of Section 1.5)."""
     path = path or [start]
     if path[-1] == goal:
         yield list(path)

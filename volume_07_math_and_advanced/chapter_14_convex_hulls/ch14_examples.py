@@ -9,7 +9,7 @@ import itertools
 import math
 import random
 
-# Book-drop boxes around town (Volume 5, Chapter 20).
+# Book-drop boxes around town (Volume 5, Chapter 22).
 BOXES = [(2, 3), (12, 30), (40, 50), (5, 1), (12, 10), (3, 4), (20, 25), (35, 8)]
 
 

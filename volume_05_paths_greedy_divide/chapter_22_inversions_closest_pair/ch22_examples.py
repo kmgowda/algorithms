@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 20 - Counting Inversions and Closest Pairs: two divide-and-conquer classics.
+"""Volume 5, Chapter 22 - Counting Inversions and Closest Pairs: two divide-and-conquer classics.
 
-Run:  python3 ch20_examples.py
+Run:  python3 ch22_examples.py
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ def inversions_brute(a: list) -> int:
 
 
 def sort_count(a: list) -> tuple[list, int]:
-    """Merge sort that also counts pairs out of order (Figure 20.2)."""
+    """Merge sort that also counts pairs out of order (Figure 22.2)."""
     if len(a) <= 1:
         return list(a), 0
     mid = len(a) // 2
@@ -43,7 +43,7 @@ def closest_brute(pts: list) -> tuple[float, tuple]:
 
 
 def closest_pair(pts: list, counter: list | None = None) -> tuple[float, tuple]:
-    """Divide by x, solve both halves, then check only a narrow strip around the dividing line (Figures 20.3 and 20.4).
+    """Divide by x, solve both halves, then check only a narrow strip around the dividing line (Figures 22.3 and 22.4).
     The points are sorted by x and by y once, at the start; every call splits its y-sorted list in two in linear
     time, so no call sorts again and the whole method is O(n log n). counter[0] counts distance calculations."""
     counter = counter if counter is not None else [0]
@@ -82,7 +82,7 @@ def closest_pair(pts: list, counter: list | None = None) -> tuple[float, tuple]:
 
 
 def closest_pair_resorting(pts: list) -> float:
-    """The simpler version that sorts each strip by y inside every call: O(n log^2 n) (Chapter 19, Figure 19.4)."""
+    """The simpler version that sorts each strip by y inside every call: O(n log^2 n) (Chapter 21, Figure 21.4)."""
     def solve(p):
         if len(p) <= 3:
             return closest_brute(p)[0]
@@ -100,7 +100,7 @@ def closest_pair_resorting(pts: list) -> float:
 
 
 def strip_candidates(pts: list, x_mid: float, d: float) -> int:
-    """The largest number of later strip points any point is compared with (at most 7, Figure 20.4)."""
+    """The largest number of later strip points any point is compared with (at most 7, Figure 22.4)."""
     strip = sorted((q for q in pts if abs(q[0] - x_mid) < d), key=lambda q: q[1])
     most = 0
     for i in range(len(strip)):
@@ -114,7 +114,7 @@ def strip_candidates(pts: list, x_mid: float, d: float) -> int:
 
 
 def kendall_tau(a: list) -> float:
-    """Section 20.7: 1 - 2 x (share of pairs in opposite order)."""
+    """Section 22.7: 1 - 2 x (share of pairs in opposite order)."""
     n = len(a)
     return 1 - 2 * sort_count(a)[1] / (n * (n - 1) / 2)
 
@@ -137,7 +137,7 @@ def significant_count(a: list) -> int:
 
 
 def jumps(left: list, right: list) -> list:
-    """The final merge of Figure 20.2: (value taken from the right, how many left values it jumps)."""
+    """The final merge of Figure 22.2: (value taken from the right, how many left values it jumps)."""
     out, i, j = [], 0, 0
     while i < len(left) and j < len(right):
         if left[i] <= right[j]:

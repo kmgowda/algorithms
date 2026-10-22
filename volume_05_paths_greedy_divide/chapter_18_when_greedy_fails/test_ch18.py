@@ -1,6 +1,6 @@
 import unittest
 
-import ch17_examples as ex
+import ch18_examples as ex
 
 
 class TestChapter17(unittest.TestCase):

@@ -1,6 +1,6 @@
-"""Volume 5, Chapter 24 - Greedy versus Divide and Conquer: the same problems, two ways of thinking.
+"""Volume 5, Chapter 27 - Greedy versus Divide and Conquer: the same problems, two ways of thinking.
 
-Run:  python3 ch24_examples.py
+Run:  python3 ch27_examples.py
 """
 
 from __future__ import annotations
@@ -19,6 +19,8 @@ def max_greedy(values: list, counter: list) -> int:
 
 def max_dc(values: list, counter: list) -> int:
     """Split, find each half's maximum, compare once: also n - 1 comparisons, but the halves are independent."""
+    if not values:
+        raise ValueError("an empty list has no largest value")
     if len(values) == 1:
         return values[0]
     mid = len(values) // 2
@@ -28,7 +30,7 @@ def max_dc(values: list, counter: list) -> int:
 
 
 def depth(n: int) -> int:
-    """Rounds needed if every comparison in a round can happen at once (Figure 24.2)."""
+    """Rounds needed if every comparison in a round can happen at once (Figure 27.2)."""
     return 0 if n <= 1 else 1 + depth((n + 1) // 2)
 
 
@@ -62,7 +64,7 @@ def sort_dc(values: list, counter: list) -> list:
 
 
 def stretch_greedy(values: list, log: list | None = None) -> int:
-    """The best stretch in one pass (Figure 24.4): keep a running total, but drop the past whenever it would hurt,
+    """The best stretch in one pass (Figure 27.4): keep a running total, but drop the past whenever it would hurt,
     i.e. start again at the current hour when the total so far is negative. n - 1 additions, depth n."""
     run = best = values[0]
     if log is not None:
@@ -76,7 +78,7 @@ def stretch_greedy(values: list, log: list | None = None) -> int:
 
 
 def stretch_dc_work(n: int) -> tuple[int, int]:
-    """(steps, depth) of Chapter 18's best-stretch method on n values: each piece of size s does s crossing steps;
+    """(steps, depth) of Chapter 20's best-stretch method on n values: each piece of size s does s crossing steps;
     the depth is the longest chain of steps that must follow one another (a crossing scan is s steps long)."""
     if n <= 1:
         return 1, 1
@@ -87,7 +89,7 @@ def stretch_dc_work(n: int) -> tuple[int, int]:
 
 
 def stretch_summary_work(n: int) -> tuple[int, int]:
-    """(steps, depth) of the four-number version (Chapter 18, Challenge 3): constant work per combine."""
+    """(steps, depth) of the four-number version (Chapter 20, Challenge 3): constant work per combine."""
     if n <= 1:
         return 1, 1
     wa, da = stretch_summary_work(n // 2)
@@ -96,7 +98,7 @@ def stretch_summary_work(n: int) -> tuple[int, int]:
 
 
 def code_lengths_huffman(counts: dict) -> dict:
-    """Greedy, bottom up: repeatedly join the two rarest groups (Chapter 16). Returns code length per symbol."""
+    """Greedy, bottom up: repeatedly join the two rarest groups (Chapter 17). Returns code length per symbol."""
     import heapq
     if len(counts) == 1:
         return {s: 1 for s in counts}

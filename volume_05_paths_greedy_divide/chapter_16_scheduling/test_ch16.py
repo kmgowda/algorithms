@@ -1,7 +1,7 @@
 import random
 import unittest
 
-import ch15_examples as ex
+import ch16_examples as ex
 
 
 class TestChapter15(unittest.TestCase):

@@ -102,7 +102,7 @@ def k_smallest(stream, k: int) -> list:
 
 def join_cost(lengths) -> tuple[int, list]:
     """Pop, change, push: repeatedly join the two shortest pieces; each join costs their combined length.
-    Returns (total cost, list of joins) (Figure 15.5). The same greedy loop builds Huffman codes (Volume 5, Chapter 16)."""
+    Returns (total cost, list of joins) (Figure 15.5). The same greedy loop builds Huffman codes (Volume 5, Chapter 17)."""
     heap = list(lengths)
     heapq.heapify(heap)
     total, joins = 0, []
