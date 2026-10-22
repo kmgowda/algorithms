@@ -32,6 +32,13 @@ class TestChapter61(unittest.TestCase):
         b.add("Robots")
         self.assertEqual([i for i, v in enumerate(b.bits) if v], [0, 1, 2, 5, 8, 11, 12, 13, 15])
 
+    def test_sizing(self) -> None:
+        self.assertEqual([round(ex.bits_for_error(p), 1) for p in (0.01, 0.001, 0.0001)], [9.6, 14.4, 19.2])
+        self.assertAlmostEqual(ex.false_positive_rate(1_000_000, 200_000, 7), 0.138, places=3)
+        self.assertAlmostEqual(0.5 ** (10 * __import__("math").log(2)), 0.6185 ** 10, places=4)
+        rates = [ex.false_positive_rate(100_000, 10_000, k) for k in range(1, 15)]
+        self.assertEqual(rates.index(min(rates)) + 1, 7)
+
     def test_rates(self) -> None:
         missed, false_yes, new = ex.screen(owned=20_000, proposals=3_000, already=500)
         self.assertEqual(missed, 0)

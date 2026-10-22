@@ -60,6 +60,32 @@ def measure(keys: list[int], lookups: list[int]) -> dict[str, dict]:
     return results
 
 
+def repair_work(keys: list[int]) -> dict[str, int]:
+    """Count the repair work behind the build times of Section 23.5: AVL rotations and the stored heights
+    it recomputes on the way back up every insert, against red-black rotations."""
+    counts = {"AVL rotations": 0, "AVL height updates": 0}
+    update, left, right = avl.update, avl.rotate_left, avl.rotate_right
+
+    def counted_update(n):
+        counts["AVL height updates"] += 1
+        update(n)
+
+    def counted_left(x):
+        counts["AVL rotations"] += 1
+        return left(x)
+
+    def counted_right(y):
+        counts["AVL rotations"] += 1
+        return right(y)
+    avl.update, avl.rotate_left, avl.rotate_right = counted_update, counted_left, counted_right
+    try:
+        avl.build(keys)
+    finally:
+        avl.update, avl.rotate_left, avl.rotate_right = update, left, right
+    counts["red-black rotations"] = rb.RedBlackTree(keys).rotations
+    return counts
+
+
 if __name__ == "__main__":
     sys.setrecursionlimit(30_000)
     rng = random.Random(1)
@@ -69,3 +95,4 @@ if __name__ == "__main__":
         print(label)
         for name, r in measure(keys, rand_keys).items():
             print(f"  {name:24s} {r}")
+        print("  repair work", repair_work(keys))

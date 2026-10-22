@@ -41,6 +41,17 @@ def load(text: str):
     return build()
 
 
+def complete(text: str) -> bool:
+    """Is this a whole saved tree (Practice Problem 22.3)? Start owing one subtree; a value fills one spot
+    and opens two, a # fills one. The line is whole when the debt reaches 0 exactly at its last token."""
+    owed = 1
+    for t in text.split():
+        if owed == 0:
+            return False                               # tokens left over after the tree closed
+        owed += 1 if t != "#" else -1
+    return owed == 0
+
+
 def from_pre_in(pre: list, ino: list):
     """Rebuild from preorder and inorder (distinct values): the first preorder value is the root (Figure 22.3)."""
     where = {v: i for i, v in enumerate(ino)}

@@ -47,6 +47,13 @@ class TestChapter54(unittest.TestCase):
         h3 = ex.MinHeap()
         h3.a = [5, 9, 7, 12, 10, 8]
         self.assertEqual((h3.pop(), h3.a), (5, [7, 9, 8, 12, 10]))
+        h4, arrays = ex.MinHeap(), []
+        for x in (58, 25, 91, 12, 70):
+            before = len(h4.trace)
+            h4.push(x)
+            arrays.append((list(h4.a), len(h4.trace) - before))
+        self.assertEqual(arrays, [([58], 0), ([25, 58], 1), ([25, 58, 91], 0), ([12, 25, 91, 58], 2),
+                                  ([12, 25, 91, 58, 70], 0)])
 
 
 if __name__ == "__main__":

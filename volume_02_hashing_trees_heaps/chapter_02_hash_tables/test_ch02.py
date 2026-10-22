@@ -65,7 +65,54 @@ class TestChapter31(unittest.TestCase):
         self.assertEqual(t.get(128), 128)
 
     def test_probe_experiment(self) -> None:
-        self.assertAlmostEqual(ex.failed_search_probes(0.5, searches=2000), 2.5, delta=0.4)
+        self.assertAlmostEqual(ex.failed_search_probes(0.5, searches=2000), 2.5, delta=0.2)
+
+    def test_probe_sequences(self) -> None:
+        self.assertEqual(list(ex.probe_sequence(35, 16, "linear"))[:4], [3, 4, 5, 6])
+        self.assertEqual(list(ex.probe_sequence(35, 16, "quadratic"))[:4], [3, 4, 6, 9])
+        self.assertEqual(list(ex.probe_sequence(35, 16, "double"))[:4], [3, 6, 9, 12])
+        self.assertEqual(list(ex.probe_sequence(67, 16, "double"))[:4], [3, 8, 13, 2])
+        for mode in ("linear", "quadratic", "double"):
+            for k in (0, 1, 35, 67, 1000):
+                self.assertEqual(sorted(ex.probe_sequence(k, 16, mode)), list(range(16)))   # every slot reached
+            self.assertEqual(list(ex.probe_sequence(5, 1, mode)), [0])                      # one slot
+
+    def test_other_probing_tables(self) -> None:
+        rng = random.Random(2)
+        for mode in ("quadratic", "double"):
+            t, ref = ex.ProbingTable(8, mode), {}
+            self.assertEqual((t.get(1), t.delete(1)), (None, False))
+            for _ in range(4000):
+                k = rng.randint(0, 200)
+                if rng.random() < 0.6:
+                    t.put(k, k * 2)
+                    ref[k] = k * 2
+                else:
+                    self.assertEqual(t.delete(k), k in ref)
+                    ref.pop(k, None)
+            for k in range(201):
+                self.assertEqual(t.get(k), ref.get(k))
+
+    def test_clustering_experiment(self) -> None:
+        lin, quad, dbl = (ex.failed_search_probes(0.75, mode, searches=1000) for mode in ("linear", "quadratic", "double"))
+        self.assertGreater(lin, quad)
+        self.assertGreater(quad, dbl)
+        self.assertAlmostEqual(dbl, 4.0, delta=0.6)          # uniform hashing: 1 / (1 - 0.75)
+        self.assertEqual(ex.failed_search_probes(0.0), 1.0)  # an empty table: one look
+
+    def test_hash_design(self) -> None:
+        calls = [100 + 8 * j for j in range(7)]
+        self.assertEqual({ex.division_hash(k, 8) for k in calls}, {4})
+        self.assertEqual(sorted(ex.division_hash(k, 7) for k in calls), list(range(7)))
+        self.assertEqual(ex.multiplication_hash(100, 8), 6)
+        self.assertEqual(ex.multiplication_hash(0, 8), 0)
+        attack = [16 * j for j in range(50)]
+        self.assertEqual(ex.longest_chain(attack, 16, lambda k: k % 16), 50)
+        self.assertEqual(ex.longest_chain(attack, 16, ex.random_universal_hash(16, random.Random(7))), 5)
+        self.assertEqual(ex.longest_chain([], 16, lambda k: 0), 0)
+        self.assertLess(ex.collision_rate(100, 116, 16), 1 / 16 + 0.01)
+        h = ex.random_universal_hash(1, random.Random(1))
+        self.assertEqual(h(12345), 0)                        # one slot: everything collides
 
 
 if __name__ == "__main__":

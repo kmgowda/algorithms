@@ -42,6 +42,11 @@ def best_k(m: int, n: int) -> int:
     return max(1, round(m / n * math.log(2)))
 
 
+def bits_for_error(p: float) -> float:
+    """Bits per item needed for false-positive rate p with the best k: -ln p / (ln 2)^2 (Section 32.6)."""
+    return -math.log(p) / math.log(2) ** 2
+
+
 def measure(m: int, n: int, k: int, trials: int = 20_000) -> float:
     bf = BloomFilter(m, k)
     for i in range(n):

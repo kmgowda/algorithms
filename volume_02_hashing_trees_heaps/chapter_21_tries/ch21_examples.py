@@ -22,6 +22,24 @@ class Trie:
             node = node.children.setdefault(ch, Trie())   # reuse the path or add a letter
         node.is_word = True
 
+    def delete(self, word: str) -> bool:
+        """Unmark the word, then climb back up removing letters no other word needs (Figure 21.4).
+        Returns whether the word was stored."""
+        path, node = [self], self
+        for ch in word:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+            path.append(node)
+        if not node.is_word:
+            return False
+        node.is_word = False
+        for i in range(len(word), 0, -1):                 # prune from the last letter upwards
+            if path[i].is_word or path[i].children:       # still needed by another word: stop
+                break
+            del path[i - 1].children[word[i - 1]]
+        return True
+
     def starting_with(self, prefix: str) -> list[str]:
         node = self
         for ch in prefix:                                 # walk the typed letters
@@ -77,4 +95,7 @@ if __name__ == "__main__":
     print(t.starting_with("CAR"), t.starting_with("DO"), t.starting_with("CO"), count_nodes(t))
     t.insert("DOVE")
     print(t.starting_with("D"))
+    for w in ["CAR", "CART", "CARD"]:                    # Figure 21.4: unmark, prune one, prune two
+        t.delete(w)
+        print("delete", w, count_nodes(t), t.starting_with("C"))
     print(compare())

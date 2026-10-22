@@ -27,6 +27,12 @@ class TestChapter43(unittest.TestCase):
         finally:
             sys.setrecursionlimit(old)
         self.assertEqual(len(ex.inorder_iterative(root)), 5000)
+        self.assertEqual((ex.levels(None), ex.levels(T(5)), ex.levels(left)), ([], [[5]], [[3], [2], [1]]))
+        self.assertEqual(ex.levels(ex.from_array([50, 30, 70, 20, 40, 60, 80, 10])),
+                         [[50], [30, 70], [20, 40, 60, 80], [10]])
+        self.assertEqual([row[-1] for row in ex.levels(ex.from_array([50, 30, 70, 20, 40, 60, 80, 10]))],
+                         [50, 70, 80, 10])                                      # Practice Problem 2
+        self.assertEqual(sum(ex.levels(full), []), ex.level_order(full))
         self.assertEqual(ex.folder_totals({"r": 0, "a": 3, "b": 4}, {"r": ["a", "b"]}, "r")["r"], 7)
 
     def test_orders(self) -> None:

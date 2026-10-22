@@ -31,7 +31,7 @@ def heapify(a: list) -> int:
 
 
 def top_k(stream, k: int) -> list:
-    """The k largest items with a min-heap of size k: the smallest of the best k sits on top (Figure 26.2)."""
+    """The k largest items with a min-heap of size k: the smallest of the best k sits on top (Figure 26.3)."""
     best: list = []
     for x in stream:
         if len(best) < k:
@@ -42,7 +42,7 @@ def top_k(stream, k: int) -> list:
 
 
 def merge_k(lists: list[list]) -> list:
-    """Merge k sorted lists with a heap holding one front item from each list (Figure 26.3)."""
+    """Merge k sorted lists with a heap holding one front item from each list (Figure 26.4)."""
     heap = [(lst[0], i, 0) for i, lst in enumerate(lists) if lst]
     heapq.heapify(heap)
     out = []
@@ -55,7 +55,7 @@ def merge_k(lists: list[list]) -> list:
 
 
 class RunningMedian:
-    """Two heaps: a max-heap of the smaller half and a min-heap of the larger half (Figure 26.4)."""
+    """Two heaps: a max-heap of the smaller half and a min-heap of the larger half (Figure 26.6)."""
 
     def __init__(self):
         self.low: list = []      # max-heap via negated values
@@ -77,6 +77,43 @@ class RunningMedian:
         return (-self.low[0] + self.high[0]) / 2
 
 
+def height_sum(n: int) -> int:
+    """The most swaps heapify can make on n items: the sum of every node's height (Section 26.4, Why it works).
+    It always equals n minus the number of 1-bits in n, so it is below n."""
+    total = 0
+    for i in range(n):
+        h, j = 0, i
+        while 2 * j + 1 < n:            # in a complete tree the leftmost path is the longest
+            j, h = 2 * j + 1, h + 1
+        total += h
+    return total
+
+
+def k_smallest(stream, k: int) -> list:
+    """The mirror rule: the k smallest items with a MAX-heap of size k (negated values in heapq)."""
+    best: list = []
+    for x in stream:
+        if len(best) < k:
+            heapq.heappush(best, -x)
+        elif best and x < -best[0]:
+            heapq.heapreplace(best, -x)       # the largest of the k leaves
+    return sorted(-v for v in best)
+
+
+def join_cost(lengths) -> tuple[int, list]:
+    """Pop, change, push: repeatedly join the two shortest pieces; each join costs their combined length.
+    Returns (total cost, list of joins) (Figure 26.5). The same greedy loop builds Huffman codes (Volume 4, Chapter 16)."""
+    heap = list(lengths)
+    heapq.heapify(heap)
+    total, joins = 0, []
+    while len(heap) > 1:
+        a, b = heapq.heappop(heap), heapq.heappop(heap)
+        total += a + b
+        joins.append((a, b, a + b))
+        heapq.heappush(heap, a + b)
+    return total, joins
+
+
 if __name__ == "__main__":
     a = [70, 63, 58, 47, 31, 25, 12]
     print(heapify(a), a)
@@ -92,3 +129,6 @@ if __name__ == "__main__":
         rm.add(x)
         meds.append(rm.median())
     print(meds)
+    print("height sums", [height_sum(n) for n in (7, 15, 31)], height_sum(1_000_000))
+    print(k_smallest([7, 2, 9, 4, 1, 8], 3))
+    print(join_cost([4, 3, 2, 6]), join_cost([1, 2, 3, 4]))

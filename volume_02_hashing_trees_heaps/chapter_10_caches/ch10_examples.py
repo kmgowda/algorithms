@@ -86,6 +86,27 @@ def count_hits(requests, capacity: int, policy: str = "lru") -> int:
     return hits
 
 
+def optimal_hits(requests, capacity: int) -> int:
+    """Belady's ideal policy, which knows the future: on a miss with a full shelf, evict the item whose next
+    request is furthest away (or never comes). No real policy can beat it (Practice Problem 10.3)."""
+    if capacity <= 0:
+        return 0
+    hits, shelf = 0, set()
+    for i, r in enumerate(requests):
+        if r in shelf:
+            hits += 1
+            continue
+        if len(shelf) == capacity:
+            def next_use(item):
+                for j in range(i + 1, len(requests)):
+                    if requests[j] == item:
+                        return j
+                return len(requests)
+            shelf.remove(max(sorted(shelf), key=next_use))
+        shelf.add(r)
+    return hits
+
+
 def popular_requests(n: int, items: int = 200, seed: int = 7) -> list[int]:
     """Requests where an item's popularity falls off as 1/rank (Figure 10.3)."""
     rng = random.Random(seed)

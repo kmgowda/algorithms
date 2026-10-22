@@ -36,6 +36,16 @@ class TestChapter33(unittest.TestCase):
         g = ex.group_anagrams(["stop", "pots", "tops", "post", "spot", "opts", "stip"])
         self.assertEqual(g, {"opst": ["stop", "pots", "tops", "post", "spot", "opts"], "ipst": ["stip"]})
 
+    def test_count_signatures(self) -> None:
+        g = ex.group_anagrams_by_counts(["dusty", "night", "inch", "study", "thing", "chin"])
+        self.assertEqual(sorted(g.values()), [["dusty", "study"], ["inch", "chin"], ["night", "thing"]])
+        self.assertEqual(ex.group_anagrams_by_counts([]), {})
+        self.assertEqual(list(ex.group_anagrams_by_counts([""]).values()), [[""]])
+        words = ["listen", "silent", "enlist", "google", "inlets", "banana"]
+        self.assertEqual(sorted(ex.group_anagrams_by_counts(words).values()), sorted(ex.group_anagrams(words).values()))
+        self.assertEqual(ex.first_repeat([63, 12, 47, 12, 63]), 12)
+        self.assertEqual((ex.first_repeat([]), ex.first_repeat([5]), ex.first_repeat([5, 5])), (None, None, 5))
+
     def test_leaderboard(self) -> None:
         rng = random.Random(2)
         log = [(f"r{rng.randint(1, 15)}", f"b{rng.randint(1, 10)}") for _ in range(200)]

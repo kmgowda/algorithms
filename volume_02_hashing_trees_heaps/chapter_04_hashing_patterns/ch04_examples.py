@@ -16,6 +16,32 @@ def group_anagrams(words: list[str]) -> dict[str, list[str]]:
     return groups
 
 
+def letter_counts(word: str) -> tuple[int, ...]:
+    """The 26 letter counts of a lower-case word: an O(k) anagram signature (Section 4.5)."""
+    counts = [0] * 26
+    for c in word:
+        counts[ord(c) - ord("a")] += 1
+    return tuple(counts)
+
+
+def group_anagrams_by_counts(words: list[str]) -> dict[tuple[int, ...], list[str]]:
+    """Group lower-case words by their letter counts, with no sorting (Figure 4.6)."""
+    groups: dict[tuple[int, ...], list[str]] = {}
+    for w in words:
+        groups.setdefault(letter_counts(w), []).append(w)
+    return groups
+
+
+def first_repeat(items: list):
+    """The first item seen a second time, in one pass with a set (Practice Problem 4.4)."""
+    seen = set()
+    for x in items:
+        if x in seen:
+            return x
+        seen.add(x)
+    return None
+
+
 def pair_for_card(prices: list[int], card: int) -> tuple[int, int] | None:
     """Two prices summing to card, in one pass with a set of prices seen so far (Figure 4.2)."""
     seen: set[int] = set()

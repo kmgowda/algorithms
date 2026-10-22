@@ -10,7 +10,9 @@ from __future__ import annotations
 def recommend(*, newest_first=False, oldest_first=False, exact_keys=False, needs_order=False, extreme_only=False,
               range_totals=False, range_extremes=False, values_change=True, groups=False, on_disk=False,
               prefixes=False, tiny_memory_ok_errors=False) -> str:
-    """Return the structure the five questions point to (Section 35.5)."""
+    """Return the structure the five questions point to, asked in order (Section 35.5): groups and ranges
+    first, then the extreme item, then which order matters (arrival, prefix, sorted, none); the
+    follow-ups of question 5 (changes, disk, tiny memory) refine the answer the earlier questions chose."""
     if groups:
         return "union-find"
     if range_totals:

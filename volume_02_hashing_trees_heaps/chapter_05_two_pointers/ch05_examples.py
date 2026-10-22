@@ -61,6 +61,27 @@ def common_sorted(a: list[int], b: list[int]) -> list[int]:
     return out
 
 
+def remove_value(a: list[int], unwanted: int) -> int:
+    """Read/write pointers on any list: keep the items that are not `unwanted`, in order (Practice Problem 5.2)."""
+    write = 0
+    for read in range(len(a)):
+        if a[read] != unwanted:
+            a[write] = a[read]
+            write += 1
+    return write
+
+
+def is_palindrome(text: str) -> tuple[bool, int]:
+    """Opposite-direction pointers: compare the two ends and move inward. Returns (answer, comparisons)."""
+    left, right, comparisons = 0, len(text) - 1, 0
+    while left < right:
+        comparisons += 1
+        if text[left] != text[right]:
+            return False, comparisons
+        left, right = left + 1, right - 1
+    return True, comparisons
+
+
 if __name__ == "__main__":
     s = [12, 12, 25, 31, 31, 31, 47, 63, 63]
     k = dedupe_sorted(s)

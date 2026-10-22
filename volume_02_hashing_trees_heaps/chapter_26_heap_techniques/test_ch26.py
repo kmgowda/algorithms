@@ -43,6 +43,24 @@ class TestChapter55(unittest.TestCase):
                 rm.add(x)
                 self.assertEqual(rm.median(), statistics.median(a[:i + 1]))
 
+    def test_new_techniques(self) -> None:
+        self.assertEqual([ex.height_sum(n) for n in (0, 1, 2, 7, 15, 31)], [0, 0, 1, 4, 11, 26])
+        for n in range(0, 200):
+            self.assertEqual(ex.height_sum(n), n - bin(n).count("1"))
+            a = list(range(n, 0, -1))
+            self.assertLessEqual(ex.heapify(a), ex.height_sum(n))
+        self.assertEqual(ex.heapify(list(range(15, 0, -1))), 11)
+        self.assertEqual(ex.k_smallest([7, 2, 9, 4, 1, 8], 3), [1, 2, 4])
+        self.assertEqual((ex.k_smallest([], 3), ex.k_smallest([5, 1], 0), ex.k_smallest([3, 3, 1], 2)), ([], [], [1, 3]))
+        self.assertEqual(ex.join_cost([4, 3, 2, 6]), (29, [(2, 3, 5), (4, 5, 9), (6, 9, 15)]))
+        self.assertEqual(ex.join_cost([1, 2, 3, 4])[0], 19)
+        self.assertEqual((ex.join_cost([]), ex.join_cost([7])), ((0, []), (0, [])))
+        rng = random.Random(2)
+        for _ in range(100):
+            a = [rng.randint(0, 50) for _ in range(rng.randint(0, 12))]
+            k = rng.randint(0, 5)
+            self.assertEqual(ex.k_smallest(a, k), sorted(a)[:k])
+
     def test_examples(self) -> None:
         a = [70, 63, 58, 47, 31, 25, 12]
         ex.heapify(a)

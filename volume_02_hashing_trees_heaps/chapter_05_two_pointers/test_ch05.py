@@ -40,5 +40,19 @@ class TestChapter34(unittest.TestCase):
         self.assertEqual(ex.common_sorted([2, 4, 6, 8, 10], [3, 4, 5, 8, 11]), [4, 8])
 
 
+class TestNewPractice(unittest.TestCase):
+    def test_remove_value(self) -> None:
+        a = [7, 0, 3, 0, 0, 9]
+        self.assertEqual((ex.remove_value(a, 0), a[:3]), (3, [7, 3, 9]))
+        self.assertEqual(ex.remove_value([], 0), 0)
+        self.assertEqual(ex.remove_value([0, 0], 0), 0)
+        self.assertEqual(ex.remove_value([1, 2], 0), 2)
+
+    def test_palindrome(self) -> None:
+        self.assertEqual(ex.is_palindrome("RACECAR"), (True, 3))
+        self.assertEqual(ex.is_palindrome("LIBRARY"), (False, 1))
+        self.assertEqual((ex.is_palindrome(""), ex.is_palindrome("A")), ((True, 0), (True, 0)))
+
+
 if __name__ == "__main__":
     unittest.main()

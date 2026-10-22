@@ -38,5 +38,18 @@ class TestChapter36(unittest.TestCase):
         self.assertEqual(ex.longest_quiet([2, 4, 1, 0, 3, 7, 1, 1, 2, 5], 6), (3, 1))
 
 
+class TestCountingWindows(unittest.TestCase):
+    def test_counts(self) -> None:
+        self.assertEqual((ex.count_at_most("AABCB", 2), ex.count_at_most("AABCB", 1)), (11, 6))
+        self.assertEqual(ex.count_exactly("AABCB", 2), 5)
+        self.assertEqual((ex.count_at_most("", 2), ex.count_at_most("AB", 0), ex.count_exactly("AB", 0)), (0, 0, 0))
+        rng = random.Random(4)
+        for _ in range(200):
+            s = "".join(rng.choice("ABC") for _ in range(rng.randint(0, 9)))
+            for k in range(4):
+                brute = sum(len(set(s[i:j + 1])) == k for i in range(len(s)) for j in range(i, len(s)))
+                self.assertEqual(ex.count_exactly(s, k), brute)
+
+
 if __name__ == "__main__":
     unittest.main()

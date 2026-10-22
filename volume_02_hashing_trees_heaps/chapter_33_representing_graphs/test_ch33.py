@@ -38,6 +38,16 @@ class TestChapter62(unittest.TestCase):
         self.assertEqual(sorted(ex.grid_neighbours(grid, 0, 0)), [(0, 1), (1, 0)])
         self.assertEqual(ex.grid_neighbours(grid, 1, 2), [(2, 2)])
 
+    def test_compressed(self) -> None:
+        start, targets = ex.compressed(ex.BRANCHES, ex.ROUTES)
+        self.assertEqual(start, [0, 4, 6, 8, 10, 12, 14])
+        self.assertEqual(targets[:4], ["North", "East", "South", "West"])
+        adj = ex.adjacency_list(ex.BRANCHES, ex.ROUTES)
+        for v in ex.BRANCHES:
+            self.assertEqual(ex.compressed_neighbours(ex.BRANCHES, start, targets, v), adj[v])
+        self.assertEqual(ex.compressed([], []), ([0], []))
+        self.assertEqual(ex.compressed(["A", "B"], []), ([0, 0, 0], []))
+
     def test_experiment_sizes(self) -> None:
         out = ex.experiment(n=200, m=500, queries=200)
         self.assertEqual((out["matrix cells"], out["list entries"]), (40000, 1000))

@@ -18,7 +18,7 @@ class _Node:
 
 
 class BST:
-    """Smaller keys to the left, larger to the right (Figures 16.1 to 16.3). Duplicates are ignored."""
+    """Smaller keys to the left, larger to the right (Figures 16.1 to 16.4). Duplicates are ignored."""
 
     def __init__(self, keys=()):
         self.root = None
@@ -53,27 +53,83 @@ class BST:
                 return
             n = nxt
 
-    def delete(self, key) -> None:
-        self.root = self._delete(self.root, key)
+    def delete(self, key, use_predecessor: bool = False) -> None:
+        """Three cases (Figure 16.4). A node with two children takes its successor's key, or its predecessor's."""
+        self.root = self._delete(self.root, key, use_predecessor)
 
-    def _delete(self, n, key):
+    def _delete(self, n, key, pred=False):
         if n is None:
             return None
         if key < n.key:
-            n.left = self._delete(n.left, key)
+            n.left = self._delete(n.left, key, pred)
         elif key > n.key:
-            n.right = self._delete(n.right, key)
+            n.right = self._delete(n.right, key, pred)
         else:
             if n.left is None:
                 return n.right                     # leaf or one child
             if n.right is None:
                 return n.left
-            s = n.right                            # two children: successor
-            while s.left is not None:
-                s = s.left
-            n.key = s.key
-            n.right = self._delete(n.right, s.key)
+            if pred:                               # two children: predecessor, the largest key on the left
+                s = n.left
+                while s.right is not None:
+                    s = s.right
+                n.key = s.key
+                n.left = self._delete(n.left, s.key, pred)
+            else:                                  # two children: successor, the smallest key on the right
+                s = n.right
+                while s.left is not None:
+                    s = s.left
+                n.key = s.key
+                n.right = self._delete(n.right, s.key, pred)
         return n
+
+    def floor(self, key):
+        """The largest key <= key, or None (Figure 16.2): remember the last node where the walk went right."""
+        best, n = None, self.root
+        while n is not None:
+            if key == n.key:
+                return n.key
+            if key < n.key:
+                n = n.left
+            else:
+                best, n = n.key, n.right
+        return best
+
+    def ceiling(self, key):
+        """The smallest key >= key, or None: remember the last node where the walk went left."""
+        best, n = None, self.root
+        while n is not None:
+            if key == n.key:
+                return n.key
+            if key > n.key:
+                n = n.right
+            else:
+                best, n = n.key, n.left
+        return best
+
+    def successor(self, key):
+        """The next larger key after key, or None: the ceiling of anything just above key."""
+        best, n = None, self.root
+        while n is not None:
+            if key < n.key:
+                best, n = n.key, n.left
+            else:
+                n = n.right
+        return best
+
+    def lowest_common_ancestor(self, a, b):
+        """Section 16.4: walk down while a and b lie on the same side; the first split point is the answer.
+        Returns None if either key is missing."""
+        if not (self.contains(a) and self.contains(b)):
+            return None
+        n = self.root
+        while True:
+            if a < n.key and b < n.key:
+                n = n.left
+            elif a > n.key and b > n.key:
+                n = n.right
+            else:
+                return n.key
 
     def inorder(self) -> list:
         out = []
@@ -130,6 +186,9 @@ if __name__ == "__main__":
     for k in (12, 70, 25):
         t.delete(k)
     print(t.inorder(), t.root.left.key)
+    t = BST(ORDER)
+    print(t.floor(60), t.ceiling(60), t.floor(10), t.ceiling(95), t.lowest_common_ancestor(31, 12),
+          t.lowest_common_ancestor(31, 63))
     rng = random.Random(1)
     keys = rng.sample(range(1_000_000), 10_000)
     r = BST(keys)

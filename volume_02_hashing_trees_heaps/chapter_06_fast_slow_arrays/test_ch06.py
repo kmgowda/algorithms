@@ -38,5 +38,14 @@ class TestChapter35(unittest.TestCase):
         self.assertFalse(ex.is_happy(4))
 
 
+class TestCycleEntrance(unittest.TestCase):
+    def test_start_matters(self) -> None:
+        self.assertEqual(ex.cycle_entrance([3, 1, 3, 4, 2]), 3)
+        self.assertEqual(ex.cycle_entrance([3, 1, 3, 4, 2], 4), 4)       # a start on the loop proves nothing
+        for a in ([1, 1], [2, 2, 2], [1, 3, 4, 2, 2], [2, 4, 1, 3, 1]):
+            self.assertEqual(ex.cycle_entrance(a), ex.find_duplicate(a))
+        self.assertEqual(sum(ex.is_happy(n) for n in range(1, 101)), 20)
+
+
 if __name__ == "__main__":
     unittest.main()

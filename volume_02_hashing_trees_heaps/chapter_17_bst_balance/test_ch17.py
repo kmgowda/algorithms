@@ -16,6 +16,16 @@ class TestChapter46(unittest.TestCase):
         self.assertEqual(ex.insert_all([70, 63, 58, 47])[0], 3)
         self.assertLess(ex.average_random_height(1000, trials=5), 30)
         self.assertGreater(ex.deliveries(), 100)
+        self.assertEqual(ex.deliveries(), 181)
+
+    def test_figures_and_practice(self) -> None:
+        self.assertEqual([round(ex.average_random_height(n), 1) for n in (10, 100, 1000)], [4.5, 12.2, 20.8])
+        self.assertEqual(round(ex.average_random_height(10_000), 1), 29.9)
+        self.assertEqual(ex.insert_all([47, 12, 25, 31, 58, 63, 70]), (3, 12))
+        self.assertEqual(ex.average_found_comparisons(range(1, 101)), 50.5)
+        self.assertEqual(round(ex.average_found_comparisons(ex.median_first(1, 100)), 1), 5.8)
+        self.assertEqual((ex.average_found_comparisons([]), ex.average_found_comparisons([5])), (0.0, 1.0))
+        self.assertEqual((ex.median_first(1, 0), ex.median_first(1, 3)), ([], [2, 1, 3]))
 
 
 if __name__ == "__main__":

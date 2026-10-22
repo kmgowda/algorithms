@@ -26,6 +26,18 @@ class TestChapter51(unittest.TestCase):
             r = ex.balanced_from_sorted(keys)
             self.assertEqual((ex.height(r), r.value if r else None, ex.inorder(r)), (h, root, keys))
 
+    def test_complete(self) -> None:
+        self.assertEqual([ex.complete(t) for t in ("58 25 12 # # 47", "58 25 12 # # 47 # # 84 # 91 # #", "#", "",
+                                                   "# #", "1 2 # #", "5 # 8 6 # # #")],
+                         [False, True, True, False, False, False, True])
+        rng = random.Random(5)
+        for _ in range(200):
+            keys = rng.sample(range(100), rng.randint(0, 20))
+            line = ex.save(ex.balanced_from_sorted(sorted(keys)))
+            self.assertTrue(ex.complete(line))
+            self.assertFalse(ex.complete(line + " #"))
+            self.assertFalse(ex.complete(" ".join(line.split()[:-1])))
+
     def test_round_trips(self) -> None:
         rng = random.Random(1)
         for _ in range(500):

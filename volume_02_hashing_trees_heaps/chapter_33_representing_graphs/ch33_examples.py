@@ -31,6 +31,22 @@ def adjacency_list(vertices: list, edges: list) -> dict:
     return adj
 
 
+def compressed(vertices: list, edges: list) -> tuple[list[int], list]:
+    """Pack the adjacency lists into two arrays (Section 33.6): vertex i's neighbours are
+    targets[start[i]:start[i + 1]]. start has n + 1 entries; targets has one entry per list entry."""
+    adj = adjacency_list(vertices, edges)
+    start, targets = [0], []
+    for v in vertices:
+        targets.extend(adj[v])
+        start.append(len(targets))
+    return start, targets
+
+
+def compressed_neighbours(vertices: list, start: list[int], targets: list, v) -> list:
+    i = vertices.index(v)
+    return targets[start[i]:start[i + 1]]
+
+
 def weighted_adjacency(edges: list[tuple]) -> dict:
     """Directed, weighted: adj[a][b] = minutes from a to b."""
     adj: dict = {}

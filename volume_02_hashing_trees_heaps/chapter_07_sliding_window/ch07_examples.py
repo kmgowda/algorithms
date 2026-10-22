@@ -60,6 +60,31 @@ def longest_quiet(noise: list[int], limit: int) -> tuple[int, int]:
     return best
 
 
+def count_at_most(log: str, k: int) -> int:
+    """How many stretches hold at most k different readers (Section 7.7).
+
+    For each right edge, shrink until the window is legal; every start from left to right then gives a legal
+    stretch ending here, so the window adds right - left + 1."""
+    seen: dict[str, int] = {}
+    left = total = 0
+    for right, r in enumerate(log):
+        seen[r] = seen.get(r, 0) + 1
+        while len(seen) > k:
+            seen[log[left]] -= 1
+            if seen[log[left]] == 0:
+                del seen[log[left]]
+            left += 1
+        total += right - left + 1
+    return total
+
+
+def count_exactly(log: str, k: int) -> int:
+    """Stretches with exactly k different readers: at most k, minus at most k - 1 (Section 7.7)."""
+    if k <= 0:
+        return 0
+    return count_at_most(log, k) - count_at_most(log, k - 1)
+
+
 if __name__ == "__main__":
     print(window_totals(VISITS, 3), window_totals(VISITS, 4))
     print(shortest_stretch(VISITS, 15), shortest_stretch(VISITS, 20))

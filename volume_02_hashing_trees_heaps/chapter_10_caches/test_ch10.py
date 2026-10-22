@@ -55,5 +55,18 @@ class TestChapter39(unittest.TestCase):
         self.assertGreater(ex.count_hits(views, 500, "lru") / len(views), 0.5)
 
 
+class TestOptimal(unittest.TestCase):
+    def test_optimal(self) -> None:
+        req = list("ABCADBEA")
+        self.assertEqual((ex.count_hits(req, 3), ex.count_hits(req, 3, "fifo"), ex.optimal_hits(req, 3)), (1, 2, 3))
+        self.assertEqual((ex.optimal_hits([], 3), ex.optimal_hits(list("AAA"), 1), ex.optimal_hits(list("AB"), 0)),
+                         (0, 2, 0))
+        cyc = list("ABCD") * 3
+        self.assertEqual((ex.count_hits(cyc, 3), ex.optimal_hits(cyc, 3)), (0, 6))
+        for n in range(1, 6):
+            reqs = ex.popular_requests(300, items=20, seed=n)
+            self.assertGreaterEqual(ex.optimal_hits(reqs, 5), max(ex.count_hits(reqs, 5), ex.count_hits(reqs, 5, "fifo")))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -60,7 +60,36 @@ def best_walk(n) -> int:
     return n.value if not kids else n.value + max(best_walk(c) for c in kids)
 
 
+def min_depth(n) -> int:
+    """Fewest edges from the root down to a leaf (Section 15.4). A missing child is not a leaf, so a node with one
+    child must use the other side; min(left, right) + 1 would wrongly stop at the empty side."""
+    if n is None:
+        return -1
+    if n.left is None and n.right is None:
+        return 0
+    kids = [c for c in (n.left, n.right) if c is not None]
+    return 1 + min(min_depth(c) for c in kids)
+
+
+def lowest_common_ancestor(n, a, b):
+    """The deepest node with both a and b in its subtree (Section 15.5); None if either value is missing.
+    Each call reports how many of a and b its subtree holds; the first node to see both is the answer."""
+    found = None
+
+    def count(node) -> int:
+        nonlocal found
+        if node is None:
+            return 0
+        c = count(node.left) + count(node.right) + (node.value == a) + (node.value == b)
+        if c >= 2 and found is None:
+            found = node
+        return c
+    count(n)
+    return found
+
+
 if __name__ == "__main__":
     lib = library()
     print(size(lib), total(lib), height(lib), largest(lib), best_walk(lib))
+    print(min_depth(lib), lowest_common_ancestor(lib, 12, 18).value)
     print(same_tree(lib, mirror(mirror(lib))), symmetric(Node(1, Node(2, Node(3), Node(4)), Node(2, Node(4), Node(3)))))

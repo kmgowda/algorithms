@@ -41,6 +41,38 @@ class TestChapter58(unittest.TestCase):
         self.assertEqual(ex.ranks([72, 95, 41, 88, 60]), [0, 1, 0, 2, 1])
         self.assertEqual(ex.ranks([50, 20, 70, 30]), [0, 0, 2, 1])
 
+    def test_build_linear(self) -> None:
+        f, moves = ex.build_linear(ex.DAYS)
+        self.assertEqual((f.tree[1:], moves), ([3, 4, 4, 9, 5, 14, 2, 31],
+                                               [(1, 2), (2, 4), (3, 4), (4, 8), (5, 6), (6, 8), (7, 8)]))
+        rng = random.Random(3)
+        for n in (0, 1, 2, 7, 16, 33):
+            vals = [rng.randint(-9, 9) for _ in range(n)]
+            self.assertEqual(ex.build_linear(vals)[0].tree, ex.Fenwick(vals).tree)
+
+    def test_range_fenwick(self) -> None:
+        r = ex.RangeFenwick(8)
+        r.range_add(2, 5, 3)
+        r.range_add(4, 8, 2)
+        self.assertEqual([r.range_sum(i, i) for i in range(1, 9)], [0, 3, 3, 5, 5, 2, 2, 2])
+        self.assertEqual((r.range_sum(1, 8), r.range_sum(3, 6)), (22, 15))
+        one = ex.RangeFenwick(1)
+        one.range_add(1, 1, 4)
+        one.range_add(1, 0, 9)                        # an empty range changes nothing
+        self.assertEqual(one.range_sum(1, 1), 4)
+        rng = random.Random(4)
+        for n in (1, 2, 5, 8, 13, 40):
+            r, vals = ex.RangeFenwick(n), [0] * n
+            for _ in range(300):
+                a = rng.randint(1, n); b = rng.randint(a, n)
+                if rng.random() < 0.5:
+                    d = rng.randint(-5, 5)
+                    r.range_add(a, b, d)
+                    for i in range(a - 1, b):
+                        vals[i] += d
+                else:
+                    self.assertEqual(r.range_sum(a, b), sum(vals[a - 1:b]))
+
 
 if __name__ == "__main__":
     unittest.main()

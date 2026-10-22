@@ -24,7 +24,7 @@ def range_sum(p: list[int], a: int, b: int) -> int:
 
 
 def chairs_in_use(bookings: list[tuple[int, int, int]], hours: int) -> list[int]:
-    """Two marks per booking (a, b, chairs), then one running total (Figure 8.3)."""
+    """Two marks per booking (a, b, chairs), then one running total (Figure 8.4)."""
     d = [0] * (hours + 1)
     for a, b, c in bookings:
         d[a] += c
@@ -37,7 +37,7 @@ def chairs_in_use(bookings: list[tuple[int, int, int]], hours: int) -> list[int]
 
 
 def count_stretches_with_sum(values: list[int], k: int) -> int:
-    """How many stretches sum to exactly k: prefixes plus the complement pattern (Section 8.4)."""
+    """How many stretches sum to exactly k: prefixes plus the complement pattern (Section 8.4, Figure 8.3)."""
     seen, running, count = {0: 1}, 0, 0
     for v in values:
         running += v
@@ -47,8 +47,8 @@ def count_stretches_with_sum(values: list[int], k: int) -> int:
 
 
 def grid_prefix(g: list[list[int]]) -> list[list[int]]:
-    """P[r][c] = total of the rectangle above-left of (r, c) (Figure 8.4)."""
-    rows, cols = len(g), len(g[0])
+    """P[r][c] = total of the rectangle above-left of (r, c) (Figure 8.5). An empty grid gives [[0]]."""
+    rows, cols = len(g), len(g[0]) if g else 0
     p = [[0] * (cols + 1) for _ in range(rows + 1)]
     for r in range(rows):
         for c in range(cols):

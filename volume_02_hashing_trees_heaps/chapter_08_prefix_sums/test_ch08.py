@@ -49,5 +49,16 @@ class TestChapter37(unittest.TestCase):
         self.assertEqual((ex.block_sum(gp, 1, 1, 2, 2), ex.block_sum(gp, 0, 0, 1, 1)), (5, 4))
 
 
+class TestGridBuildAndCounting(unittest.TestCase):
+    def test_grid_build(self) -> None:
+        self.assertEqual(ex.grid_prefix([[1, 0, 2], [0, 3, 1], [2, 1, 0]]),
+                         [[0, 0, 0, 0], [0, 1, 1, 3], [0, 1, 4, 7], [0, 3, 7, 10]])
+        self.assertEqual((ex.grid_prefix([]), ex.grid_prefix([[]]), ex.grid_prefix([[5]])), ([[0]], [[0], [0]], [[0, 0], [0, 5]]))
+
+    def test_counting(self) -> None:
+        self.assertEqual(ex.count_stretches_with_sum([2, 3, -1, 1, 5], 5), 4)
+        self.assertEqual(ex.count_stretches_with_sum([1, -1, 1, -1], 0), 4)
+
+
 if __name__ == "__main__":
     unittest.main()

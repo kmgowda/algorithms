@@ -14,6 +14,22 @@ def values(n):
     return [] if n is None else [n.value] + values(n.left) + values(n.right)
 
 
+def search_tree(keys):
+    root = None
+    for k in keys:
+        if root is None:
+            root = ex.Node(k)
+            continue
+        n = root
+        while True:
+            side = "left" if k < n.value else "right"
+            if getattr(n, side) is None:
+                setattr(n, side, ex.Node(k))
+                break
+            n = getattr(n, side)
+    return root
+
+
 class TestChapter44(unittest.TestCase):
     def test_every_case(self) -> None:
         N, L = ex.Node, ex.library()
@@ -26,6 +42,17 @@ class TestChapter44(unittest.TestCase):
         self.assertEqual((ex.largest(N(-5, N(-9))), ex.best_walk(N(1, N(-10), N(-2)))), (-5, -1))
         with self.assertRaises(AttributeError):
             ex.best_walk(None)
+
+    def test_min_depth_and_lca(self) -> None:
+        N, L = ex.Node, ex.library()
+        self.assertEqual((ex.min_depth(None), ex.min_depth(N(7)), ex.min_depth(L)), (-1, 0, 2))
+        self.assertEqual(ex.min_depth(N(50, None, N(70, None, N(80)))), 2)    # the one-child trap
+        t = search_tree([50, 30, 70, 20, 40, 60, 80, 35])
+        lca = lambda a, b: (lambda n: n.value if n else None)(ex.lowest_common_ancestor(t, a, b))
+        self.assertEqual((lca(35, 20), lca(35, 60), lca(40, 35), lca(80, 80), lca(35, 99)), (30, 50, 40, 80, None))
+        self.assertEqual((lca(20, 40), lca(35, 80), lca(35, 30), ex.min_depth(t)), (30, 50, 30, 2))  # practice
+        self.assertIsNone(ex.lowest_common_ancestor(None, 1, 2))
+        self.assertEqual(ex.lowest_common_ancestor(L, 12, 18).value, 4)        # Algebra and Physics: Science
 
     def test_library(self) -> None:
         lib = ex.library()

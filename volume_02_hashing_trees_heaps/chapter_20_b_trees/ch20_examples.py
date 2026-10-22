@@ -21,13 +21,17 @@ class BNode:
 
 
 class BTree:
-    """A B-tree whose nodes hold at most max_keys keys (an odd number); full nodes split on the way down."""
+    """A B-tree whose nodes hold at most max_keys = 2t - 1 keys and, except the root, at least
+    min_keys = t - 1 keys (t is the minimum degree). Full nodes split on the way down (Figure 20.3);
+    deletion repairs underfull nodes on the way back up by borrowing or merging (Figures 20.7 and 20.8)."""
 
     def __init__(self, max_keys: int = 3, keys=()):
         assert max_keys % 2 == 1 and max_keys >= 3
         self.max_keys = max_keys
+        self.min_keys = max_keys // 2                     # t - 1, where t = (max_keys + 1) / 2
         self.root = BNode()
         self.splits = 0
+        self.borrows = self.merges = self.shrinks = 0
         for k in keys:
             self.insert(k)
 
@@ -69,6 +73,104 @@ class BTree:
             n = n.children[i]
         bisect.insort(n.keys, key)
 
+    def insert_bottom_up(self, key) -> None:
+        """The other way to insert (Figure 20.4): put the key into its leaf first, and split a node only
+        when it overflows to max_keys + 1 keys, pushing its middle key up; the parent may overflow in turn."""
+        if self.search(key)[0]:
+            return
+        up = self._insert_up(self.root, key)
+        if up is not None:                               # the root overflowed: a new root above it
+            self.root = BNode([up[0]], [self.root, up[1]])
+
+    def _insert_up(self, n: BNode, key):
+        i = bisect.bisect_left(n.keys, key)
+        if n.leaf:
+            n.keys.insert(i, key)
+        else:
+            up = self._insert_up(n.children[i], key)
+            if up is not None:
+                n.keys.insert(i, up[0])
+                n.children.insert(i + 1, up[1])
+        if len(n.keys) <= self.max_keys:
+            return None
+        m = len(n.keys) // 2                             # overflowing: split, and hand the middle key up
+        right = BNode(n.keys[m + 1:], n.children[m + 1:])
+        middle = n.keys[m]
+        n.keys, n.children = n.keys[:m], n.children[:m + 1]
+        self.splits += 1
+        return middle, right
+
+    def delete(self, key) -> bool:
+        """Remove key if present; returns whether it was there (Figures 20.7 and 20.8)."""
+        removed = self._delete(self.root, key)
+        if not self.root.keys and self.root.children:    # the root lost its last key: its one child is the root
+            self.root = self.root.children[0]
+            self.shrinks += 1
+        return removed
+
+    def _delete(self, n: BNode, key) -> bool:
+        i = bisect.bisect_left(n.keys, key)
+        here = i < len(n.keys) and n.keys[i] == key
+        if n.leaf:
+            if here:
+                n.keys.pop(i)
+            return here
+        if here:                                         # an inner key: swap in its predecessor, delete that
+            p = n.children[i]
+            while not p.leaf:
+                p = p.children[-1]
+            n.keys[i] = key = p.keys[-1]
+        removed = self._delete(n.children[i], key)
+        if len(n.children[i].keys) < self.min_keys:       # the child fell below the minimum: repair it
+            self._repair(n, i)
+        return removed
+
+    def _repair(self, parent: BNode, i: int) -> None:
+        """Give parent.children[i] back its minimum: borrow from a sibling with a spare key, else merge."""
+        child = parent.children[i]
+        left = parent.children[i - 1] if i > 0 else None
+        right = parent.children[i + 1] if i + 1 < len(parent.children) else None
+        if left is not None and len(left.keys) > self.min_keys:     # borrow through the parent, from the left
+            child.keys.insert(0, parent.keys[i - 1])
+            parent.keys[i - 1] = left.keys.pop()
+            if not left.leaf:
+                child.children.insert(0, left.children.pop())
+            self.borrows += 1
+        elif right is not None and len(right.keys) > self.min_keys:  # or from the right
+            child.keys.append(parent.keys[i])
+            parent.keys[i] = right.keys.pop(0)
+            if not right.leaf:
+                child.children.append(right.children.pop(0))
+            self.borrows += 1
+        else:                                            # no spare key nearby: merge with a sibling
+            j = i - 1 if left is not None else i
+            a, b = parent.children[j], parent.children[j + 1]
+            a.keys += [parent.keys.pop(j)] + b.keys      # the separator comes down between them
+            a.children += b.children
+            parent.children.pop(j + 1)
+            self.merges += 1
+
+    def valid(self) -> bool:
+        """Sorted keys, keys between their separators, min_keys..max_keys keys per non-root node,
+        one more child than keys in inner nodes, and every leaf at the same depth."""
+        depths = set()
+
+        def check(n, lo, hi, d, is_root):
+            if n.keys != sorted(n.keys) or len(set(n.keys)) != len(n.keys):
+                return False
+            if any((lo is not None and k <= lo) or (hi is not None and k >= hi) for k in n.keys):
+                return False
+            if len(n.keys) > self.max_keys or (not is_root and len(n.keys) < self.min_keys):
+                return False
+            if n.leaf:
+                depths.add(d)
+                return True
+            if len(n.children) != len(n.keys) + 1:
+                return False
+            bounds = [lo] + n.keys + [hi]
+            return all(check(c, bounds[k], bounds[k + 1], d + 1, False) for k, c in enumerate(n.children))
+        return check(self.root, None, None, 0, True) and len(depths) == 1
+
     def height(self) -> int:
         h, n = 0, self.root
         while not n.leaf:
@@ -104,11 +206,26 @@ class BTree:
         return len(depths) == 1
 
 
+def drawers_opened(records: int, per_drawer: int) -> tuple[int, int]:
+    """Section 20.9, a B+ tree: leaf drawers hold the records, inner drawers point to per_drawer drawers.
+    Returns (leaf drawers needed, drawers opened by one lookup = number of levels)."""
+    leaves = nodes = -(-records // per_drawer)
+    levels = 1
+    while nodes > 1:
+        nodes = -(-nodes // per_drawer)
+        levels += 1
+    return leaves, levels
+
+
 if __name__ == "__main__":
     t = BTree(3)
     for k in [58, 25, 84, 12, 47, 70, 91, 31, 63]:
         t.insert(k)
         print(k, t.levels())
     print(t.search(63), t.splits)
+    for k in [47, 12, 91, 58, 25, 84, 31]:               # the clearing-out of Section 20.8
+        t.delete(k)
+        print("delete", k, t.levels(), t.borrows, t.merges, t.shrinks)
+    print([drawers_opened(2_000_000, f) for f in (250, 167, 125)])
     big = BTree(199, range(1_000_000))
     print(big.height(), big.search(765_432), math.log2(1_000_000))

@@ -43,6 +43,66 @@ class TestChapter56(unittest.TestCase):
             self.assertEqual(uf.same(a, b), same)
             self.assertEqual(uf.groups, len(groups))
 
+    def test_progression(self) -> None:
+        q = ex.QuickFind("ABCDEF")
+        writes = []
+        for a, b in zip("ABCDE", "BCDEF"):
+            q.union(a, b)
+            writes.append(q.writes)
+        self.assertEqual(writes, [1, 3, 6, 10, 15])
+        self.assertEqual((q.union("A", "F"), q.find("A")), (False, "F"))
+        self.assertEqual((ex.QuickFind([]).writes, ex.QuickFind([1]).union(1, 1)), (0, False))
+        qu = ex.NaiveUnionFind("ABCDEF")
+        for a, b in zip("ABCDE", "BCDEF"):
+            qu.union(a, b)
+        self.assertEqual(qu.find("A"), ("F", 5))
+        line = ex.QuickFind(range(10_000))
+        for i in range(9_999):
+            line.union(i, i + 1)
+        self.assertEqual(line.writes, 49_995_000)
+
+    def test_rank_and_halving(self) -> None:
+        r = ex.UnionByRank("A")
+        self.assertEqual((r.find("A"), r.union("A", "A"), r.rank["A"]), ("A", False, 0))
+        r = ex.UnionByRank("ABCDEFGH")
+        for a, b in [("A", "B"), ("C", "D"), ("A", "C"), ("E", "F"), ("G", "H"), ("E", "G"), ("A", "E")]:
+            self.assertTrue(r.union(a, b))
+        self.assertEqual((r.rank["A"], r.parent), (3, {"A": "A", "B": "A", "C": "A", "D": "C", "E": "A", "F": "E",
+                                                         "G": "E", "H": "G"}))
+        self.assertEqual((r.union("H", "B"), r.union("B", "H")), (False, False))
+        h = ex.UnionByRank("ABCDE")
+        h.parent = {"A": "A", "B": "A", "C": "B", "D": "C", "E": "D"}
+        self.assertEqual(h.find("E"), "A")
+        self.assertEqual(h.parent, {"A": "A", "B": "A", "C": "A", "D": "C", "E": "C"})
+        h = ex.UnionByRank("ABCDEFG")
+        h.parent = {"A": "A", "B": "A", "C": "B", "D": "C", "E": "D", "F": "E", "G": "F"}
+        h.find("G")
+        self.assertEqual((h.parent["G"], h.parent["E"], h.parent["C"], h.parent["F"], h.parent["D"]),
+                         ("E", "C", "A", "E", "C"))
+        self.assertEqual(ex.min_members_by_rank(4), [1, 2, 4, 8, 16])
+        rng = random.Random(1)
+        big = ex.UnionByRank(range(100_000))
+        for _ in range(200_000):
+            big.union(rng.randrange(100_000), rng.randrange(100_000))
+        self.assertEqual(max(big.rank.values()), 7)
+        sizes = {}
+        for x in range(100_000):
+            root = big.find(x)
+            sizes[root] = sizes.get(root, 0) + 1
+        for root, size in sizes.items():
+            self.assertGreaterEqual(size, 2 ** big.rank[root])          # the rank lemma
+        rng = random.Random(3)
+        uf, br = ex.UnionFind(range(50)), ex.UnionByRank(range(50))
+        for _ in range(200):
+            a, b = rng.randrange(50), rng.randrange(50)
+            self.assertEqual(uf.union(a, b), br.union(a, b))
+            self.assertEqual(uf.same(a, b), br.find(a) == br.find(b))
+
+    def test_alpha(self) -> None:
+        self.assertEqual([ex.ackermann_level(k, 1, 10 ** 100) for k in range(4)], [2, 3, 7, 2047])
+        self.assertEqual([ex.inverse_ackermann(m) for m in (1, 2, 3, 4, 7, 8, 2047, 2048, 10 ** 9, 10 ** 80)],
+                         [0, 0, 1, 2, 2, 3, 3, 4, 4, 4])
+
     def test_examples(self) -> None:
         uf = ex.UnionFind("ABCDEF")
         for a, b in [("A", "B"), ("C", "D"), ("B", "D"), ("E", "F")]:

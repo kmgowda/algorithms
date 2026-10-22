@@ -43,6 +43,21 @@ def level_order(root) -> list:
     return out
 
 
+def levels(root) -> list[list]:
+    """Level by level (Section 14.6): the queue's length at the start of a round is the size of one level."""
+    out, q = [], deque([root] if root else [])
+    while q:
+        row = []
+        for _ in range(len(q)):
+            n = q.popleft()
+            row.append(n.value)
+            for c in (n.left, n.right):
+                if c:
+                    q.append(c)
+        out.append(row)
+    return out
+
+
 def inorder_iterative(root) -> list:
     """Inorder with an explicit stack: safe for very deep trees."""
     out, stack, n = [], [], root
@@ -70,5 +85,6 @@ def folder_totals(own: dict[str, int], children: dict[str, list[str]], root: str
 if __name__ == "__main__":
     t = from_array([58, 25, 84, 12, 47, 70, 91])
     print(preorder(t), inorder(t), postorder(t), level_order(t), inorder_iterative(t))
+    print(levels(t))
     print(folder_totals({"Home": 1, "Docs": 3, "Photos": 10, "Old": 2},
                         {"Home": ["Docs", "Photos"], "Docs": ["Old"]}, "Home"))

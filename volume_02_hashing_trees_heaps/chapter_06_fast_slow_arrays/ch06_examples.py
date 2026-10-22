@@ -21,6 +21,20 @@ def find_duplicate(a: list[int]) -> int:
     return slow
 
 
+def cycle_entrance(a: list[int], start: int = 0) -> int:
+    """Floyd's two phases from any start position, as in the pseudocode of Section 6.5.
+
+    From position 0 (which no value names) the answer is the repeated value; from a start on the loop
+    the walkers simply meet at the start again (Practice Problem 6.4)."""
+    slow, fast = a[start], a[a[start]]
+    while slow != fast:
+        slow, fast = a[slow], a[a[fast]]
+    slow = start
+    while slow != fast:
+        slow, fast = a[slow], a[fast]
+    return slow
+
+
 def digit_square_sum(n: int) -> int:
     return sum(int(d) ** 2 for d in str(n))
 

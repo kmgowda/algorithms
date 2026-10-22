@@ -71,6 +71,37 @@ class SkipList:
         for lane in range(lvl):
             node.next[lane], update[lane].next[lane] = update[lane].next[lane], node
 
+    def delete(self, key) -> list:
+        """Remove key if present: find the last node before it on every lane (the update array), unlink the
+        node on each lane it belongs to, and drop empty top lanes (Section 31.6). Returns the update array
+        as (lane, key before) pairs, top lane first; [] if the key is absent."""
+        update, x = [self.head] * MAX_LEVEL, self.head
+        for lane in range(self.level - 1, -1, -1):
+            while x.next[lane] is not None and x.next[lane].key < key:
+                x = x.next[lane]
+            update[lane] = x
+        target = x.next[0]
+        if target is None or target.key != key:
+            return []
+        before = [(lane, update[lane].key) for lane in range(self.level - 1, -1, -1)]
+        for lane in range(len(target.next)):
+            update[lane].next[lane] = target.next[lane]          # skip over the deleted node
+        while self.level > 1 and self.head.next[self.level - 1] is None:
+            self.level -= 1                                      # the top lane is empty: lower the head
+        return before
+
+    def range_keys(self, lo, hi) -> list:
+        """Every key in lo..hi: search for lo, then walk lane 0 until passing hi (Section 31.9)."""
+        x = self.head
+        for lane in range(self.level - 1, -1, -1):
+            while x.next[lane] is not None and x.next[lane].key < lo:
+                x = x.next[lane]
+        out, x = [], x.next[0]
+        while x is not None and x.key <= hi:
+            out.append(x.key)
+            x = x.next[0]
+        return out
+
     def lanes(self) -> list[list]:
         out = []
         for lane in range(self.level):
@@ -90,6 +121,7 @@ if __name__ == "__main__":
     for lane in reversed(s.lanes()):
         print(lane)
     print(s.search_path(70), s.steps)
+    print(s.delete(58), [lane for lane in reversed(s.lanes())])
     big = SkipList(seed=3)
     keys = random.Random(2).sample(range(10 ** 7), 100_000)
     for k in keys:
