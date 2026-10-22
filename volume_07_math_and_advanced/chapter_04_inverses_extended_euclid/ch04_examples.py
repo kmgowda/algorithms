@@ -17,7 +17,7 @@ def extended_gcd(a: int, b: int, log: list | None = None) -> tuple[int, int, int
 
 
 def inverse(a: int, m: int) -> int | None:
-    """The number x with a*x mod m = 1, or None when gcd(a, m) is not 1 (Figure 4.3)."""
+    """The number x with a*x mod m = 1, or None when gcd(a, m) is not 1 (Section 4.6)."""
     if m <= 0:
         raise ValueError("the modulus must be positive")
     g, x, _ = extended_gcd(a % m, m)

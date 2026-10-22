@@ -10,7 +10,7 @@ import random
 
 
 def quickselect(values: list, k: int, rng, pivot: str = "random") -> tuple:
-    """The k-th smallest (k from 0), counting comparisons. pivot = 'first' or 'random' (Figure 18.2)."""
+    """The k-th smallest (k from 0), counting comparisons. pivot = 'first' or 'random' (Figure 18.1)."""
     if not 0 <= k < len(values):
         raise ValueError("k must be at least 0 and below the number of values")
     a, comparisons = list(values), 0
@@ -33,7 +33,7 @@ def matmul(A, B):
 
 
 def freivalds(A, B, C, rounds: int, rng) -> bool:
-    """Monte Carlo check of A x B = C (Figure 18.3): multiply by a random 0/1 vector instead of multiplying matrices.
+    """Monte Carlo check of A x B = C (Section 18.6): multiply by a random 0/1 vector instead of multiplying matrices.
     A 'no' is certain; a 'yes' is wrong with probability at most 1/2 per round."""
     n = len(A)
     for _ in range(rounds):
@@ -98,7 +98,7 @@ def trials_until_success(p: float, runs: int, seed: int) -> float:
 # ---------------------------------------------------------------- Karger's minimum cut
 
 def karger_once(vertices: list, edges: list, rng) -> tuple[int, set]:
-    """One run of Karger's contraction (Figure 18.6): pick random edges and merge their ends, skipping edges inside
+    """One run of Karger's contraction (Figure 18.3): pick random edges and merge their ends, skipping edges inside
     a merged group, until two groups remain. Returns (edges crossing the two groups, one group)."""
     parent = {v: v for v in vertices}
 
@@ -149,7 +149,7 @@ ROADS = [("Library", "School"), ("Library", "Park"), ("School", "Market"), ("Par
          ("Museum", "Harbour"), ("Station", "Museum")]
 
 
-# Two reading rooms, each a group of four desks all wired to each other, joined by two cables (Figure 18.6).
+# Two reading rooms, each a group of four desks all wired to each other, joined by two cables (Figure 18.3).
 ROOMS = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"]
 CABLES = [(a, b) for g in ("A", "B") for i, a in enumerate([f"{g}{k}" for k in range(1, 5)]) for b in [f"{g}{k}" for k in range(i + 2, 5)]] \
     + [("A1", "B1"), ("A4", "B4")]

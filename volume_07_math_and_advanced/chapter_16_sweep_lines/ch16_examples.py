@@ -24,7 +24,7 @@ def max_overlap(intervals: list) -> tuple[int, int]:
 
 
 def union_area(rects: list) -> int:
-    """Area covered by rectangles: sweep left to right; between events, covered height x width (Figure 16.2)."""
+    """Area covered by rectangles: sweep left to right; between events, covered height x width (Figure 16.1)."""
     xs = sorted({x for r in rects for x in (r[0], r[2])})
     total = 0
     for a, b in zip(xs, xs[1:]):
@@ -47,7 +47,7 @@ def union_area_by_cells(rects: list) -> int:
 
 def closest_by_sweep(points: list) -> tuple[float, int]:
     """The x-strip shortcut: compare only points within the best distance so far behind the line. Fast on spread-out
-    points, but O(n^2) when many points share nearly the same x (Figure 16.4). Returns (distance squared, comparisons)."""
+    points, but O(n^2) when many points share nearly the same x (Figure 16.3). Returns (distance squared, comparisons)."""
     pts = sorted(points)
     best, comps, start = float("inf"), 0, 0
     for i, p in enumerate(pts):
@@ -60,7 +60,7 @@ def closest_by_sweep(points: list) -> tuple[float, int]:
 
 
 def closest_pair_sweep(points: list) -> tuple[float, int]:
-    """Closest pair by a sweep with a y-ordered status (Figure 16.4): keep the points within d (the best distance so
+    """Closest pair by a sweep with a y-ordered status (Figure 16.3): keep the points within d (the best distance so
     far) behind the line, ordered by y, and compare the new point only with those within d above or below it.
     O(n log n) with a balanced tree; the companion uses a sorted list. Returns (distance squared, comparisons)."""
     import bisect
@@ -90,7 +90,7 @@ def closest_brute(points: list) -> float:
 
 
 def strip_heights(rects: list) -> list:
-    """For each strip between neighbouring events: (left x, right x, covered height) (Figure 16.2)."""
+    """For each strip between neighbouring events: (left x, right x, covered height) (Figure 16.1)."""
     xs = sorted({x for r in rects for x in (r[0], r[2])})
     out = []
     for a, b in zip(xs, xs[1:]):

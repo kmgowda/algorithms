@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 25 - Exact Algorithms for Hard Problems: smarter exponential searches.
+"""Volume 7, Chapter 28 - Exact Algorithms for Hard Problems: smarter exponential searches.
 
-Run:  python3 ch25_examples.py
+Run:  python3 ch28_examples.py
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ ROADS = [("Library", "School"), ("Library", "Park"), ("School", "Market"), ("Par
 
 
 def cover_branching(edges: list, k: int, calls: list) -> list | None:
-    """Vertex cover of size at most k (Figure 25.2): any uncovered road needs one of its two ends, so try each.
+    """Vertex cover of size at most k (Figure 28.2): any uncovered road needs one of its two ends, so try each.
     At most 2^k branches, however many places there are."""
     calls[0] += 1
     if not edges:
@@ -42,7 +42,7 @@ def cover_brute(vertices: list, edges: list, k: int) -> tuple[list | None, int]:
 
 
 def subset_sum_mitm(values: list, target: int) -> tuple[bool, int]:
-    """Meet in the middle (Figure 25.3): all sums of each half (2^(n/2) each), sort one, look up the other.
+    """Meet in the middle (Figure 28.3): all sums of each half (2^(n/2) each), sort one, look up the other.
     Returns (found?, sums listed)."""
     half = len(values) // 2
     left, right = values[:half], values[half:]
@@ -70,7 +70,7 @@ def subset_sum_mitm_trace(values: list, target: int) -> tuple[list, list, tuple 
 # ---------------------------------------------------------------- kernelisation (Buss)
 
 def buss_kernel(edges: list, k: int) -> tuple[list | None, list, int]:
-    """Shrink a vertex-cover instance (Figure 25.3): a place with more than k roads must be in any cover of size k
+    """Shrink a vertex-cover instance (Figure 28.3): a place with more than k roads must be in any cover of size k
     (otherwise all its more-than-k neighbours would be needed); take it, delete its roads, lower k. Afterwards, if
     more than k^2 roads remain, no cover of size k exists. Returns (remaining roads or None if impossible,
     forced places, remaining k)."""
@@ -132,7 +132,7 @@ def cover_branching_better(edges: list, k: int, calls: list) -> list | None:
 # ---------------------------------------------------------------- branch and bound for knapsack
 
 def knapsack_branch_and_bound(values: list, weights: list, cap: int) -> tuple[int, list, int]:
-    """Best-first is the textbook choice; this is depth-first branch and bound (Figure 25.4): decide each book in or
+    """Best-first is the textbook choice; this is depth-first branch and bound (Figure 28.4): decide each book in or
     out, in order of value per width, and abandon a branch when even the fractional (greedy) bound cannot beat the
     best answer found so far. Returns (best value, chosen indices, nodes explored)."""
     order = sorted(range(len(values)), key=lambda i: -values[i] / weights[i])
@@ -169,7 +169,7 @@ SHELF_WEIGHTS = [3, 6, 5, 2, 8, 6, 2, 7, 4, 3]
 # ---------------------------------------------------------------- DPLL satisfiability
 
 def dpll(clauses: list, assignment: dict | None = None, stats: dict | None = None) -> dict | None:
-    """Davis-Putnam-Logemann-Loveland (Figure 25.5): simplify by unit clauses (a clause with one literal left forces
+    """Davis-Putnam-Logemann-Loveland (Figure 28.5): simplify by unit clauses (a clause with one literal left forces
     it) and pure literals (a variable appearing with one sign only can be set that way), then branch on a variable,
     backtracking on a contradiction. Clauses are lists of +v / -v."""
     assignment = dict(assignment or {})

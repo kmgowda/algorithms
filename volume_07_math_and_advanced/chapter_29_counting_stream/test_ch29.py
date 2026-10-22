@@ -2,7 +2,7 @@ import random
 import unittest
 from collections import Counter
 
-import ch26_examples as ex
+import ch29_examples as ex
 
 
 class TestChapter26(unittest.TestCase):

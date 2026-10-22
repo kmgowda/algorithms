@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 23 - Approximation Algorithms: fast answers with a proven bound on how far from best they can be.
+"""Volume 7, Chapter 26 - Approximation Algorithms: fast answers with a proven bound on how far from best they can be.
 
-Run:  python3 ch23_examples.py
+Run:  python3 ch26_examples.py
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ ROADS = [("Library", "School"), ("Library", "Park"), ("School", "Market"), ("Par
 
 
 def cover_by_matching(edges: list) -> list:
-    """2-approximation for vertex cover (Figure 23.2): take both ends of any road not yet covered."""
+    """2-approximation for vertex cover (Figure 26.1): take both ends of any road not yet covered."""
     cover = []
     for a, b in edges:
         if a not in cover and b not in cover:
@@ -31,7 +31,7 @@ def smallest_cover(vertices: list, edges: list) -> list:
 
 
 def first_fit_decreasing(sizes: list, capacity: int) -> list:
-    """Bin packing: largest box first, into the first bin with room (Figure 23.3). Uses at most about 11/9 of the best."""
+    """Bin packing: largest box first, into the first bin with room (Figure 26.3). Uses at most about 11/9 of the best."""
     bins = []
     for s in sorted(sizes, reverse=True):
         if s > capacity:
@@ -104,7 +104,7 @@ def mst(vertices: list, d: dict) -> tuple[list, float]:
 
 
 def tree_doubling_tour(vertices: list, d: dict) -> tuple[list, float, float]:
-    """2-approximation (Figure 23.4): walk round the MST (each edge twice), skipping places already visited.
+    """2-approximation (Figure 26.5): walk round the MST (each edge twice), skipping places already visited.
     Returns (tour, its length, the MST weight)."""
     edges, w = mst(vertices, d)
     adj = {v: [] for v in vertices}
@@ -178,7 +178,7 @@ def no_triangle_instance(vertices: list, roads: list, ratio: float) -> dict:
 # ---------------------------------------------------------------- greedy set cover
 
 def greedy_set_cover(universe: set, sets: dict) -> list:
-    """Repeatedly pick the set covering the most still-uncovered items (Figure 23.5). Within H(n) ~ ln n of the best."""
+    """Repeatedly pick the set covering the most still-uncovered items (Figure 26.6). Within H(n) ~ ln n of the best."""
     uncovered, chosen = set(universe), []
     while uncovered:
         name = max(sorted(sets), key=lambda s: len(sets[s] & uncovered))

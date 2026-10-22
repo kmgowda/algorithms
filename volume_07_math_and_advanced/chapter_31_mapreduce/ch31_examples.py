@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 28 - MapReduce: split the data, map each piece, group by key, reduce each group.
+"""Volume 7, Chapter 31 - MapReduce: split the data, map each piece, group by key, reduce each group.
 
-Run:  python3 ch28_examples.py
+Run:  python3 ch31_examples.py
 """
 
 from __future__ import annotations
@@ -11,8 +11,7 @@ NEWSLETTERS = ["the club reads maps", "the club meets on monday", "maps and poem
 
 
 def map_reduce(records: list, mapper, reducer, machines: int = 3) -> dict:
-    """Simulated MapReduce (Figure 28.1): records are split among machines, each maps its share to (key, value) pairs,
-    the pairs are grouped by key (the shuffle), and each group is reduced."""
+    """Simulated MapReduce (Figure 31.1): split, map, group by key (the shuffle), reduce."""
     if machines < 1:
         raise ValueError("at least one machine is needed")
     shares = [records[i::machines] for i in range(machines)]
@@ -28,8 +27,8 @@ def word_count(records: list, machines: int = 3) -> dict:
 
 
 def inverted_index(records: list) -> dict:
-    """Which newsletters mention each word."""
-    return map_reduce(list(enumerate(records)), lambda r: [(w, r[0]) for w in set(r[1].split())], lambda k, vs: sorted(vs))
+    """Which newsletters mention each word (numbered from 1)."""
+    return map_reduce(list(enumerate(records, 1)), lambda r: [(w, r[0]) for w in set(r[1].split())], lambda k, vs: sorted(vs))
 
 
 LOANS = [("North", 2), ("North", 3), ("North", 2), ("North", 1), ("North", 2), ("East", 14)]   # (branch, books per visit)
@@ -44,7 +43,7 @@ def per_machine(records: list) -> list:
 
 
 def average_wrong(records: list) -> float:
-    """Averaging the machines' averages: wrong when machines hold different amounts (Figure 28.3)."""
+    """Averaging the machines' averages: wrong when machines hold different amounts (Figure 31.2)."""
     avgs = [sum(s) / len(s) for s in per_machine(records)]
     return sum(avgs) / len(avgs)
 
@@ -56,7 +55,7 @@ def average_right(records: list) -> float:
 
 
 def map_reduce_counted(records: list, mapper, reducer, machines: int = 3, combiner=None) -> tuple[dict, int]:
-    """The same simulation, also counting the pairs sent through the shuffle (the network cost, Figure 28.4).
+    """The same simulation, also counting the pairs sent through the shuffle (the network cost, Figure 31.3).
     A combiner reduces each machine's pairs for the same key before they are sent."""
     if machines < 1:
         raise ValueError("at least one machine is needed")
@@ -81,7 +80,7 @@ VISITS = [("North", 2), ("North", 3), ("East", 14), ("North", 1), ("East", 4)]
 
 
 def join(branches: list, visits: list) -> dict:
-    """A reduce-side join (Figure 28.5): tag every record with its table, key it by branch, and let each reducer
+    """A reduce-side join (Figure 31.4): tag every record with its table, key it by branch, and let each reducer
     pair the branch's address with its visits."""
     records = [("B", b) for b in branches] + [("V", v) for v in visits]
 

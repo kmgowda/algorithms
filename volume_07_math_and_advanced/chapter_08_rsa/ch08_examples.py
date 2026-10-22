@@ -9,7 +9,7 @@ import math
 
 
 def make_keys(p: int, q: int, e: int = 17) -> tuple[tuple, tuple]:
-    """Public key (n, e) and private key (n, d) from two primes (Figure 8.2)."""
+    """Public key (n, e) and private key (n, d) from two primes (Section 8.4)."""
     n, phi = p * q, (p - 1) * (q - 1)
     if math.gcd(e, phi) != 1:
         raise ValueError("e must share no factor with (p - 1)(q - 1)")

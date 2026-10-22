@@ -18,7 +18,6 @@ def crt(remainders: list, moduli: list) -> tuple[int | None, int]:
         g = math.gcd(m, n)
         if (r - x) % g:
             return None, m * n // g
-        # step from x by multiples of m until x mod n = r
         k = ((r - x) // g) * pow(m // g, -1, n // g) % (n // g)
         x += m * k
         m = m * n // g

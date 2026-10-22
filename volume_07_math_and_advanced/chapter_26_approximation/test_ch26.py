@@ -2,10 +2,10 @@ import itertools
 import random
 import unittest
 
-import ch23_examples as ex
+import ch26_examples as ex
 
 
-class TestChapter23(unittest.TestCase):
+class TestChapter26(unittest.TestCase):
     def test_examples(self) -> None:
         c = ex.cover_by_matching(ex.ROADS)
         self.assertEqual((len(c), len(ex.smallest_cover(ex.TOWN, ex.ROADS))), (8, 4))

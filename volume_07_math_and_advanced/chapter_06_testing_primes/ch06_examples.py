@@ -12,7 +12,7 @@ EXACT_BELOW = 318_665_857_834_031_151_167_461                # Sorenson and Webs
 
 
 def fermat(n: int, a: int) -> bool:
-    """Passes if a^(n-1) mod n = 1, as every prime does (Figure 6.2)."""
+    """Passes if a^(n-1) mod n = 1, as every prime does (Figure 6.1)."""
     return pow(a, n - 1, n) == 1
 
 

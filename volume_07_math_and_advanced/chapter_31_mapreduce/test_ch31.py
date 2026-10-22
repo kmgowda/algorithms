@@ -2,7 +2,7 @@ import random
 import unittest
 from collections import Counter
 
-import ch28_examples as ex
+import ch31_examples as ex
 
 
 class TestChapter28(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestChapter28(unittest.TestCase):
         wc = ex.word_count(ex.NEWSLETTERS)
         self.assertEqual((wc["the"], wc["monday"], len(wc)), (4, 2, 13))
         idx = ex.inverted_index(ex.NEWSLETTERS)
-        self.assertEqual((idx["monday"], idx["maps"], idx["the"]), ([1, 3], [0, 2], [0, 1, 2, 3]))
+        self.assertEqual((idx["monday"], idx["maps"], idx["the"]), ([2, 4], [1, 3], [1, 2, 3, 4]))
         self.assertEqual((ex.average_wrong(ex.LOANS), ex.average_right(ex.LOANS)), (8.0, 4.0))
 
     def test_every_case(self) -> None:

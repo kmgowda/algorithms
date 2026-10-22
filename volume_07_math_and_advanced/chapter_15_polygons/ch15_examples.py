@@ -54,7 +54,7 @@ def inside_exact(p, poly: list) -> str:
 
 
 def winding_number(p, poly: list) -> int:
-    """How many times the boundary winds anticlockwise round p (Figure 15.5): +1 for each upward edge passing to the
+    """How many times the boundary winds anticlockwise round p (Figure 15.4): +1 for each upward edge passing to the
     right of p, -1 for each downward one. 0 means outside; for simple polygons it is +1 or -1 inside."""
     w, n = 0, len(poly)
     for i in range(n):

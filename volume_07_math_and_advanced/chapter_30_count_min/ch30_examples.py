@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 27 - Sketches: Count-Min, a small table that never undercounts.
+"""Volume 7, Chapter 30 - Sketches: Count-Min, a small table that never undercounts.
 
-Run:  python3 ch27_examples.py
+Run:  python3 ch30_examples.py
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from collections import Counter
 
 
 class CountMin:
-    """depth rows of width counters; each item adds 1 to one counter per row; estimate = smallest of its counters (Figure 27.1)."""
+    """depth rows of width counters; each item adds 1 to one counter per row; estimate = smallest of its counters (Figure 30.1)."""
 
     def __init__(self, width: int, depth: int):
         if width < 1 or depth < 1:
@@ -34,7 +34,7 @@ class CountMin:
 
 def sized_for(eps: float, delta: float) -> tuple[int, int]:
     """Width e/eps and depth ln(1/delta), rounded up: then each estimate is at most true + eps x N with
-    probability at least 1 - delta (Figure 27.3)."""
+    probability at least 1 - delta (Figure 30.3)."""
     import math
     return math.ceil(math.e / eps), math.ceil(math.log(1 / delta))
 
@@ -67,7 +67,7 @@ class CountMinConservative(CountMin):
 
 
 class CountSketch:
-    """Charikar, Chen and Farach-Colton's Count sketch (Figure 27.4): each row also gives the item a random sign +1 or
+    """Charikar, Chen and Farach-Colton's Count sketch (Figure 30.4): each row also gives the item a random sign +1 or
     -1; add the sign to the item's counter, and estimate by the median over rows of sign x counter. Unbiased, and it
     allows removals (negative counts)."""
 
@@ -119,7 +119,7 @@ TINY = ["dragons", "maps", "dragons", "poems", "dragons", "maps", "atlas"]
 
 
 def tiny_grid() -> tuple[list, dict]:
-    """A 3 x 8 sketch of seven searches, for drawing (Figure 27.2): (rows, each word's columns)."""
+    """A 3 x 8 sketch of seven searches, for drawing (Figure 30.2): (rows, each word's columns)."""
     cm = CountMin(8, 3)
     for w in TINY:
         cm.add(w)

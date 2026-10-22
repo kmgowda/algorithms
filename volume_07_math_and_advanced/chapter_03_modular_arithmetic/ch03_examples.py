@@ -44,7 +44,7 @@ def last_digit_table(base: int, n: int = 8) -> list:
 
 
 def power_mod_trace(base: int, exp: int, mod: int) -> list:
-    """Square-and-multiply with its trace (Figure 3.4): rows (bit, square before the step, result after the step)."""
+    """Square-and-multiply with its trace (Figure 3.3): rows (bit, square before the step, result after the step)."""
     rows, result, square = [], 1 % mod, base % mod
     while exp:
         bit = exp & 1
@@ -58,7 +58,7 @@ def power_mod_trace(base: int, exp: int, mod: int) -> list:
 
 
 def residue_row(a: int, p: int) -> list:
-    """a x 1, a x 2, ..., a x (p - 1) mod p: for a prime p not dividing a, a rearrangement of 1..p-1 (Figure 3.3)."""
+    """a x 1, a x 2, ..., a x (p - 1) mod p: for a prime p not dividing a, a rearrangement of 1..p-1 (Figure 3.4)."""
     return [a * k % p for k in range(1, p)]
 
 

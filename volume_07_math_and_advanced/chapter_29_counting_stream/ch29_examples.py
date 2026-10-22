@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 26 - Counting in a Stream: majority, frequent items, and distinct counts in tiny memory.
+"""Volume 7, Chapter 29 - Counting in a Stream: majority, frequent items, and distinct counts in tiny memory.
 
-Run:  python3 ch26_examples.py
+Run:  python3 ch29_examples.py
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from collections import Counter
 
 
 def majority(stream) -> object | None:
-    """Boyer-Moore vote (Figure 26.1): one candidate and one counter. Returns the majority item, or None if none exists
+    """Boyer-Moore vote (Figure 29.1): one candidate and one counter. Returns the majority item, or None if none exists
     (a second pass confirms)."""
     items = list(stream)
     cand, count = None, 0
@@ -24,7 +24,7 @@ def majority(stream) -> object | None:
 
 
 def misra_gries(stream, k: int) -> dict:
-    """Keep at most k - 1 counters (Figure 26.2); every item seen more than n/k times survives."""
+    """Keep at most k - 1 counters (Figure 29.2); every item seen more than n/k times survives."""
     counters = {}
     for x in stream:
         if x in counters:
@@ -44,7 +44,7 @@ def h01(x) -> float:
 
 
 def distinct_estimate(stream, k: int = 64) -> float:
-    """K minimum values (Figure 26.3): keep the k smallest hash values; if the k-th smallest is v, about (k - 1)/v distinct."""
+    """K minimum values (Figure 29.3): keep the k smallest hash values; if the k-th smallest is v, about (k - 1)/v distinct."""
     smallest = set()
     for x in stream:
         h = h01(x)
@@ -71,7 +71,7 @@ def majority_trace(stream) -> list:
 
 
 def space_saving(stream, k: int) -> dict:
-    """Metwally, Agrawal and El Abbadi's Space-Saving (Figure 26.3): k counters; a new item takes over the smallest
+    """Metwally, Agrawal and El Abbadi's Space-Saving (Figure 29.3): k counters; a new item takes over the smallest
     counter and adds 1 to it. Every count is an overestimate by at most n/k, and every item above n/k is kept."""
     counters = {}
     for x in stream:
@@ -94,7 +94,7 @@ def trailing_zeros(v: int, bits: int = 64) -> int:
 
 
 def flajolet_martin(stream, copies: int = 64) -> float:
-    """Flajolet and Martin (1985), Figure 26.5: for each hash value note its number of trailing zero bits r and mark
+    """Flajolet and Martin (1985), Figure 29.5: for each hash value note its number of trailing zero bits r and mark
     bit r of a bitmap. A run of r zeros turns up about once in every 2^(r+1) distinct items, so the bitmap fills
     from the bottom; R = the position of its first unmarked bit is about log2(0.77351 n). Average R over many
     independent hashes: estimate 2^(average R) / 0.77351."""
@@ -107,7 +107,7 @@ def flajolet_martin(stream, copies: int = 64) -> float:
 
 
 def hyperloglog(stream, b: int = 10) -> float:
-    """HyperLogLog (Flajolet, Fusy, Gandouet and Meunier, 2007), Figure 26.6: the first b bits of a 64-bit hash choose
+    """HyperLogLog (Flajolet, Fusy, Gandouet and Meunier, 2007), Figure 29.6: the first b bits of a 64-bit hash choose
     one of m = 2^b registers; the register keeps the largest "rank" (position of the first 1 bit) of the remaining
     bits. Estimate alpha_m m^2 / sum of 2^(-register), with the small-range correction m ln(m / empty registers)."""
     import math

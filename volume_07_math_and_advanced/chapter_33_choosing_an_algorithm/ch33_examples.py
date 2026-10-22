@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 30 - The Road Ahead: Choosing an Algorithm (the series in one decision guide).
+"""Volume 7, Chapter 33 - The Road Ahead: Choosing an Algorithm (the series in one decision guide).
 
-Run:  python3 ch30_examples.py
+Run:  python3 ch33_examples.py
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ GROWTH = {"n": lambda n: n, "n log n": lambda n: n * math.log2(max(n, 2)), "n^2"
 
 
 def largest_input(rate: str, budget: int) -> int:
-    """The largest n whose cost fits the budget of steps (Figure 30.1), by doubling then binary search."""
+    """The largest n whose cost fits the budget of steps (Figure 33.1), by doubling then binary search."""
     f = GROWTH[rate]
     if f(1) > budget:
         return 0
@@ -36,8 +36,8 @@ def fastest_fitting(n: int, budget: int) -> list:
 RULES = [  # (question, answer, where in the series)
     ("data changes and you search it often", "a hash table or balanced tree", "Volumes 2 and 3"),
     ("range totals or minimums over an array", "prefix sums, Fenwick or segment trees, sparse tables", "Volume 3, Part II"),
-    ("you need the order of the data", "sort it", "Volume 4, Part I"),
-    ("reachability or fewest hops in a network", "breadth-first or depth-first search", "Volume 4, Part II"),
+    ("you need the order of the data", "sort it", "Volume 4, Part II"),
+    ("reachability or fewest hops in a network", "breadth-first or depth-first search", "Volume 4, Part III"),
     ("routes on a map with weights", "Dijkstra, or Bellman-Ford with negative roads", "Volume 5, Part I"),
     ("best choice looks safe at each step and you can prove it", "greedy", "Volume 5, Part II"),
     ("halves independent combine", "divide and conquer", "Volume 5, Part III"),
@@ -59,7 +59,7 @@ def advise(situation: str) -> list:
 
 
 def hard_problem_plan(n: int, budget: int, small_parameter: int | None = None, need_proof_of_quality: bool = True) -> str:
-    """Section 30.6: the Part V route for an NP-hard problem."""
+    """Section 33.6: the Part V route for an NP-hard problem."""
     if 2 ** n <= budget:
         return "exact: try every subset (or branch and bound)"
     if 2 ** (n / 2) * n <= budget:
@@ -72,7 +72,7 @@ def hard_problem_plan(n: int, budget: int, small_parameter: int | None = None, n
 
 
 def big_data_plan(fits_in_memory: bool, one_pass_only: bool, machines: int, approximate_ok: bool) -> str:
-    """Section 30.7: the Part VI route when data is large."""
+    """Section 33.7: the Part VI route when data is large."""
     if fits_in_memory:
         return "ordinary in-memory algorithm"
     if one_pass_only:
@@ -82,7 +82,7 @@ def big_data_plan(fits_in_memory: bool, one_pass_only: bool, machines: int, appr
     return "external sorting"
 
 
-# ---- the branch-sites worked problem (Section 30.9) -------------------------------------------------------
+# ---- the branch-sites worked problem (Section 33.9) -------------------------------------------------------
 
 def town(sites: int = 20, homes: int = 400, seed: int = 30):
     rng = random.Random(seed)

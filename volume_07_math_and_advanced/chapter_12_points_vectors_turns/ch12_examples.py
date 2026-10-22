@@ -45,7 +45,7 @@ def triangle_area(a, b, c) -> float:
 
 
 def projection(p, a, b):
-    """The point of the line through a and b closest to p, and the parameter t (0 at a, 1 at b) (Figure 12.4)."""
+    """The point of the line through a and b closest to p, and the parameter t (0 at a, 1 at b) (Figure 12.3)."""
     u, w = sub(b, a), sub(p, a)
     if u == (0, 0):
         raise ValueError("a line needs two different points")

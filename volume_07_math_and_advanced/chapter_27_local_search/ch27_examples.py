@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 24 - Local Search and Simulated Annealing: improve a round by small changes.
+"""Volume 7, Chapter 27 - Local Search and Simulated Annealing: improve a round by small changes.
 
-Run:  python3 ch24_examples.py
+Run:  python3 ch27_examples.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ def length(tour: list, pts: list) -> float:
 
 
 def two_opt(tour: list, pts: list) -> tuple[list, int]:
-    """Reverse a stretch of the round whenever that shortens it, until no reversal helps (Figure 24.2).
+    """Reverse a stretch of the round whenever that shortens it, until no reversal helps (Figure 27.2).
     Returns (round, improvements made)."""
     tour, moves, better = list(tour), 0, True
     while better:
@@ -34,7 +34,7 @@ def two_opt(tour: list, pts: list) -> tuple[list, int]:
 
 
 def annealing(tour: list, pts: list, rng, steps: int = 20000, start_temp: float = 50.0) -> list:
-    """Like 2-opt, but sometimes accept a longer round, less often as the 'temperature' cools (Figure 24.3)."""
+    """Like 2-opt, but sometimes accept a longer round, less often as the 'temperature' cools (Figure 27.3)."""
     tour = list(tour)
     best = list(tour)
     for s in range(steps):
@@ -90,7 +90,7 @@ def cut_size(side: dict, edges: list) -> int:
 
 
 def max_cut_local(vertices: list, edges: list, start: dict | None = None) -> tuple[dict, int, int]:
-    """Local search for a maximum cut (Figure 24.4): move one place to the other side whenever that increases the
+    """Local search for a maximum cut (Figure 27.4): move one place to the other side whenever that increases the
     number of roads crossing between the sides. Ends with at least half of all roads crossing.
     Returns (sides, cut size, moves)."""
     side = dict(start) if start else {v: 0 for v in vertices}

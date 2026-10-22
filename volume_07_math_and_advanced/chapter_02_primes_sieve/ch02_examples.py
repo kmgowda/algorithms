@@ -22,7 +22,7 @@ def is_prime(n: int) -> tuple[bool, int]:
 
 
 def sieve(limit: int) -> tuple[list, int]:
-    """Sieve of Eratosthenes (Figure 2.3): cross out multiples of each prime from its square.
+    """Sieve of Eratosthenes (Figure 2.1): cross out multiples of each prime from its square.
     Returns (primes up to limit, crossings-out made)."""
     if limit < 2:
         return [], 0

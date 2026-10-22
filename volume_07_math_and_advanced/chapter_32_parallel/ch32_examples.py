@@ -1,6 +1,6 @@
-"""Volume 7, Chapter 29 - Parallel Algorithms: work, span, and how many helpers really help.
+"""Volume 7, Chapter 32 - Parallel Algorithms: work, span, and how many helpers really help.
 
-Run:  python3 ch29_examples.py
+Run:  python3 ch32_examples.py
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ import math
 
 
 def tree_sum(values: list) -> tuple[int, int, int]:
-    """Add pairs in rounds, all pairs of a round at once (Figure 29.1). Returns (total, additions = work, rounds = span)."""
+    """Add pairs in rounds, all pairs of a round at once (Figure 32.1). Returns (total, additions = work, rounds = span)."""
     level, work, rounds = list(values), 0, 0
     if not level:
         return 0, 0, 0
@@ -23,7 +23,7 @@ def tree_sum(values: list) -> tuple[int, int, int]:
 
 
 def prefix_sums_parallel(values: list) -> tuple[list, int, int]:
-    """Hillis-Steele scan (Figure 29.2): in round r, every position adds the value 2^r places to its left.
+    """Hillis-Steele scan (Figure 32.2): in round r, every position adds the value 2^r places to its left.
     Returns (running totals, additions, rounds)."""
     a, work, rounds, step = list(values), 0, 0, 1
     while step < len(a):
@@ -40,14 +40,14 @@ def time_with_helpers(work: int, span: int, helpers: int) -> float:
 
 
 def amdahl(parallel_share: float, helpers: int) -> float:
-    """Speed-up when only part of a job can be shared out (Figure 29.3)."""
+    """Speed-up when only part of a job can be shared out (Figure 32.3)."""
     return 1 / ((1 - parallel_share) + parallel_share / helpers)
 
 
 # ---------------------------------------------------------------- the fork-join model, as a DAG of unit steps
 
 def tree_sum_dag(n: int) -> dict:
-    """The computation DAG of a fork-join tree sum of n values (Figure 29.2): node -> list of nodes it must wait for.
+    """The computation DAG of a fork-join tree sum of n values (Figure 32.2): node -> list of nodes it must wait for.
     Leaves are the values (one read step each); every inner node is one addition."""
     deps, counter = {}, [0]
 
@@ -95,7 +95,7 @@ def greedy_schedule(deps: dict, p: int) -> int:
 
 def race_outcomes(increments_per_helper: int = 1, helpers: int = 2) -> dict:
     """Every interleaving of 'read counter, then write counter + 1' by several helpers on a shared counter that starts
-    at 0: how often each final value occurs (Figure 29.4)."""
+    at 0: how often each final value occurs (Figure 32.4)."""
     from collections import Counter
     import itertools
     steps = [(h, k, part) for h in range(helpers) for k in range(increments_per_helper) for part in ("read", "write")]
@@ -123,7 +123,7 @@ def race_outcomes(increments_per_helper: int = 1, helpers: int = 2) -> dict:
 # ---------------------------------------------------------------- Blelloch's work-efficient scan
 
 def blelloch_scan(values: list) -> tuple[list, int, int, list]:
-    """Exclusive prefix sums in two sweeps over a balanced tree (Figure 29.5). Length padded to a power of two.
+    """Exclusive prefix sums in two sweeps over a balanced tree (Figure 32.5). Length padded to a power of two.
     Returns (exclusive sums, additions, rounds, array after the up-sweep)."""
     if not values:
         return [], 0, 0, []

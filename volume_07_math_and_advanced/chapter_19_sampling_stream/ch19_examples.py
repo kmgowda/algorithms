@@ -10,7 +10,7 @@ from collections import Counter
 
 
 def reservoir(stream, k: int, rng) -> list:
-    """Keep the first k; item number i (from 1) replaces a random kept item with probability k / i (Figure 19.2)."""
+    """Keep the first k; item number i (from 1) replaces a random kept item with probability k / i (Section 19.4)."""
     if k < 0:
         raise ValueError("k must be 0 or more")
     kept = []
@@ -38,7 +38,7 @@ def weighted_pick(items: list, weights: list, rng):
 
 def exact_inclusion(n: int, k: int) -> list:
     """Run reservoir sampling on every possible sequence of random choices (each equally likely) and return, for each
-    item, the exact fraction of runs that end with it in the sample (Figure 19.3)."""
+    item, the exact fraction of runs that end with it in the sample (Figure 19.1)."""
     import itertools
     from fractions import Fraction
     choice_ranges = [range(i) for i in range(k + 1, n + 1)]
@@ -78,7 +78,7 @@ def weighted_sample(items: list, weights: list, k: int, rng) -> list:
 
 def reservoir_skipping(stream, k: int, rng) -> tuple[list, int]:
     """Li's Algorithm L: instead of one random number per item, jump straight to the next item that will enter,
-    using about k (1 + ln(n / k)) random numbers. Returns (sample, random numbers used)."""
+    using about 3 k ln(n / k) random numbers (three per item that enters). Returns (sample, random numbers used)."""
     import math
     it = iter(stream)
     kept, used = [], 0
