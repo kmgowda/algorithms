@@ -27,5 +27,20 @@ class TestChapter26(unittest.TestCase):
             self.assertEqual(len(ex.longest_repeat(t)), len(rep))
 
 
+    def test_attack_and_double_hash(self) -> None:
+        import random
+        self.assertEqual([ex.overflow_attack(n) for n in (8, 9, 10, 11)], [(False, False), (False, False), (True, False), (True, False)])
+        self.assertTrue(all(ex.overflow_attack(10, b)[0] for b in (257, 1_000_003, 911382323, 2 ** 31 - 1)))
+        self.assertEqual((ex.thue_morse(0), ex.thue_morse(3)), ("a", "abbabaab"))
+        r = random.Random(26)
+        for seed in range(20):
+            t = "".join(r.choice("ab") for _ in range(40))
+            d = ex.DoubleHash(t, seed=seed)
+            for _ in range(30):
+                a, b = sorted((r.randrange(41), r.randrange(41)))
+                c = r.randrange(41 - (b - a))
+                self.assertEqual(d.get(a, b) == d.get(c, c + b - a), t[a:b] == t[c:c + b - a])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -21,5 +21,15 @@ class TestChapter5(unittest.TestCase):
             self.assertEqual(ex.count_sets(a, ex.COINS)[0], ex.brute_sets(a, ex.COINS))
 
 
+    def test_digit_dp(self) -> None:
+        self.assertEqual((ex.count_digit_sum(253, 10)[0], ex.count_digit_sum(99, 10)[0]), (25, 9))
+        self.assertEqual((ex.count_digit_sum(10 ** 6, 10)[0], ex.count_digit_sum(0, 0)[0], ex.count_digit_sum(-1, 0)[0]),
+                         (2997, 1, 0))
+        self.assertEqual((ex.free_digit_table(2, 10)[2][10], ex.free_digit_table(2, 10)[2][9]), (9, 10))
+        for n in range(0, 400, 7):
+            for t in range(0, 20):
+                self.assertEqual(ex.count_digit_sum(n, t)[0], sum(1 for x in range(n + 1) if sum(map(int, str(x))) == t))
+
+
 if __name__ == "__main__":
     unittest.main()

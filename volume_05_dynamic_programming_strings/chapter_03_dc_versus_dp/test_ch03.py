@@ -36,5 +36,14 @@ class TestChapter3(unittest.TestCase):
                 self.assertEqual(ex.choose_table(n, k)[0], math.comb(n, k))
 
 
+    def test_sub_problem_graph(self) -> None:
+        edges, order = ex.sub_problem_graph(4, 2)
+        self.assertEqual((len(order), len(edges)), (8, 8))
+        pos = {v: i for i, v in enumerate(order)}
+        self.assertTrue(all(pos[b] < pos[a] for a, b in edges))
+        self.assertEqual(ex.sub_problem_graph(3, 0), ([], [(3, 0)]))
+        self.assertEqual(len(ex.sub_problem_graph(20, 10)[1]), 120)
+
+
 if __name__ == "__main__":
     unittest.main()

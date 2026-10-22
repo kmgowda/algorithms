@@ -52,6 +52,27 @@ def cheapest(dust: list) -> tuple[int, list, list]:
     return least[-1][-1], least, route[::-1]
 
 
+def count_paths_moving(floor: list, k: int) -> tuple[int, list]:
+    """Routes that may pass through at most k shelf squares (the trolley can push a shelf aside, but only k times)
+    (Section 7.6). State (r, c, j): routes reaching (r, c) having pushed exactly j shelves.
+    Returns (routes with at most k pushes, the counts at the far corner for j = 0..k)."""
+    rows, cols = len(floor), len(floor[0])
+    ways = [[[0] * (k + 1) for _ in range(cols)] for _ in range(rows)]
+    for r in range(rows):
+        for c in range(cols):
+            for j in range(k + 1):
+                shelf = floor[r][c]
+                before = j - shelf                     # pushes used before arriving here
+                if before < 0:
+                    continue
+                if r == 0 and c == 0:
+                    ways[r][c][j] = 1 if before == 0 else 0
+                else:
+                    ways[r][c][j] = (ways[r - 1][c][before] if r else 0) + (ways[r][c - 1][before] if c else 0)
+    corner = ways[-1][-1]
+    return sum(corner), corner
+
+
 if __name__ == "__main__":
     n, table = count_paths(FLOOR)
     print(n, table)

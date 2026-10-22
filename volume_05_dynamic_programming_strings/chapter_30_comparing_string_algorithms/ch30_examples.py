@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import importlib.util
 import os
-import random
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,8 +34,9 @@ def all_methods(text: str, pattern: str) -> dict:
         "naive": naive.naive_search(text, pattern),
         "Knuth-Morris-Pratt": kmp.kmp_search(text, pattern),
         "Rabin-Karp": rk.rabin_karp(text, pattern)[:2],
-        "Z-algorithm": (zalg.z_search(text, pattern), None),
+        "Z-algorithm": (zalg.z_search(text, pattern), zalg.z_array(pattern + "\0" + text)[1] if pattern else 0),
         "Horspool": bmh.horspool(text, pattern)[:2],
+        "Boyer-Moore": bmh.boyer_moore(text, pattern)[:2],
         "Aho-Corasick": (sorted(i for i, _ in ac.search(text, [pattern])[0]), ac.search(text, [pattern])[1]),
         "suffix array": sa.find_all(text, s, pattern),
     }
@@ -44,8 +44,8 @@ def all_methods(text: str, pattern: str) -> dict:
 
 
 def workloads(seed: int = 30) -> dict:
-    r = random.Random(seed)
-    random_text = "".join(r.choice("abcdefghijklmnopqrstuvwxyz ") for _ in range(10000))
+    """The three shared tasks of Part II; the random text is the same one Chapters 17, 19 and 21 use."""
+    random_text = naive.random_text(10000, seed)
     return {"random text, 'library'": (random_text, "library"), "1,000 a's, 'aaaaaaaaab'": ("a" * 1000, "a" * 9 + "b"),
             "1,000 a's, 'baaaaaaaaa'": ("a" * 1000, "b" + "a" * 9)}
 

@@ -33,6 +33,30 @@ def lcs(a, b) -> tuple[int, list, list]:
     return L[n][m], out[::-1], L
 
 
+def all_lcs(a, b) -> list:
+    """Every different longest common subsequence (Section 8.4's ties), found by walking back along every
+    branch where the table allows it. Fine for short inputs; the number can grow quickly."""
+    _, _, L = lcs(a, b)
+    memo = {}
+
+    def back(i: int, j: int) -> set:
+        if i == 0 or j == 0:
+            return {()}
+        if (i, j) not in memo:
+            if a[i - 1] == b[j - 1]:
+                out = {s + (a[i - 1],) for s in back(i - 1, j - 1)}
+            else:
+                out = set()
+                if L[i - 1][j] == L[i][j]:
+                    out |= back(i - 1, j)
+                if L[i][j - 1] == L[i][j]:
+                    out |= back(i, j - 1)
+            memo[(i, j)] = out
+        return memo[(i, j)]
+
+    return sorted(list(s) for s in back(len(a), len(b)))
+
+
 def brute(a, b) -> int:
     for k in range(min(len(a), len(b)), -1, -1):
         subs = {tuple(c) for c in itertools.combinations(a, k)}

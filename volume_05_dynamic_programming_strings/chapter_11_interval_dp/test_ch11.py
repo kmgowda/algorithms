@@ -19,5 +19,20 @@ class TestChapter11(unittest.TestCase):
             self.assertEqual(ex.merge_cost(s)[0], ex.brute(s))
 
 
+    def test_matrix_chain(self) -> None:
+        import random
+        cost, table, split, brackets = ex.matrix_chain(ex.CHAIN)
+        self.assertEqual((cost, brackets), (5000, "((A B) (C D))"))
+        self.assertEqual([table[1][2], table[2][3], table[3][4], table[1][3], table[2][4]], [1500, 9000, 3000, 4500, 4500])
+        self.assertEqual((split[1][3], split[2][4], split[1][4]), (2, 2, 2))
+        self.assertEqual((ex.matrix_chain([10, 20])[0], ex.matrix_chain([10, 20])[3], ex.matrix_chain([])[0]), (0, "A", 0))
+        self.assertEqual(ex.matrix_chain([2, 3, 4])[:1] + ex.matrix_chain([2, 3, 4])[3:], (24, "(A B)"))
+        self.assertEqual((ex.matrix_chain([2, 3, 4, 1])[0], ex.matrix_chain([2, 3, 4, 1])[3]), (18, "(A (B C))"))
+        r = random.Random(11)
+        for _ in range(200):
+            d = [r.randint(1, 30) for _ in range(r.randint(1, 8))]
+            self.assertEqual(ex.matrix_chain(d)[0], ex.chain_brute(d))
+
+
 if __name__ == "__main__":
     unittest.main()

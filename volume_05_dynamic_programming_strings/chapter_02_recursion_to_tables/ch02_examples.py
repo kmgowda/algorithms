@@ -43,6 +43,21 @@ def least_effort(effort: list) -> tuple[int, list, list]:
     return best[n + 1], best, path[::-1]
 
 
+def least_effort_memo(effort: list) -> int:
+    """The same least effort found top-down (Section 2.6): the recursion the table was converted from."""
+    n, memo = len(effort), {}
+
+    def best(i: int) -> int:                          # least effort to stand on step i (0 = ground, n + 1 = top)
+        if i == 0:
+            return 0
+        if i not in memo:
+            cost = effort[i - 1] if i <= n else 0
+            memo[i] = cost + min(best(i - 1), best(i - 2) if i >= 2 else best(i - 1))
+        return memo[i]
+
+    return best(n + 1)
+
+
 if __name__ == "__main__":
     print(ways_table(10))
     print(ways_two_numbers(10), ways_two_numbers(1), ways_two_numbers(0))

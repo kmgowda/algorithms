@@ -46,6 +46,16 @@ def unlimited(books: list, budget: int) -> int:
     return row[budget]
 
 
+def subset_sums(prices: list, budget: int) -> list:
+    """Which totals up to budget can be spent exactly with whole books (Section 6.7): the knapsack with
+    votes equal to price, kept as true/false. reach[t] is True when some set of books costs exactly t."""
+    reach = [True] + [False] * budget
+    for p in prices:
+        for t in range(budget, p - 1, -1):
+            reach[t] = reach[t] or reach[t - p]
+    return reach
+
+
 def brute(books: list, budget: int) -> int:
     return max(sum(v for *_, v in c) for k in range(len(books) + 1) for c in itertools.combinations(books, k)
                if sum(p for _, p, _ in c) <= budget)

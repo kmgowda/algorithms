@@ -22,5 +22,35 @@ class TestChapter7(unittest.TestCase):
         self.assertEqual((ex.count_paths(f)[0], ex.count_paths([[0] * 3 for _ in range(3)])[0], ex.cheapest(ex.DUST)[1][3][0]), (1, 6, 13))
 
 
+    def test_moving_shelves(self) -> None:
+        import itertools
+        import random
+
+        def brute(fl, k):
+            rows, cols, n = len(fl), len(fl[0]), 0
+            for downs in itertools.combinations(range(rows + cols - 2), rows - 1):
+                r = c = 0
+                pushed = fl[0][0]
+                for i in range(rows + cols - 2):
+                    if i in downs:
+                        r += 1
+                    else:
+                        c += 1
+                    pushed += fl[r][c]
+                n += pushed <= k
+            return n
+
+        self.assertEqual([ex.count_paths_moving(ex.FLOOR, k) for k in range(3)], [(5, [5]), (22, [5, 17]), (35, [5, 17, 13])])
+        self.assertEqual(ex.count_paths_moving([[1]], 0), (0, [0]))
+        self.assertEqual(ex.count_paths_moving([[1]], 1), (1, [0, 1]))
+        r = random.Random(7)
+        for _ in range(100):
+            fl = [[int(r.random() < 0.3) for _ in range(r.randint(1, 4))]]
+            fl += [[int(r.random() < 0.3) for _ in fl[0]] for _ in range(r.randint(0, 3))]
+            k = r.randint(0, 2)
+            self.assertEqual(ex.count_paths_moving(fl, k)[0], brute(fl, k))
+            self.assertEqual(ex.count_paths_moving(fl, 0)[0], ex.count_paths(fl)[0])
+
+
 if __name__ == "__main__":
     unittest.main()

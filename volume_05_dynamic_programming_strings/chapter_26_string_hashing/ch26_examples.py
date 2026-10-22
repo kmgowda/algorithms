@@ -73,6 +73,42 @@ def collisions(n_strings: int, mod: int, seed: int = 26) -> int:
     return pairs
 
 
+def thue_morse(n: int) -> str:
+    """The Thue-Morse word of length 2^n over a and b: start with a, and repeatedly append the swapped copy."""
+    w = "a"
+    for _ in range(n):
+        w += w.translate(str.maketrans("ab", "ba"))
+    return w
+
+
+def whole_hash(s: str, base: int, mod: int) -> int:
+    """The polynomial hash of a whole string, for any base and modulus (Section 26.6)."""
+    h = 0
+    for ch in s:
+        h = (h * base + ord(ch)) % mod
+    return h
+
+
+def overflow_attack(n: int = 10, base: int = BASE) -> tuple[bool, bool]:
+    """Anti-hash input (Section 26.6): the Thue-Morse word of length 2^n and its swapped copy. Returns (collide
+    modulo 2^64, as with unchecked 64-bit overflow?, collide modulo the prime 2^61 - 1?)."""
+    a = thue_morse(n)
+    b = a.translate(str.maketrans("ab", "ba"))
+    return whole_hash(a, base, 1 << 64) == whole_hash(b, base, 1 << 64), whole_hash(a, base, MOD) == whole_hash(b, base, MOD)
+
+
+class DoubleHash:
+    """Two independent prefix hashes with random bases (Section 26.6): a false match needs both to collide."""
+
+    def __init__(self, s: str, seed: int | None = None):
+        r = random.Random(seed)
+        self.h1 = PrefixHash(s, base=r.randrange(256, MOD - 1), mod=MOD)
+        self.h2 = PrefixHash(s, base=r.randrange(256, 1_000_000_006), mod=1_000_000_007)
+
+    def get(self, a: int, b: int) -> tuple[int, int]:
+        return self.h1.get(a, b), self.h2.get(a, b)
+
+
 if __name__ == "__main__":
     s = "the club reads; the club meets"
     print(same(s, 0, 8, 16, 24), same(s, 4, 8, 20, 24), same(s, 0, 3, 4, 7))

@@ -28,5 +28,25 @@ class TestChapter29(unittest.TestCase):
             self.assertEqual(ex.changes(d)[0], L[-1][-1])
 
 
+    def test_myers(self) -> None:
+        import random
+        d, script, rounds = ex.myers(list("ABCABBA"), list("CBABAC"))
+        self.assertEqual((d, len(rounds)), (5, 6))
+        self.assertEqual(ex.apply_diff(list("ABCABBA"), script), list("CBABAC"))
+        self.assertEqual(rounds[1], {-1: (0, 1), 1: (1, 0)})
+        self.assertEqual((ex.myers([], [])[0], ex.myers(["a"], [])[1], ex.myers([], ["a"])[1]), (0, [("- ", "a")], [("+ ", "a")]))
+        d, script, _ = ex.myers(ex.OLD, ex.NEW)
+        self.assertEqual((d, ex.changes(script)), (4, (3, 2, 2)))
+        r = random.Random(29)
+        for _ in range(300):
+            a = [r.choice("xyz") for _ in range(r.randint(0, 9))]
+            b = [r.choice("xyz") for _ in range(r.randint(0, 9))]
+            d, script, _ = ex.myers(a, b)
+            kept = ex.changes(ex.diff(a, b))[0]
+            self.assertEqual(d, len(a) + len(b) - 2 * kept)
+            self.assertEqual(ex.apply_diff(a, script), b)
+            self.assertEqual([line for tag, line in script if tag in ("  ", "- ")], a)
+
+
 if __name__ == "__main__":
     unittest.main()

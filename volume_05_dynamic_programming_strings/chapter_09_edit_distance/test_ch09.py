@@ -29,5 +29,34 @@ class TestChapter9(unittest.TestCase):
             self.assertLessEqual(abs(len(a) - len(b)), d)
 
 
+    def test_alignment(self) -> None:
+        import functools
+        import random
+        self.assertEqual(ex.align("GATTACA", "GCATGCU")[:3], (0, "G-ATTACA", "GCA-TGCU"))
+        self.assertEqual(ex.align("GATTACA", "GCATGCU", 0, -1, -1)[0], -4)
+        self.assertEqual(ex.align("ACGTGCA", "ACGGCA", 2, -1, -2)[:3], (10, "ACGTGCA", "ACG-GCA"))
+        self.assertEqual(ex.suggest("PALYS", ex.TITLES)[:4], [(2, "PLAYS"), (3, "ATLAS"), (3, "MAPS"), (3, "POEMS")])
+        self.assertEqual(ex.suggest("NOBEL", ex.TITLES)[:3], [(1, "NOVEL"), (4, "COMIC"), (4, "POEMS")])
+        self.assertEqual((ex.align("", "ABC")[:3], ex.align("A", "")[:3], ex.align("", "")[:3]),
+                         ((-3, "---", "ABC"), (-1, "A", "-"), (0, "", "")))
+        r = random.Random(9)
+        for _ in range(200):
+            a = "".join(r.choice("ACGT") for _ in range(r.randint(0, 7)))
+            b = "".join(r.choice("ACGT") for _ in range(r.randint(0, 7)))
+            mt, mm, gp = r.choice([(1, -1, -1), (2, -1, -2), (0, -1, -1), (3, -2, -1)])
+
+            @functools.lru_cache(maxsize=None)
+            def best(i: int, j: int) -> int:
+                if i == 0 or j == 0:
+                    return (i + j) * gp
+                return max(best(i - 1, j - 1) + (mt if a[i - 1] == b[j - 1] else mm), best(i - 1, j) + gp, best(i, j - 1) + gp)
+
+            score, top, bottom, _ = ex.align(a, b, mt, mm, gp)
+            self.assertEqual(score, best(len(a), len(b)))
+            self.assertEqual(ex.alignment_score(top, bottom, mt, mm, gp), score)
+            self.assertEqual((top.replace("-", ""), bottom.replace("-", "")), (a, b))
+            self.assertEqual(ex.align(a, b, 0, -1, -1)[0], -ex.edit_distance(a, b)[0])
+
+
 if __name__ == "__main__":
     unittest.main()

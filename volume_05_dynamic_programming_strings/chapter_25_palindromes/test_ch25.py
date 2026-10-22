@@ -24,5 +24,22 @@ class TestChapter25(unittest.TestCase):
             self.assertLessEqual(ex.manacher(s)[2], 2 * (2 * len(s) + 1))
 
 
+    def test_trace_and_counts(self) -> None:
+        tr = ex.manacher_trace("abacabad")
+        self.assertEqual([t[4] for t in tr], ex.manacher("abacabad")[1])
+        self.assertEqual((tr[7], tr[9][2:], tr[11][2:]), ((7, "c", "outside", 7, 7), ("copied", 0, 1), ("copied to the edge", 1, 3)))
+        self.assertEqual((ex.manacher("abba is a band")[0], ex.count_palindromes("aaa"), ex.count_palindromes("abacabad"),
+                          ex.count_palindromes("")), ("abba", 6, 13, 0))
+        s = "abba is a band"
+        pals = sorted({s[i:j] for i in range(len(s)) for j in range(i + 1, len(s) + 1) if s[i:j] == s[i:j][::-1]}, key=len)
+        self.assertEqual(pals[-2:], [" a ", "abba"])
+        import random
+        r = random.Random(25)
+        for _ in range(200):
+            w = "".join(r.choice("ab") for _ in range(r.randint(0, 12)))
+            brute = sum(1 for i in range(len(w)) for j in range(i + 1, len(w) + 1) if w[i:j] == w[i:j][::-1])
+            self.assertEqual(ex.count_palindromes(w), brute)
+
+
 if __name__ == "__main__":
     unittest.main()

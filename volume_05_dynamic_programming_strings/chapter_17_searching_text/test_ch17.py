@@ -22,5 +22,13 @@ class TestChapter17(unittest.TestCase):
             self.assertEqual(ex.naive_search(t, p)[0], [i for i in range(len(t) - len(p) + 1) if t.startswith(p, i)])
 
 
+    def test_shared_random_text(self) -> None:
+        rt = ex.random_text()
+        self.assertEqual((len(rt), ex.naive_search(rt, "library")), (10000, ([], 10350)))
+        self.assertEqual((round(ex.expected_comparisons(10000, 7)), ex.expected_comparisons(3, 5)), (10378, 0.0))
+        self.assertEqual(ex.naive_search("a" * 12, "aaab")[1], 36)
+        self.assertEqual((ex.naive_search(rt, "reading club")[1], round(ex.expected_comparisons(10000, 12))), (10312, 10373))
+
+
 if __name__ == "__main__":
     unittest.main()

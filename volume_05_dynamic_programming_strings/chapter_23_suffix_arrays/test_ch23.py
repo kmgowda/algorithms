@@ -29,5 +29,21 @@ class TestChapter23(unittest.TestCase):
             self.assertEqual(ex.find_all(t, sa, p)[0], [i for i in range(len(t) - len(p) + 1) if t.startswith(p, i)])
 
 
+    def test_doubling_and_radix(self) -> None:
+        import random
+        tr = ex.doubling_trace("banana")
+        self.assertEqual([r[2] for r in tr], [[1, 0, 2, 0, 2, 0], [2, 1, 3, 1, 3, 0], [3, 2, 5, 1, 4, 0]])
+        self.assertEqual(tr[1][1], [(1, 0), (0, 2), (2, 0), (0, 2), (2, 0), (0, -1)])
+        self.assertEqual((ex.suffix_array_radix("banana"), ex.suffix_array_radix(""), ex.suffix_array_radix("a"),
+                          ex.suffix_array_radix("abc"), ex.suffix_array_radix("aaaa")),
+                         (([5, 3, 1, 0, 4, 2], 2), ([], 0), ([0], 0), ([0, 1, 2], 0), ([3, 2, 1, 0], 2)))
+        self.assertEqual([r[2] for r in ex.doubling_trace("abab")], [[0, 1, 0, 1], [0, 2, 0, 1], [1, 3, 0, 2]])
+        self.assertEqual(ex.counting_sort([3, 1, 2, 1], lambda x: x, 4), [1, 1, 2, 3])
+        r = random.Random(23)
+        for _ in range(200):
+            t = "".join(r.choice("abc") for _ in range(r.randint(0, 30)))
+            self.assertEqual(ex.suffix_array_radix(t)[0], ex.suffix_array_simple(t))
+
+
 if __name__ == "__main__":
     unittest.main()

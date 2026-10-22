@@ -31,6 +31,54 @@ def lcp_kasai(text: str, sa: list) -> list:
     return lcp
 
 
+def kasai_trace(text: str, sa: list) -> list:
+    """Kasai's method step by step (Section 24.4): for each i in text order, (i, the suffix just above it, h it
+    started from, h found)."""
+    n = len(text)
+    rank = [0] * n
+    for r, i in enumerate(sa):
+        rank[i] = r
+    h, out = 0, []
+    for i in range(n):
+        if rank[i] > 0:
+            j = sa[rank[i] - 1]
+            start = h
+            while i + h < n and j + h < n and text[i + h] == text[j + h]:
+                h += 1
+            out.append((i, j, start, h))
+            if h:
+                h -= 1
+        else:
+            h = 0
+    return out
+
+
+class LCPQuery:
+    """The longest common prefix of ANY two suffixes (Section 24.5): it is the smallest LCP value between their rows
+    of the suffix array, answered in one step with a sparse table of minimums (Volume 2)."""
+
+    def __init__(self, text: str):
+        self.sa = suffix_array(text)
+        self.lcp = lcp_kasai(text, self.sa)
+        self.rank = {i: r for r, i in enumerate(self.sa)}
+        self.n = len(text)
+        self.table = [list(self.lcp)]                  # table[k][r] = min of lcp[r .. r + 2^k - 1]
+        k = 1
+        while (1 << k) <= len(self.lcp):
+            prev = self.table[-1]
+            half = 1 << (k - 1)
+            self.table.append([min(prev[r], prev[r + half]) for r in range(len(self.lcp) - (1 << k) + 1)])
+            k += 1
+
+    def query(self, i: int, j: int) -> int:
+        if i == j:
+            return self.n - i
+        a, b = sorted((self.rank[i], self.rank[j]))
+        lo, hi = a + 1, b                              # the minimum of lcp[a + 1 .. b]
+        k = (hi - lo + 1).bit_length() - 1
+        return min(self.table[k][lo], self.table[k][hi - (1 << k) + 1])
+
+
 def longest_repeat(text: str) -> str:
     """The longest substring occurring at least twice: the largest LCP value (Figure 24.2)."""
     if len(text) < 2:

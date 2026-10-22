@@ -27,5 +27,15 @@ class TestChapter22(unittest.TestCase):
             self.assertLessEqual(steps, 2 * len(t))
 
 
+    def test_links_and_walk(self) -> None:
+        self.assertEqual(ex.links(ex.WORDS), {"h": "", "he": "", "s": "", "sh": "h", "she": "he", "hi": "", "his": "s",
+                                              "her": "", "hers": "s"})
+        w = ex.walk("ushers", ex.WORDS)
+        self.assertEqual([st[2] for st in w], ["", "s", "sh", "she", "her", "hers"])
+        self.assertEqual((w[3][3], w[4][1], w[5][3]), (["she", "he"], ["he"], ["hers"]))
+        self.assertEqual((ex.links([]), ex.walk("", ex.WORDS), ex.links(["a", "aa", "aaa"])),
+                         ({}, [], {"a": "", "aa": "a", "aaa": "aa"}))
+
+
 if __name__ == "__main__":
     unittest.main()

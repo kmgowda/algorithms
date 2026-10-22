@@ -8,12 +8,13 @@ NL = "the reading club meets on monday; the club reads maps and poems at the lib
 
 class TestChapter30(unittest.TestCase):
     def test_workloads(self) -> None:
-        want = {"random text, 'library'": (10350, 10344, 1624, 26), "1,000 a's, 'aaaaaaaaab'": (9910, 1991, 991, 18),
-                "1,000 a's, 'baaaaaaaaa'": (991, 1000, 9910, 18)}
+        want = {"random text, 'library'": (10350, 10344, 1624, 26, 10364, 1624), "1,000 a's, 'aaaaaaaaab'": (9910, 1991, 991, 18, 2009, 991),
+                "1,000 a's, 'baaaaaaaaa'": (991, 1000, 9910, 18, 1010, 1000)}
         for name, (t, p) in ex.workloads().items():
             res = ex.all_methods(t, p)
             self.assertEqual(len({tuple(v[0]) for v in res.values()}), 1)
-            self.assertEqual((res["naive"][1], res["Knuth-Morris-Pratt"][1], res["Horspool"][1], res["suffix array"][1]), want[name])
+            self.assertEqual((res["naive"][1], res["Knuth-Morris-Pratt"][1], res["Horspool"][1], res["suffix array"][1],
+                              res["Z-algorithm"][1], res["Boyer-Moore"][1]), want[name])
 
     def test_every_case(self) -> None:
         r = ex.all_methods(NL, "club")

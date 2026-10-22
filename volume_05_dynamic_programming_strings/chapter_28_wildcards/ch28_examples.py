@@ -38,6 +38,122 @@ def plain_recursion(pattern: str, text: str, calls: list) -> bool:
     return bool(text) and pattern[0] in ("?", text[0]) and plain_recursion(pattern[1:], text[1:], calls)
 
 
+# ---- regular expressions (Section 28.6): letters, '.', '*', '|' and parentheses, by Thompson's construction
+
+def _postfix(regex: str) -> list:
+    """Insert explicit concatenation ('&') and convert to postfix order (shunting-yard)."""
+    out, ops, prev = [], [], None
+    prec = {"|": 1, "&": 2}
+    tokens = []
+    for ch in regex:                                   # add '&' between two pieces that follow each other
+        if prev is not None and prev not in "(|" and ch not in "|)*":
+            tokens.append("&")
+        tokens.append(ch)
+        prev = ch
+    for t in tokens:
+        if t == "(":
+            ops.append(t)
+        elif t == ")":
+            while ops[-1] != "(":
+                out.append(ops.pop())
+            ops.pop()
+        elif t in prec:
+            while ops and ops[-1] != "(" and prec[ops[-1]] >= prec[t]:
+                out.append(ops.pop())
+            ops.append(t)
+        else:                                          # a letter, '.', or '*' (a postfix operator already)
+            out.append(t)
+    while ops:
+        out.append(ops.pop())
+    return out
+
+
+def build_nfa(regex: str) -> tuple[int, int, dict, dict]:
+    """Thompson's NFA: states are numbers; letter[s] = (symbol, next) for a state that reads one symbol;
+    free[s] = states reachable without reading (empty moves). Returns (start, accept, letter, free)."""
+    letter, free, count = {}, {}, [0]
+
+    def new() -> int:
+        count[0] += 1
+        free[count[0]] = []
+        return count[0]
+
+    stack = []
+    for t in _postfix(regex):
+        if t == "&":
+            b, a = stack.pop(), stack.pop()
+            free[a[1]].append(b[0])
+            stack.append((a[0], b[1]))
+        elif t == "|":
+            b, a = stack.pop(), stack.pop()
+            s0, s1 = new(), new()
+            free[s0] += [a[0], b[0]]
+            free[a[1]].append(s1)
+            free[b[1]].append(s1)
+            stack.append((s0, s1))
+        elif t == "*":
+            a = stack.pop()
+            s0, s1 = new(), new()
+            free[s0] += [a[0], s1]
+            free[a[1]] += [a[0], s1]
+            stack.append((s0, s1))
+        else:
+            s0, s1 = new(), new()
+            letter[s0] = (t, s1)
+            stack.append((s0, s1))
+    if not stack:                                      # the empty regex matches only the empty text
+        s0 = new()
+        return s0, s0, letter, free
+    start, accept = stack.pop()
+    return start, accept, letter, free
+
+
+def nfa_match(regex: str, text: str) -> tuple[bool, int]:
+    """Does regex match the whole text? Keep the SET of states the NFA could be in; each text letter moves every
+    state at once. Returns (match?, state visits), at most about (text length + 1) x (states)."""
+    start, accept, letter, free = build_nfa(regex)
+    visits = [0]
+
+    def close(states: set) -> set:
+        todo, seen = list(states), set(states)
+        while todo:
+            s = todo.pop()
+            visits[0] += 1
+            for t in free.get(s, ()):
+                if t not in seen:
+                    seen.add(t)
+                    todo.append(t)
+        return seen
+
+    current = close({start})
+    for ch in text:
+        current = close({nxt for s in current if s in letter for sym, nxt in [letter[s]] if sym in (ch, ".")})
+    return accept in current, visits[0]
+
+
+def backtrack_match(regex: str, text: str) -> tuple[bool, int]:
+    """The same question answered by trying one path through the NFA at a time, backing up on failure, as
+    backtracking engines do. Returns (match?, steps); the steps can grow exponentially."""
+    start, accept, letter, free = build_nfa(regex)
+    steps = [0]
+
+    def go(s: int, i: int, seen: frozenset) -> bool:
+        steps[0] += 1
+        if s == accept and i == len(text):
+            return True
+        if s in letter:
+            sym, nxt = letter[s]
+            if i < len(text) and sym in (text[i], "."):
+                return go(nxt, i + 1, frozenset())
+            return False
+        for t in free.get(s, ()):
+            if t not in seen and go(t, i, seen | {s}):
+                return True
+        return False
+
+    return go(start, 0, frozenset()), steps[0]
+
+
 def search(pattern: str, titles: list) -> list:
     return [t for t in titles if wildcard(pattern, t)[0]]
 

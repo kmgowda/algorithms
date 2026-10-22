@@ -53,6 +53,30 @@ def subtree_sizes(reports: dict, root) -> dict:
     return size
 
 
+def farthest_colleague(reports: dict, root) -> dict:
+    """Rerooting (Section 12.7): for every person, the most steps along the tree to any other person.
+    Pass 1 (up): down[p] = longest chain down from p. Pass 2 (down): up[r] = longest chain from r that starts by
+    going to r's manager p: 1 + the best of up[p] and down through p's other reports. Answer = max(down, up)."""
+    down, up = {}, {root: 0}
+
+    def go_down(p):
+        down[p] = max((1 + go_down(r) for r in reports[p]), default=0)
+        return down[p]
+
+    go_down(root)
+
+    def go_up(p):
+        kids = reports[p]
+        branch = [1 + down[r] for r in kids]          # chain from p through each report
+        for i, r in enumerate(kids):
+            others = max((b for k, b in enumerate(branch) if k != i), default=0)
+            up[r] = 1 + max(up[p], others)
+            go_up(r)
+
+    go_up(root)
+    return {p: max(down[p], up[p]) for p in down}
+
+
 def brute(reports: dict, fun: dict) -> int:
     people = list(fun)
     boss = {r: p for p, rs in reports.items() for r in rs}

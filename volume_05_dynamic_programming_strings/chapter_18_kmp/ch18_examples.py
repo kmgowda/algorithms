@@ -38,6 +38,67 @@ def kmp_search(text: str, pattern: str) -> tuple[list, int]:
     return found, comparisons
 
 
+def failure_trace(pattern: str) -> list:
+    """The border table built step by step (Section 18.4): for each i >= 1, (i, letter, k before, the k values
+    fallen back to, k after)."""
+    fail, k, steps = [0] * len(pattern), 0, []
+    for i in range(1, len(pattern)):
+        start, falls = k, []
+        while k and pattern[i] != pattern[k]:
+            k = fail[k - 1]
+            falls.append(k)
+        if pattern[i] == pattern[k]:
+            k += 1
+        fail[i] = k
+        steps.append((i, pattern[i], start, falls, k))
+    return steps
+
+
+def kmp_trace(text: str, pattern: str) -> list:
+    """The search step by step (Figure 18.3): for each text position, (i, letter, k before, fallbacks, k after,
+    match reported?)."""
+    fail, k, out = failure(pattern), 0, []
+    for i, ch in enumerate(text):
+        start, falls = k, []
+        while k and ch != pattern[k]:
+            k = fail[k - 1]
+            falls.append(k)
+        if ch == pattern[k]:
+            k += 1
+        hit = k == len(pattern)
+        out.append((i, ch, start, falls, k, hit))
+        if hit:
+            k = fail[k - 1]
+    return out
+
+
+def automaton(pattern: str, alphabet: str) -> list:
+    """The KMP automaton (Section 18.5): step[k][c] = how many pattern letters match after reading c with k matched.
+    It is built from the border table, and searching then takes exactly one look-up per text letter."""
+    m, fail = len(pattern), failure(pattern)
+    step = [{} for _ in range(m + 1)]
+    for k in range(m + 1):
+        for c in alphabet:
+            if k < m and c == pattern[k]:
+                step[k][c] = k + 1
+            elif k == 0:
+                step[k][c] = 0
+            else:
+                step[k][c] = step[fail[k - 1]][c]
+    return step
+
+
+def automaton_search(text: str, pattern: str) -> list:
+    if not pattern:
+        return list(range(len(text) + 1))
+    step, k, found = automaton(pattern, sorted(set(text + pattern))), 0, []
+    for i, c in enumerate(text):
+        k = step[k][c]
+        if k == len(pattern):
+            found.append(i - k + 1)
+    return found
+
+
 if __name__ == "__main__":
     print(failure("abacab"), failure("aaaab"), failure("abcd"))
     print(kmp_search("abacabacab", "abacab"))

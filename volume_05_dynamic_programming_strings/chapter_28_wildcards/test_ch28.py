@@ -26,5 +26,23 @@ class TestChapter28(unittest.TestCase):
             self.assertEqual(ex.plain_recursion(p, t, [0]), ex.wildcard(p, t)[0])
 
 
+    def test_regex_nfa(self) -> None:
+        import random
+        import re
+        self.assertEqual(ex.build_nfa("ab*")[:2], (1, 6))
+        self.assertEqual((ex.nfa_match("ab*", "abb")[0], ex.nfa_match("ab*", "ba")[0], ex.nfa_match("", "")[0], ex.nfa_match("", "a")[0]),
+                         (True, False, True, False))
+        self.assertEqual([ex.backtrack_match("(a*)*b", "a" * n)[1] for n in (10, 15)], [7169, 229377])
+        self.assertEqual([ex.nfa_match("(a*)*b", "a" * n)[1] for n in (10, 15, 20)], [66, 96, 126])
+        r = random.Random(28)
+        pieces = ["a", "b", ".", "a*", "(a|b)", "(ab)*", "b*", "(a|bb)*"]
+        for _ in range(400):
+            rx = "".join(r.choice(pieces) for _ in range(r.randint(0, 4)))
+            t = "".join(r.choice("ab") for _ in range(r.randint(0, 6)))
+            want = re.fullmatch(rx, t) is not None
+            self.assertEqual(ex.nfa_match(rx, t)[0], want, (rx, t))
+            self.assertEqual(ex.backtrack_match(rx, t)[0], want, (rx, t))
+
+
 if __name__ == "__main__":
     unittest.main()

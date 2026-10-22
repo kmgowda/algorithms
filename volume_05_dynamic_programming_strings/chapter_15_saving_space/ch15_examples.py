@@ -61,6 +61,25 @@ def hirschberg(a: str, b: str) -> str:
     return hirschberg(a[:mid], b[:k]) + hirschberg(a[mid:], b[k:])
 
 
+def crossing(a: str, b: str) -> tuple[int, list, list, list]:
+    """The middle step of Hirschberg's method (Figure 15.3): split a at mid; forward[j] = LCS of a's left half with
+    b[:j]; backward[j] = LCS of a's right half with b[j:]. Returns (best split k, forward, backward, their sums)."""
+    mid = len(a) // 2
+    forward = last_row(a[:mid], b)
+    backward = last_row(a[mid:][::-1], b[::-1])[::-1]
+    sums = [f + g for f, g in zip(forward, backward)]
+    return max(range(len(b) + 1), key=lambda j: sums[j]), forward, backward, sums
+
+
+def hirschberg_cells(a: str, b: str) -> int:
+    """How many table cells Hirschberg's method fills in total, to compare with the full table's n * m."""
+    if not a or not b or len(a) == 1:
+        return len(a) * len(b)
+    mid = len(a) // 2
+    k = crossing(a, b)[0]
+    return len(a) * len(b) + hirschberg_cells(a[:mid], b[:k]) + hirschberg_cells(a[mid:], b[k:])
+
+
 if __name__ == "__main__":
     print(lcs_full("READING", "TRADING"), lcs_two_rows("READING", "TRADING"), hirschberg("READING", "TRADING"))
     r = random.Random(15)

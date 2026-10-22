@@ -43,6 +43,36 @@ def suggest(typed: str, titles: list) -> list:
     return sorted((edit_distance(typed, t)[0], t) for t in titles)
 
 
+def align(a: str, b: str, match: int = 1, mismatch: int = -1, gap: int = -1) -> tuple[int, str, str, list]:
+    """Needleman-Wunsch global alignment (Section 9.6): S[i][j] = best score lining up a[:i] with b[:j], where
+    a pair of equal letters scores match, unequal letters mismatch, and a letter against a gap scores gap.
+    Returns (score, a with gaps, b with gaps, table). Ties prefer pairing, then a gap in b, then a gap in a."""
+    n, m = len(a), len(b)
+    S = [[0] * (m + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        S[i][0] = i * gap
+    for j in range(1, m + 1):
+        S[0][j] = j * gap
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            pair = S[i - 1][j - 1] + (match if a[i - 1] == b[j - 1] else mismatch)
+            S[i][j] = max(pair, S[i - 1][j] + gap, S[i][j - 1] + gap)
+    top, bottom, i, j = [], [], n, m
+    while i or j:
+        if i and j and S[i][j] == S[i - 1][j - 1] + (match if a[i - 1] == b[j - 1] else mismatch):
+            top.append(a[i - 1]); bottom.append(b[j - 1]); i -= 1; j -= 1
+        elif i and S[i][j] == S[i - 1][j] + gap:
+            top.append(a[i - 1]); bottom.append("-"); i -= 1
+        else:
+            top.append("-"); bottom.append(b[j - 1]); j -= 1
+    return S[n][m], "".join(top[::-1]), "".join(bottom[::-1]), S
+
+
+def alignment_score(top: str, bottom: str, match: int = 1, mismatch: int = -1, gap: int = -1) -> int:
+    """Score an alignment written as two equal-length rows with '-' for gaps."""
+    return sum(gap if x == "-" or y == "-" else (match if x == y else mismatch) for x, y in zip(top, bottom))
+
+
 if __name__ == "__main__":
     print(edit_distance("LIBRAY", "LIBRARY")[:2])
     d, e, t = edit_distance("PEOMS", "POEMS")

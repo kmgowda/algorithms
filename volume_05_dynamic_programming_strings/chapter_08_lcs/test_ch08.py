@@ -25,5 +25,13 @@ class TestChapter8(unittest.TestCase):
             self.assertEqual(len(s), n)
 
 
+    def test_all_lcs(self) -> None:
+        self.assertEqual(ex.all_lcs(ex.ANA, ex.BEN), [["Atlas", "Novel", "Diary", "Plays"], ["Poems", "Novel", "Diary", "Plays"]])
+        self.assertEqual([("".join(s)) for s in ex.all_lcs("ABC", "CBA")], ["A", "B", "C"])
+        n, s, t = ex.lcs("CAT", "ACT")
+        self.assertEqual((n, "".join(s), [r[1:] for r in t[1:]]), (2, "CT", [[0, 1, 1], [1, 1, 1], [1, 1, 2]]))
+        self.assertEqual((ex.all_lcs("", "AB"), ex.all_lcs("READING", "TRADING")), ([[]], [list("RADING")]))
+
+
 if __name__ == "__main__":
     unittest.main()

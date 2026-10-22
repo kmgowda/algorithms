@@ -34,6 +34,22 @@ def choose_table(n: int, k: int) -> tuple[int, int]:
     return row[k], filled
 
 
+def sub_problem_graph(n: int, k: int) -> tuple[list, list]:
+    """The different sub-problems of choose(n, k) with an arrow from each to the two it needs (Figure 3.4).
+    Returns (edges, a fill order): smaller n first, so every arrow points to an earlier entry."""
+    edges, seen, todo = [], {(n, k)}, [(n, k)]
+    while todo:
+        a, b = todo.pop()
+        if b == 0 or b == a:
+            continue
+        for c in ((a - 1, b - 1), (a - 1, b)):
+            edges.append(((a, b), c))
+            if c not in seen:
+                seen.add(c)
+                todo.append(c)
+    return sorted(edges), sorted(seen)
+
+
 def summary(seen: Counter) -> tuple[int, int]:
     """(calls made, different sub-problems)."""
     return sum(seen.values()), len(seen)

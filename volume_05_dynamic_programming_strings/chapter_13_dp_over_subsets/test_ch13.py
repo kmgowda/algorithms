@@ -33,5 +33,24 @@ class TestChapter13(unittest.TestCase):
             self.assertEqual(sorted(route[1:-1]), list(range(1, n)))
 
 
+    def test_masks(self) -> None:
+        import random
+        d = ex.matrix(ex.BRANCHES, ex.TRAVEL)
+        length, best = ex.held_karp_masks(d)
+        self.assertEqual((length, sum(len(r) for r in best.values())), (21, 32))
+        self.assertEqual((best[0b00100][2], best[0b10100][4], best[0b11100][3], best[0b11110][1], best[0b10010][4], best[0b11010][3]),
+                         (9, 14, 15, 19, 5, 6))
+        self.assertEqual((ex.held_karp_masks([[0]])[0], ex.held_karp_masks([[0, 4], [4, 0]])[0]), (0, 8))
+        r = random.Random(13)
+        for _ in range(30):
+            n = r.randint(1, 7)
+            dd = [[0] * n for _ in range(n)]
+            for i in range(n):
+                for j in range(i + 1, n):
+                    dd[i][j] = dd[j][i] = r.randint(1, 20)
+            self.assertEqual(ex.held_karp_masks(dd)[0], ex.brute(dd))
+        self.assertEqual([(m - 1) * 2 ** (m - 2) for m in (5, 10, 15, 20)], [32, 2304, 114688, 4980736])
+
+
 if __name__ == "__main__":
     unittest.main()

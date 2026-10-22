@@ -47,6 +47,41 @@ def decodings(message: str) -> int:
     return ways[n]
 
 
+def free_digit_table(length: int, total: int) -> list:
+    """F[r][t] = ways to write r free digits (0-9, leading zeros allowed) adding up to t (Section 5.7)."""
+    f = [[0] * (total + 1) for _ in range(length + 1)]
+    f[0][0] = 1
+    for r in range(1, length + 1):
+        for t in range(total + 1):
+            f[r][t] = sum(f[r - 1][t - d] for d in range(10) if d <= t)
+    return f
+
+
+def count_digit_sum(limit: int, s: int) -> tuple[int, list]:
+    """Digit DP: how many numbers from 0 to limit have digits adding up to s (Section 5.7).
+    Walk the digits of limit from the left; at each position every smaller digit frees the rest, counted by
+    the table F; then keep the limit's own digit ("tight") and move on. Returns (count, the walk's additions)."""
+    if limit < 0 or s < 0:
+        return 0, []
+    digits = [int(c) for c in str(limit)]
+    f = free_digit_table(len(digits), s)
+    count, so_far, steps = 0, 0, []
+    for pos, top in enumerate(digits):
+        rest = len(digits) - pos - 1
+        for d in range(top):
+            need = s - so_far - d
+            if 0 <= need:
+                add = f[rest][need]
+                if add:
+                    steps.append((pos, d, rest, need, add))
+                count += add
+        so_far += top
+    if so_far == s:
+        count += 1
+        steps.append(("limit itself", limit))
+    return count, steps
+
+
 if __name__ == "__main__":
     print(count_sets(10, COINS), count_orders(10, COINS)[0], brute_sets(10, COINS))
     print(count_sets(100, [1, 2, 5, 10, 20, 50, 100])[0], count_sets(200, [1, 2, 5, 10, 20, 50, 100, 200])[0])

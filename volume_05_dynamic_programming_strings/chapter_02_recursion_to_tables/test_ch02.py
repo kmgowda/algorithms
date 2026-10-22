@@ -20,5 +20,14 @@ class TestChapter2(unittest.TestCase):
             self.assertEqual(ex.ways_two_numbers(n), ex.ways_table(n)[-1])
 
 
+    def test_top_down_equals_bottom_up(self) -> None:
+        import random
+        r = random.Random(2)
+        self.assertEqual((ex.least_effort_memo(ex.EFFORT), ex.least_effort_memo([]), ex.least_effort_memo([5])), (10, 0, 0))
+        for _ in range(300):
+            a = [r.randint(0, 9) for _ in range(r.randint(0, 12))]
+            self.assertEqual(ex.least_effort(a)[0], ex.least_effort_memo(a))
+
+
 if __name__ == "__main__":
     unittest.main()

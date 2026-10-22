@@ -29,5 +29,26 @@ class TestChapter1(unittest.TestCase):
             sys.setrecursionlimit(old)
 
 
+class TestCallCounting(unittest.TestCase):
+    def test_plain_calls(self) -> None:
+        self.assertEqual([ex.plain_calls(n) for n in (5, 6, 10, 20, 30)], [25, 41, 287, 35421, 4356617])
+        self.assertEqual(ex.plain_calls(30, (1, 2, 3)), 192299281)
+        self.assertEqual((ex.plain_calls(0), ex.plain_calls(-1), ex.plain_calls(1)), (1, 1, 3))
+        c = Counter()
+        ex.ways(12, (1, 2, 3), calls=c)
+        self.assertEqual(sum(c.values()), ex.plain_calls(12, (1, 2, 3)))
+
+    def test_book_numbers(self) -> None:
+        self.assertEqual(ex.ways_memo(30, (1, 2, 3)), 53798080)
+        self.assertTrue(all(ex.plain_calls(n) == 2 * ex.ways_memo(n + 1) - 1 for n in range(25)))
+        self.assertEqual((ex.ways_avoiding(6, {3}), ex.ways_avoiding(6), ex.ways_avoiding(0, {0})), (4, 13, 0))
+
+    def test_memo_trace(self) -> None:
+        t = ex.memo_trace(5)
+        self.assertEqual([m for e, m in t if e == "solve"], [5, 4, 3, 2, 1])
+        self.assertEqual([m for e, m in t if e == "look up"], [1, 2, 3])
+        self.assertEqual((ex.memo_trace(0), ex.memo_trace(1)), ([], [("solve", 1)]))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -50,6 +50,40 @@ def search(text: str, words: list) -> tuple[list, int]:
     return sorted(found), steps
 
 
+def node_names(goto: list) -> list:
+    """The string each trie node spells (node 0 is the start, the empty string)."""
+    names, queue = [""] + [None] * (len(goto) - 1), deque([0])
+    while queue:
+        u = queue.popleft()
+        for ch, v in goto[u].items():
+            names[v] = names[u] + ch
+            queue.append(v)
+    return names
+
+
+def links(words: list) -> dict:
+    """Each node's fallback link by name (Section 22.4): {"she": "he", ...}; the start is written as ""."""
+    goto, fail, _ = build(words)
+    names = node_names(goto)
+    return {names[v]: names[fail[v]] for v in range(1, len(goto))}
+
+
+def walk(text: str, words: list) -> list:
+    """The search step by step (Figure 22.3): for each letter, (letter, links followed as node names,
+    node reached, words reported)."""
+    goto, fail, out = build(words)
+    names = node_names(goto)
+    node, steps = 0, []
+    for ch in text:
+        followed = []
+        while node and ch not in goto[node]:
+            node = fail[node]
+            followed.append(names[node])
+        node = goto[node].get(ch, 0)
+        steps.append((ch, followed, names[node], list(out[node])))
+    return steps
+
+
 def search_each(text: str, words: list) -> list:
     return sorted((i, w) for w in words for i in range(len(text) - len(w) + 1) if text.startswith(w, i))
 

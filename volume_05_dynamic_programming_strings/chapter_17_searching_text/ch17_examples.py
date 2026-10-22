@@ -25,12 +25,29 @@ def naive_search(text: str, pattern: str) -> tuple[list, int]:
     return found, comparisons
 
 
+ALPHABET = "abcdefghijklmnopqrstuvwxyz "
+
+
+def random_text(n: int = 10000, seed: int = 30) -> str:
+    """The shared random text of Part II (Chapters 17, 21 and 30): n letters and spaces, all equally likely."""
+    import random
+    r = random.Random(seed)
+    return "".join(r.choice(ALPHABET) for _ in range(n))
+
+
+def expected_comparisons(n: int, m: int, symbols: int = 27) -> float:
+    """Average comparisons of the naive search on random text (Section 17.5): at each of the n - m + 1 shifts,
+    comparison i + 1 happens only if the first i letters matched, which has chance (1/symbols)^i."""
+    if m > n:
+        return 0.0
+    per_shift = sum((1 / symbols) ** i for i in range(m))
+    return (n - m + 1) * per_shift
+
+
 if __name__ == "__main__":
     print(naive_search(NEWSLETTER, "club"))
     print(naive_search(NEWSLETTER, "poems"), naive_search(NEWSLETTER, "opera"))
     t = "a" * 1000
     print(naive_search(t, "a" * 9 + "b")[1], naive_search(t, "b" + "a" * 9)[1], naive_search(t, "aaa")[0][:3], len(naive_search(t, "aaa")[0]))
-    import random
-    r = random.Random(17)
-    rt = "".join(r.choice("abcdefghijklmnopqrstuvwxyz ") for _ in range(10000))
-    print(naive_search(rt, "library")[1])
+    rt = random_text()
+    print(naive_search(rt, "library")[1], round(expected_comparisons(10000, 7)))

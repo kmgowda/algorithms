@@ -34,6 +34,51 @@ def merge_cost(stacks: list) -> tuple[int, list, str]:
     return C[0][n - 1], C, plan(0, n - 1)
 
 
+# Four tables to multiply in a chain (rows x columns): A is 10 x 30, B 30 x 5, C 5 x 60, D 60 x 10.
+CHAIN = [10, 30, 5, 60, 10]
+
+
+def matrix_chain(dims: list) -> tuple[int, list, list, str]:
+    """Matrix-chain order (Section 11.7): tables M1..Mn, where Mi is dims[i-1] x dims[i]. cost[i][j] = fewest scalar
+    multiplications for Mi..Mj = min over k of cost[i][k] + cost[k+1][j] + dims[i-1] * dims[k] * dims[j].
+    Returns (cost, cost table, split table, bracketing), with tables indexed from 1."""
+    n = len(dims) - 1
+    if n <= 0:
+        return 0, [], [], ""
+    cost = [[0] * (n + 1) for _ in range(n + 1)]
+    split = [[0] * (n + 1) for _ in range(n + 1)]
+    for length in range(2, n + 1):
+        for i in range(1, n - length + 2):
+            j = i + length - 1
+            cost[i][j] = None
+            for k in range(i, j):
+                c = cost[i][k] + cost[k + 1][j] + dims[i - 1] * dims[k] * dims[j]
+                if cost[i][j] is None or c < cost[i][j]:
+                    cost[i][j], split[i][j] = c, k
+    names = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+    def bracket(i: int, j: int) -> str:
+        if i == j:
+            return names[i - 1] if n <= 26 else f"M{i}"
+        k = split[i][j]
+        return "(" + bracket(i, k) + " " + bracket(k + 1, j) + ")"
+
+    return cost[1][n], cost, split, bracket(1, n)
+
+
+def chain_brute(dims: list) -> int:
+    """Try every bracketing (exponentially many) to check matrix_chain."""
+    from functools import lru_cache
+
+    @lru_cache(maxsize=None)
+    def best(i: int, j: int) -> int:
+        if i == j:
+            return 0
+        return min(best(i, k) + best(k + 1, j) + dims[i - 1] * dims[k] * dims[j] for k in range(i, j))
+
+    return best(1, len(dims) - 1) if len(dims) > 1 else 0
+
+
 def greedy_smallest_pair(stacks: list) -> int:
     """Always merge the neighbouring pair with the fewest books: tempting, not always best."""
     s, cost = list(stacks), 0

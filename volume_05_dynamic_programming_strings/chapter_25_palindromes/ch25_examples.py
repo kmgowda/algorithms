@@ -45,6 +45,38 @@ def manacher(s: str) -> tuple[str, list, int]:
     return s[start:start + radius[k]], radius, comparisons
 
 
+def manacher_trace(s: str) -> list:
+    """Manacher's method step by step (Section 25.5): for each position i of the #-string, (i, symbol, how the
+    radius started: "outside", "copied" (final, strictly inside) or "copied to the edge", comparisons, radius)."""
+    t = "#" + "#".join(s) + "#" if s else "#"
+    n = len(t)
+    radius, centre, right, out = [0] * n, 0, 0, []
+    for i in range(n):
+        how = "outside"
+        if i < right:
+            radius[i] = min(right - i, radius[2 * centre - i])
+            how = "copied to the edge" if radius[i] == right - i else "copied"
+        compared = 0
+        if how != "copied":                            # a mirror strictly inside the big palindrome is final
+            while i - radius[i] - 1 >= 0 and i + radius[i] + 1 < n:
+                compared += 1
+                if t[i - radius[i] - 1] != t[i + radius[i] + 1]:
+                    break
+                radius[i] += 1
+        if i + radius[i] > right:
+            centre, right = i, i + radius[i]
+        out.append((i, t[i], how, compared, radius[i]))
+    return out
+
+
+def count_palindromes(s: str) -> int:
+    """Palindromic substrings counted with repeats (Challenge 1): each centre of the #-string with radius r holds
+    (r + 1) // 2 of them."""
+    if not s:
+        return 0
+    return sum((r + 1) // 2 for r in manacher(s)[1])
+
+
 if __name__ == "__main__":
     for w in ("level", "abacabad", "noon", "racecar drive"):
         print(w, expand_around_centres(w), manacher(w)[::2])

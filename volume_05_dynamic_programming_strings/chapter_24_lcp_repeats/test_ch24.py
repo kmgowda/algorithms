@@ -26,5 +26,30 @@ class TestChapter24(unittest.TestCase):
             self.assertEqual(len(ex.longest_repeat(t)), len(rep))
 
 
+    def test_kasai_trace_and_queries(self) -> None:
+        import random
+        sa = ex.suffix_array("banana")
+        self.assertEqual(ex.kasai_trace("banana", sa), [(0, 1, 0, 0), (1, 3, 0, 3), (2, 4, 2, 2), (3, 5, 1, 1), (4, 0, 0, 0)])
+        q = ex.LCPQuery("banana")
+        self.assertEqual((q.query(1, 3), q.query(0, 2), q.query(2, 4), q.query(5, 3), q.query(1, 1)), (3, 0, 2, 1, 5))
+        self.assertEqual(ex.LCPQuery("a").query(0, 0), 1)
+
+        def brute(t, i, j):
+            k = 0
+            while i + k < len(t) and j + k < len(t) and t[i + k] == t[j + k]:
+                k += 1
+            return k
+
+        r = random.Random(24)
+        for _ in range(100):
+            t = "".join(r.choice("ab") for _ in range(r.randint(1, 20)))
+            q = ex.LCPQuery(t)
+            for _ in range(10):
+                i, j = r.randrange(len(t)), r.randrange(len(t))
+                self.assertEqual(q.query(i, j), brute(t, i, j))
+            for i, j, start, h in ex.kasai_trace(t, ex.suffix_array(t)):
+                self.assertLessEqual(start, h)
+
+
 if __name__ == "__main__":
     unittest.main()

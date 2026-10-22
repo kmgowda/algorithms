@@ -25,5 +25,12 @@ class TestChapter6(unittest.TestCase):
             self.assertEqual(ex.knapsack_one_row(books, m), ex.brute(books, m))
 
 
+    def test_subset_sums(self) -> None:
+        reach = ex.subset_sums([p for _, p, _ in ex.BOOKS], 35)
+        self.assertEqual([t for t in range(36) if not reach[t]], [1, 2, 3, 4, 7, 8, 12, 13, 17, 18, 22, 23, 27, 28, 31, 32, 33, 34])
+        self.assertEqual((ex.subset_sums([], 3), ex.subset_sums([5], 0)), ([True, False, False, False], [True]))
+        self.assertEqual((ex.unlimited([("Poems", 5, 6)], 15), ex.knapsack_one_row([("Poems", 5, 6)], 15)), (18, 6))
+
+
 if __name__ == "__main__":
     unittest.main()

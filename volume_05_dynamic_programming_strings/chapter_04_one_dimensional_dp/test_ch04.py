@@ -27,5 +27,30 @@ class TestChapter4(unittest.TestCase):
             self.assertEqual(ex.best_evenings(talks)[0], brute)
 
 
+    def test_weighted_intervals(self) -> None:
+        import random
+        best, chosen, p, opt = ex.weighted_intervals(ex.BOOKINGS)
+        self.assertEqual((best, chosen), (22, ["Story time", "Poetry", "Film club", "Book swap"]))
+        self.assertEqual((p, opt), ([0, 1, 0, 3, 2, 4, 5], [0, 5, 8, 9, 13, 16, 20, 22]))
+        self.assertEqual(ex.greedy_intervals(ex.BOOKINGS, key=lambda b: b[2])[0], 19)
+        self.assertEqual(ex.greedy_intervals(ex.BOOKINGS, key=lambda b: -b[3])[0], 20)
+        self.assertEqual(ex.weighted_intervals([])[:2], (0, []))
+        self.assertEqual(ex.weighted_intervals([("A", 1, 2, 4)])[:2], (4, ["A"]))
+        self.assertEqual(ex.weighted_intervals([("A", 1, 3, 4), ("B", 3, 5, 4)])[:2], (8, ["A", "B"]))
+        big = [(a, b, c, 20 if a == "Chess club" else d) for a, b, c, d in ex.BOOKINGS]
+        self.assertEqual(ex.weighted_intervals(big)[:2], (31, ["Chess club", "Knitting", "History talk"]))
+        r = random.Random(4)
+        for _ in range(200):
+            bs = []
+            for i in range(r.randint(0, 7)):
+                s0 = r.randint(0, 10)
+                bs.append((str(i), s0, s0 + r.randint(1, 4), r.randint(1, 9)))
+            brute = max(sum(x[3] for x in c) for k in range(len(bs) + 1) for c in itertools.combinations(bs, k)
+                        if all(a[2] <= b[1] or b[2] <= a[1] for a, b in itertools.combinations(c, 2)))
+            got, names, _, _ = ex.weighted_intervals(bs)
+            self.assertEqual(got, brute)
+            self.assertEqual(sum(b[3] for b in bs if b[0] in names), got)
+
+
 if __name__ == "__main__":
     unittest.main()

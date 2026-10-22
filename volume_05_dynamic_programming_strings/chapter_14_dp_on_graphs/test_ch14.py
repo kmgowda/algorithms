@@ -27,5 +27,11 @@ class TestChapter14(unittest.TestCase):
                          (({"A": 0}, {"A": 1}), [{"A": 0, "B": float("inf")}]))
 
 
+    def test_slower_school_road(self) -> None:
+        roads = [(a, b, 7 if (a, b) == ("School", "Station") else w) for a, b, w in ex.ROADWORKS]
+        dist, ways = ex.count_quickest(ex.adjacency(ex.PLACES, roads), "Library")
+        self.assertEqual((dist["Station"], ways["Station"], dist["Harbour"], ways["Harbour"]), (10, 1, 16, 2))
+
+
 if __name__ == "__main__":
     unittest.main()

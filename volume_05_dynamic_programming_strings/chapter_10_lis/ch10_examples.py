@@ -45,6 +45,25 @@ def lis_piles(values: list) -> tuple[int, list]:
     return len(tops), history
 
 
+def lis_patience(values: list, strict: bool = True) -> tuple[int, list, list]:
+    """Patience sorting with back-links (Section 10.5): deal each value onto the leftmost pile whose top is not
+    smaller (bisect_left; for a non-decreasing run use bisect_right), remembering the top of the pile to its left.
+    Returns (length, one longest increasing subsequence, the piles as lists of values, bottom first)."""
+    tops, top_index, piles, link = [], [], [], [-1] * len(values)
+    for i, v in enumerate(values):
+        k = (bisect.bisect_left if strict else bisect.bisect_right)(tops, v)
+        link[i] = top_index[k - 1] if k else -1            # the card this one would follow
+        if k == len(tops):
+            tops.append(v); top_index.append(i); piles.append([v])
+        else:
+            tops[k] = v; top_index[k] = i; piles[k].append(v)
+    out, i = [], top_index[-1] if top_index else -1
+    while i != -1:
+        out.append(values[i])
+        i = link[i]
+    return len(tops), out[::-1], piles
+
+
 def brute(values: list) -> int:
     for k in range(len(values), 0, -1):
         if any(all(a < b for a, b in zip(c, c[1:])) for c in itertools.combinations(values, k)):

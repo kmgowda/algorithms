@@ -51,6 +51,30 @@ def held_karp(d: list) -> tuple[int, list, int]:
     return length, route[::-1], len(best)
 
 
+def held_karp_masks(d: list) -> tuple[int, dict]:
+    """The same table with explicit bit operations (Section 13.4): places 1..n-1 are bits 1..n-1 of a mask.
+    Masks are visited in increasing numeric order, which puts every set after all of its subsets.
+    Returns (round length, the table best[mask][j] as a dict of dicts)."""
+    n = len(d)
+    if n == 1:
+        return 0, {}
+    full = (1 << n) - 2                                # every place except home (bit 0)
+    inf = float("inf")
+    best = {}
+    for mask in range(2, full + 1, 2):                 # even masks only: bit 0 (home) is never in a set
+        row = {}
+        for j in range(1, n):
+            if not mask & (1 << j):                    # j must be in the set
+                continue
+            prev = mask & ~(1 << j)                    # the set without j: a smaller number
+            if prev == 0:
+                row[j] = d[0][j]
+            else:
+                row[j] = min((best[prev][k] + d[k][j] for k in range(1, n) if prev & (1 << k)), default=inf)
+        best[mask] = row
+    return min(best[full][j] + d[j][0] for j in range(1, n)), best
+
+
 def brute(d: list) -> int:
     n = len(d)
     return min(sum(d[a][b] for a, b in zip((0,) + p, p + (0,))) for p in itertools.permutations(range(1, n))) if n > 1 else 0

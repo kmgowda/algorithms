@@ -34,6 +34,57 @@ def suffix_array_doubling(text: str) -> tuple[list, int]:
         k *= 2
 
 
+def doubling_trace(text: str) -> list:
+    """Prefix doubling round by round (Figure 23.3). Each entry is (k, the pair (rank[i], rank[i + k]) for every
+    position i, the new ranks), starting from ranks of single letters (a = 0, b = 1, ...); -1 means "past the end"."""
+    n = len(text)
+    letters = sorted(set(text))
+    rank = [letters.index(c) for c in text]
+    out, k = [(0, None, list(rank))], 1
+    while n and (len(set(rank)) < n):
+        pairs = [(rank[i], rank[i + k] if i + k < n else -1) for i in range(n)]
+        order = sorted(set(pairs))
+        rank = [order.index(p) for p in pairs]
+        out.append((k, pairs, list(rank)))
+        k *= 2
+    return out
+
+
+def counting_sort(items: list, key, size: int) -> list:
+    """A stable sort of items by an integer key from -1 to size - 1 (Volume 3's counting sort)."""
+    buckets = [[] for _ in range(size + 1)]
+    for it in items:
+        buckets[key(it) + 1].append(it)
+    return [it for b in buckets for it in b]
+
+
+def suffix_array_radix(text: str) -> tuple[list, int]:
+    """Prefix doubling with radix sorting (Section 23.5): each round sorts the pairs with two stable counting-sort
+    passes, by second rank and then by first rank, so a round costs O(n) and the whole build O(n log n).
+    Returns (suffix array, rounds)."""
+    n = len(text)
+    if n == 0:
+        return [], 0
+    letters = sorted(set(text))
+    rank = [letters.index(c) for c in text]
+    if len(set(rank)) == n:                            # all letters different: one sort by letter is enough
+        return sorted(range(n), key=lambda i: rank[i]), 0
+    sa, k, rounds = list(range(n)), 1, 0
+    while True:
+        rounds += 1
+        second = lambda i: rank[i + k] if i + k < n else -1
+        sa = counting_sort(list(range(n)), second, n)            # pass 1: by the second key
+        sa = counting_sort(sa, lambda i: rank[i], n)             # pass 2: by the first key, keeping pass 1's order
+        new = [0] * n
+        for a, b in zip(sa, sa[1:]):
+            new[b] = new[a] + ((rank[a], second(a)) != (rank[b], second(b)))
+        rank = new
+        k *= 2
+        if len(set(rank)) == n:
+            break
+    return sa, rounds
+
+
 def find_all(text: str, sa: list, pattern: str) -> tuple[list, int]:
     """Every occurrence: the suffixes starting with pattern form one block of the array, found by two binary
     searches (Figure 23.2). Returns (sorted positions, suffix comparisons)."""
