@@ -22,7 +22,8 @@ def adjacency(places=PLACES, roads=ROADS) -> dict[str, list[str]]:
 
 def explore(adj: dict, start, log: list | None = None) -> list:
     """The generic walk (Figure 22.3): keep a frontier of places seen but not yet visited, and a visited set.
-    Taking from the end of the frontier makes it a stack; Chapter 23 takes from the front instead."""
+    Taking from the end of the frontier makes it a stack (a "stack walk"); taking from the front makes it a queue,
+    which is breadth-first search (Chapter 23). The stack walk is NOT depth-first search (Section 22.5)."""
     visited, frontier, order = {start}, [start], []
     while frontier:
         v = frontier.pop()
@@ -34,6 +35,39 @@ def explore(adj: dict, start, log: list | None = None) -> list:
         if log is not None:
             log.append((v, list(frontier)))
     return order
+
+
+def walk_tree(adj: dict, start, frontier_rule: str = "stack") -> dict:
+    """The parent of each place: the place from which it was first seen (the red roads of Figure 22.4)."""
+    parent, frontier = {start: None}, [start]
+    while frontier:
+        v = frontier.pop() if frontier_rule == "stack" else frontier.pop(0)
+        for w in adj[v]:
+            if w not in parent:
+                parent[w] = v
+                frontier.append(w)
+    return parent
+
+
+def is_ancestor(parent: dict, a, b) -> bool:
+    """True when a lies on the tree path from b back to the start."""
+    while b is not None:
+        if b == a:
+            return True
+        b = parent[b]
+    return False
+
+
+def cross_roads(adj: dict, parent: dict) -> list:
+    """Roads outside the tree whose ends lie on different branches (neither is an ancestor of the other).
+    A depth-first search tree of an undirected graph never has one (Chapter 24)."""
+    out = []
+    for v in adj:
+        for w in adj[v]:
+            if v in parent and w in parent and str(v) < str(w) and parent.get(w) != v and parent.get(v) != w \
+                    and not is_ancestor(parent, v, w) and not is_ancestor(parent, w, v):
+                out.append((v, w))
+    return out
 
 
 def reachable(adj: dict, start) -> set:
@@ -53,3 +87,5 @@ if __name__ == "__main__":
     for row in log:
         print(row)
     print(degree_table(adj), sum(degree_table(adj).values()), len(ROADS))
+    t = walk_tree(adj, "Library")
+    print(t, cross_roads(adj, t))

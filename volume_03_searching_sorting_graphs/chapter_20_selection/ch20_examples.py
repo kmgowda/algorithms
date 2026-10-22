@@ -67,6 +67,43 @@ def median_of_medians(a: list, k: int, counter: dict | None = None) -> object:
     return median_of_medians(larger, k - len(smaller) - len(equal), counter)
 
 
+def mom_pivot(a: list) -> tuple[list, object]:
+    """One round of median of medians (Figure 20.4): the groups of five, each sorted, and the pivot chosen."""
+    groups = [sorted(a[i:i + 5]) for i in range(0, len(a), 5)]
+    meds = [g[(len(g) - 1) // 2] for g in groups]
+    return groups, median_of_medians(meds, (len(meds) + 1) // 2)
+
+
+def guaranteed_side(n: int) -> int:
+    """Items certainly larger than the median-of-medians pivot (and, likewise, smaller): at least 3 from each of the
+    groups whose median is above the pivot's, leaving out the pivot's own group and a short last group."""
+    import math
+    return max(0, 3 * (math.ceil(math.ceil(n / 5) / 2) - 2))
+
+
+def expected_select(n_max: int) -> list:
+    """E[n][k]: the exact average comparisons of random-pivot quickselect (Lomuto, n - 1 comparisons per partition)
+    for the k-th smallest of n distinct items, for every n <= n_max (Section 20.5)."""
+    E = [[0.0] * (n_max + 2) for _ in range(n_max + 2)]
+    for n in range(2, n_max + 1):
+        for k in range(1, n + 1):
+            total = sum(E[n - p][k - p] for p in range(1, k)) + sum(E[p - 1][k] for p in range(k + 1, n + 1))
+            E[n][k] = n - 1 + total / n
+    return E
+
+
+def average_median_comparisons(n: int, runs: int, seed: int = 1) -> float:
+    """Measured comparisons per item of random-pivot quickselect for the median of n random numbers."""
+    rng = random.Random(seed)
+    a = [rng.random() for _ in range(n)]
+    total = 0
+    for r in range(runs):
+        c = {"comparisons": 0}
+        quickselect(a, n // 2, c, rng=random.Random(seed * 1000 + r))
+        total += c["comparisons"]
+    return total / runs / n
+
+
 def smallest_k_heap(a: list, k: int) -> list:
     """The k smallest, in order, with a max-heap of size k (Volume 2, Chapter 26): O(n log k)."""
     return heapq.nsmallest(k, a)

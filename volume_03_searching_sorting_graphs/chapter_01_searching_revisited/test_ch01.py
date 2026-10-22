@@ -49,6 +49,14 @@ class TestChapter01(unittest.TestCase):
         self.assertEqual(got[1], sum(today <= d <= end for d in due))
         self.assertEqual(got[2], bisect.bisect_right(due, new))
 
+    def test_midpoints(self) -> None:
+        self.assertEqual(ex.naive_mid_32bit(2_000_000_000, 2_100_000_000), -97_483_648)
+        self.assertEqual(ex.safe_mid(2_000_000_000, 2_100_000_000), 2_050_000_000)
+        for lo in range(0, 30):
+            for hi in range(lo, 30):
+                self.assertEqual(ex.safe_mid(lo, hi), (lo + hi) // 2)
+        self.assertEqual(ex.wrap32(2**31), -2**31)
+
 
 if __name__ == "__main__":
     unittest.main()

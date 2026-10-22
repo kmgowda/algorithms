@@ -58,6 +58,37 @@ def experiment(n: int = 10_000, seed: int = 1) -> dict:
     return out
 
 
+def expected_square(n: int) -> float:
+    """E[n_i^2] for one bucket when n keys fall independently and evenly into n buckets: 2 - 1/n (Section 17.5)."""
+    return 2 - 1 / n if n > 0 else 0.0
+
+
+def sum_of_squares(n: int, rng) -> int:
+    """Scatter n random keys from [0, 1) into n buckets and return the sum of the squared bucket sizes."""
+    sizes = [0] * n
+    for _ in range(n):
+        sizes[min(int(rng.random() * n), n - 1)] += 1
+    return sum(s * s for s in sizes)
+
+
+SAMPLE = [0.79, 0.82, 0.49, 0.26, 0.0, 0.66, 0.47, 0.76, 0.37, 0.77]   # ten keys for Figure 17.4
+SHELF_KEYS = [0.81, 0.17, 0.39, 0.26, 0.72, 0.94, 0.21, 0.12, 0.23, 0.68]
+
+
+def bucket_sizes(keys: list, n: int) -> list:
+    """How many keys of [0, 1) fall into each of n equal buckets."""
+    sizes = [0] * n
+    for x in keys:
+        sizes[min(int(x * n), n - 1)] += 1
+    return sizes
+
+
+def average_sum_of_squares(n: int, trials: int, seed: int = 1) -> float:
+    """Average of sum(n_i^2) over many scatterings; the theory says n(2 - 1/n) = 2n - 1."""
+    rng = random.Random(seed)
+    return sum(sum_of_squares(n, rng) for _ in range(trials)) / trials
+
+
 if __name__ == "__main__":
     log = {}
     print(bucket_sort(PILE, 0, 100, 10, log), log)

@@ -60,7 +60,7 @@ def flood_fill(grid: list[str], start) -> set:
 
 
 def generate_maze(rows: int, cols: int, seed: int = 1) -> list[str]:
-    """A random perfect maze (exactly one route between any two rooms) by randomized DFS (Figure 26.4).
+    """A random perfect maze (exactly one route between any two rooms) by randomized DFS (Figure 26.5).
     Rooms sit at odd coordinates of a (2*rows+1) x (2*cols+1) grid; DFS knocks down the wall between rooms."""
     rng = random.Random(seed)
     h, w = 2 * rows + 1, 2 * cols + 1
@@ -80,6 +80,50 @@ def generate_maze(rows: int, cols: int, seed: int = 1) -> list[str]:
         seen.add((nr, nc))
         stack.append((nr, nc))
     return ["".join(row) for row in g]
+
+
+def bfs_states(start, goal, moves) -> list | None:
+    """BFS on an implicit state graph (Section 26.5, Figure 26.4): moves(state) yields the states one move away.
+    Returns the fewest-moves list of states from start to goal, or None if the goal can never be reached."""
+    parent = {start: None}
+    q = deque([start])
+    while q:
+        s = q.popleft()
+        if s == goal:
+            path = []
+            while s is not None:
+                path.append(s)
+                s = parent[s]
+            return path[::-1]
+        for t in moves(s):
+            if t not in parent:
+                parent[t] = s
+                q.append(t)
+    return None
+
+
+def lock_moves(jammed: set):
+    """The archive cabinet's lock: three dials 0-9; one move turns one dial one step up or down (9 wraps to 0).
+    Combinations in `jammed` stick the lock, so the search must never pass through them."""
+    def moves(code: str):
+        for i in range(len(code)):
+            for step in (1, -1):
+                d = (int(code[i]) + step) % 10
+                nxt = code[:i] + str(d) + code[i + 1:]
+                if nxt not in jammed:
+                    yield nxt
+    return moves
+
+
+def count_states(start, moves) -> int:
+    """How many states the search can reach at all (flood fill on the state graph)."""
+    seen, q = {start}, deque([start])
+    while q:
+        for t in moves(q.popleft()):
+            if t not in seen:
+                seen.add(t)
+                q.append(t)
+    return len(seen)
 
 
 if __name__ == "__main__":

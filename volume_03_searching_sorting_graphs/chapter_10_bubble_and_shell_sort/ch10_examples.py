@@ -31,7 +31,7 @@ def bubble_sort(a: list, passes: list | None = None) -> dict:
 
 
 def shell_sort(a: list, gaps=None, rounds: list | None = None) -> dict:
-    """Insertion sort on items a gap apart, for shrinking gaps ending with 1 (Figure 10.3)."""
+    """Insertion sort on items a gap apart, for shrinking gaps ending with 1 (Figure 10.2)."""
     n = len(a)
     if gaps is None:
         gaps, g = [], 1

@@ -42,6 +42,14 @@ class TestChapter23(unittest.TestCase):
             if w not in seen:
                 yield from self._paths(adj, w, b, seen + [w])
 
+    def test_from_the_market(self) -> None:
+        dist, parent = ex.bfs(ex.adjacency(), "Market")
+        self.assertEqual(ex.layers(dist), [["Market"], ["School", "Park", "Station", "Museum"],
+                                           ["Library", "Hospital", "Harbour"]])
+        self.assertEqual(ex.route(parent, "Harbour"), ["Market", "Station", "Harbour"])
+        self.assertEqual(ex.route({"A": None}, "A"), ["A"])
+        self.assertIsNone(ex.route({}, "A"))
+
 
 if __name__ == "__main__":
     unittest.main()

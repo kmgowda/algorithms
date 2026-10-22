@@ -101,6 +101,67 @@ def lomuto_last(a: list, lo: int = 0, hi: int | None = None) -> None:
     lomuto_last(a, i + 1, hi)
 
 
+def hoare_partition(a: list, lo: int, hi: int, counter: dict | None = None, log: list | None = None) -> int:
+    """Hoare's partition around the value in the middle position (Section 13.5). Two fingers move towards each other
+    and swap a pair that is on the wrong sides. Returns j with every item of a[lo..j] <= pivot <= every item of
+    a[j+1..hi]; the pivot itself need not end at j."""
+    pivot = a[(lo + hi) // 2]
+    i, j = lo - 1, hi + 1
+    while True:
+        i += 1
+        while a[i] < pivot:
+            if counter is not None:
+                counter["comparisons"] += 1
+            i += 1
+        j -= 1
+        while a[j] > pivot:
+            if counter is not None:
+                counter["comparisons"] += 1
+            j -= 1
+        if counter is not None:
+            counter["comparisons"] += 2          # the two comparisons that stopped the fingers
+        if i >= j:
+            return j
+        a[i], a[j] = a[j], a[i]
+        if counter is not None:
+            counter["swaps"] += 1
+        if log is not None:
+            log.append((i, j, list(a[lo:hi + 1])))
+
+
+def quicksort_hoare(a: list, lo: int = 0, hi: int | None = None, counter: dict | None = None) -> None:
+    """Quicksort with Hoare's partition: recurse on lo..j and j+1..hi."""
+    if hi is None:
+        hi = len(a) - 1
+    if lo >= hi:
+        return
+    j = hoare_partition(a, lo, hi, counter)
+    quicksort_hoare(a, lo, j, counter)
+    quicksort_hoare(a, j + 1, hi, counter)
+
+
+def lomuto_counts(a: list) -> dict:
+    """Comparisons and swaps of last-item Lomuto quicksort (Chapter 12), for comparison with Hoare's scheme."""
+    c = {"comparisons": 0, "swaps": 0}
+
+    def sort(lo, hi):
+        if lo >= hi:
+            return
+        pivot, i = a[hi], lo
+        for j in range(lo, hi):
+            c["comparisons"] += 1
+            if a[j] < pivot:
+                a[i], a[j] = a[j], a[i]
+                c["swaps"] += 1
+                i += 1
+        a[i], a[hi] = a[hi], a[i]
+        c["swaps"] += 1
+        sort(lo, i - 1)
+        sort(i + 1, hi)
+    sort(0, len(a) - 1)
+    return c
+
+
 def compare(n: int = 4000, seed: int = 1) -> dict:
     rng = random.Random(seed)
     inputs = {"random": [rng.random() for _ in range(n)], "sorted": sorted(rng.random() for _ in range(n)),

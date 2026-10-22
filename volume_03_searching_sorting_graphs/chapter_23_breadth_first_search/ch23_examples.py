@@ -38,7 +38,7 @@ def bfs(adj: dict, start, log: list | None = None) -> tuple[dict, dict]:
 
 
 def route(parent: dict, goal) -> list | None:
-    """Walk the parent links back from the goal (Figure 23.4); None if the goal was never reached."""
+    """Walk the parent links back from the goal and reverse (Section 23.5); None if the goal was never reached."""
     if goal not in parent:
         return None
     path = []

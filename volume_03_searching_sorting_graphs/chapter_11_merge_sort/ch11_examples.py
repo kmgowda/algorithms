@@ -12,7 +12,7 @@ PILE = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 
 
 def merge(left: list, right: list, counter: dict | None = None) -> list:
-    """Merge two sorted lists: repeatedly take the smaller front item (Figure 11.3). Stable: ties take from left."""
+    """Merge two sorted lists: repeatedly take the smaller front item (Figure 11.2). Stable: ties take from left."""
     out, i, j = [], 0, 0
     while i < len(left) and j < len(right):
         if counter is not None:
@@ -26,7 +26,7 @@ def merge(left: list, right: list, counter: dict | None = None) -> list:
 
 
 def merge_sort(a: list, counter: dict | None = None, log: list | None = None, depth: int = 0) -> list:
-    """Split in half, sort each half, merge (Figure 11.2). Returns a new sorted list."""
+    """Split in half, sort each half, merge (Figures 11.1 and 11.3). Returns a new sorted list."""
     if log is not None:
         log.append(("split", depth, list(a)))
     if len(a) <= 1:

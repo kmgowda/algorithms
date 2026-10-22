@@ -27,7 +27,7 @@ class TestChapter31(unittest.TestCase):
 
     def test_timings_run(self) -> None:
         t = ex.timings(300, 900)
-        self.assertEqual(len(t), 7)
+        self.assertEqual(len(t), 9)
 
 
 if __name__ == "__main__":

@@ -50,6 +50,21 @@ def contains(a: list, key) -> bool:
     return i < len(a) and a[i] == key
 
 
+def safe_mid(lo: int, hi: int) -> int:
+    """The middle of [lo, hi) written so that lo + hi is never formed (Section 1.5)."""
+    return lo + (hi - lo) // 2
+
+
+def wrap32(x: int) -> int:
+    """What a 32-bit signed integer holds after x is computed: values past 2**31 - 1 wrap round to negatives."""
+    return (x + 2**31) % 2**32 - 2**31
+
+
+def naive_mid_32bit(lo: int, hi: int) -> int:
+    """(lo + hi) // 2 as a 32-bit machine computes it: the sum can wrap round before the halving."""
+    return wrap32(lo + hi) // 2
+
+
 def due_date_report(due: list[int], today: int, week_end: int, new_day: int) -> tuple[int, int, int]:
     """Section 1.8: (due today, due this week, insertion position for a new loan)."""
     return (count(due, today), count_between(due, today, week_end), upper_bound(due, new_day))

@@ -12,15 +12,31 @@ GRID = [[12, 25, 31, 47],
         [35, 58, 80, 91]]                            # every row and every column increases
 
 
-def find_rotation(a: list) -> int:
-    """Index of the smallest value (where the rotation starts), by binary search (Figure 3.2)."""
+def find_rotation(a: list, trace: list | None = None) -> int:
+    """Index of the smallest value (where the rotation starts), by binary search (Section 3.4); 0 for an empty list."""
     lo, hi = 0, len(a) - 1
     while lo < hi:
         mid = (lo + hi) // 2
+        if trace is not None:
+            trace.append((lo, hi, mid, a[mid], a[hi]))
         if a[mid] > a[hi]:
             lo = mid + 1          # the drop is to the right of mid
         else:
             hi = mid
+    return lo
+
+
+def find_rotation_with_duplicates(a: list) -> int:
+    """Like find_rotation, but when a[mid] = a[hi] the drop could be either side: drop hi by one (worst case O(n))."""
+    lo, hi = 0, len(a) - 1
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if a[mid] > a[hi]:
+            lo = mid + 1
+        elif a[mid] < a[hi]:
+            hi = mid
+        else:
+            hi -= 1
     return lo
 
 

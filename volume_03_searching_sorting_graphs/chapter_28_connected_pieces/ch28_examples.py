@@ -91,8 +91,77 @@ def strongly_connected(g: dict) -> list[list]:
     return groups
 
 
+def finish_times(g: dict) -> dict:
+    """Discovery and finish times of a DFS over the whole directed graph, starting places in list order:
+    {place: (discovered, finished)}. Used to illustrate the lemma behind Kosaraju's method (Section 28.6)."""
+    clock, times = [0], {}
+
+    def dfs(v):
+        clock[0] += 1
+        d = clock[0]
+        times[v] = (d, None)
+        for w in g[v]:
+            if w not in times:
+                dfs(w)
+        clock[0] += 1
+        times[v] = (d, clock[0])
+
+    for v in g:
+        if v not in times:
+            dfs(v)
+    return times
+
+
+def tarjan_scc(g: dict, log: list | None = None, final: dict | None = None) -> list[list]:
+    """Tarjan's one-pass method (Section 28.6). One DFS gives every place a discovery number disc and a low-link low:
+    the smallest disc reachable from its subtree using at most one arrow back to a place still on the stack.
+    A place with low = disc is the root of a group: pop the stack down to it. Groups come out sinks first.
+    log, if given, receives (place, disc, low, group) as each group root closes its group; final, if given,
+    receives {place: (disc, low)} when the search ends."""
+    disc, low, on_stack, stack, groups, clock = {}, {}, set(), [], [], [0]
+
+    def visit(v):
+        clock[0] += 1
+        disc[v] = low[v] = clock[0]
+        stack.append(v)
+        on_stack.add(v)
+        for w in g[v]:
+            if w not in disc:                       # a tree arrow: go deeper, then take the child's low-link
+                visit(w)
+                low[v] = min(low[v], low[w])
+            elif w in on_stack:                     # an arrow back into the current, unfinished group
+                low[v] = min(low[v], disc[w])
+        if low[v] == disc[v]:                       # v is the first place of its group that DFS reached
+            group = []
+            while True:
+                w = stack.pop()
+                on_stack.discard(w)
+                group.append(w)
+                if w == v:
+                    break
+            groups.append(group)
+            if log is not None:
+                log.append((v, disc[v], low[v], list(group)))
+
+    for v in g:
+        if v not in disc:
+            visit(v)
+    if final is not None:
+        final.update({v: (disc[v], low[v]) for v in disc})
+    return groups
+
+
+def condensation(g: dict, groups: list[list]) -> set:
+    """Arrows between groups (by group index): always a DAG."""
+    where = {v: i for i, grp in enumerate(groups) for v in grp}
+    return {(where[a], where[b]) for a in g for b in g[a] if where[a] != where[b]}
+
+
 if __name__ == "__main__":
     after = [r for r in ROADS if r not in CLOSED]
     print(components(adjacency(roads=after)))
     print(components(adjacency()))
     print(strongly_connected(directed()))
+    print(finish_times(directed()))
+    log = []
+    print(tarjan_scc(directed(), log), log)

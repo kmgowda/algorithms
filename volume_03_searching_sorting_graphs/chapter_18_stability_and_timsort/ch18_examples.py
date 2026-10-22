@@ -1,8 +1,8 @@
 """Volume 3, Chapter 18 - Stability and Timsort: sorting real data, which is rarely random.
 
-A teaching version of Timsort: find natural runs (reversing falling ones), extend short runs with insertion sort,
-and merge runs from a stack while keeping run lengths balanced. (Python's own sorted() is the full Timsort, with
-galloping; this version omits galloping to stay short.)
+A teaching version of Timsort: find natural runs (reversing strictly falling ones) and merge runs from a stack while
+keeping run lengths balanced. Python's own sorted() is the full Timsort; the functions min_run, collapse_rule,
+timsort_merges, and powersort_merges model its minimum run length and its two merge policies (Section 18.5).
 
 Run:  python3 ch18_examples.py
 """
@@ -82,6 +82,92 @@ def timsort(a: list, counter: dict | None = None, log: list | None = None) -> No
             log.append(("merge", a[s1:e2]))
 
 
+def min_run(n: int) -> int:
+    """CPython's minimum run length (Section 18.5): n itself below 64; otherwise a number from 32 to 64 chosen so
+    that n / min_run is a power of two or a little below one. Take the top six bits of n, and add 1 if any of the
+    remaining bits is set."""
+    r = 0
+    while n >= 64:
+        r |= n & 1
+        n >>= 1
+    return n + r
+
+
+def collapse_rule(lengths: list[int], log: list | None = None) -> list[int]:
+    """Timsort's merge rule on a stack of run lengths (bottom first), as in CPython 3.4-3.10 after the 2015 fix.
+    With the top runs ... W, Z, Y, X (X on top) it keeps two invariants: Z > Y + X and Y > X (and, the fix, W > Z + Y).
+    While one fails, it merges Y with the smaller of its neighbours. Returns the stack after the new run is in place."""
+    p = list(lengths)
+    while len(p) > 1:
+        n = len(p) - 2                                   # p[n] is Y, p[n + 1] is X
+        if (n > 0 and p[n - 1] <= p[n] + p[n + 1]) or (n > 1 and p[n - 2] <= p[n - 1] + p[n]):
+            if p[n - 1] < p[n + 1]:
+                n -= 1                                   # merge Z and Y instead of Y and X
+        elif p[n] > p[n + 1]:
+            break                                        # both invariants hold
+        if log is not None:
+            log.append((p[n], p[n + 1]))
+        p[n:n + 2] = [p[n] + p[n + 1]]
+    return p
+
+
+def timsort_merges(run_lengths: list[int]) -> list[tuple[int, int]]:
+    """The merges real Timsort (CPython 3.4-3.10) makes for runs of these lengths, in order, as (left, right) sizes."""
+    log: list = []
+    stack: list[int] = []
+    for r in run_lengths:
+        stack = collapse_rule(stack + [r], log)
+    while len(stack) > 1:                               # merge whatever is left, top first
+        log.append((stack[-2], stack[-1]))
+        stack[-2:] = [stack[-2] + stack[-1]]
+    return log
+
+
+def power(s1: int, n1: int, n2: int, n: int) -> int:
+    """Powersort's 'power' of the boundary between a run [s1, s1 + n1) and the next run of length n2, in a list of
+    n items: the depth in the halving tree of [0, n) at which the two runs' midpoints first fall on different sides
+    (CPython 3.11+, powerloop in listobject.c)."""
+    a, b = 2 * s1 + n1, 2 * s1 + 2 * n1 + n2       # twice the two midpoints
+    result = 0
+    while True:
+        result += 1
+        if a >= n:
+            a, b = a - n, b - n
+        elif b >= n:
+            return result
+        a, b = 2 * a, 2 * b
+
+
+def powersort_merges(run_lengths: list[int]) -> list[tuple[int, int]]:
+    """The merges Powersort (CPython 3.11+) makes for runs of these lengths: when a new run arrives, merge the top of
+    the stack while the boundary below it has a larger power than the new boundary."""
+    n = sum(run_lengths)
+    log: list = []
+    stack: list[list[int]] = []                         # [start, length, power of the boundary above this run]
+    start = 0
+    for length in run_lengths:
+        if stack:
+            s1, n1, _ = stack[-1]
+            pw = power(s1, n1, length, n)
+            while len(stack) > 1 and stack[-2][2] > pw:
+                (sa, na, pa), (sb, nb, _) = stack[-2], stack.pop()
+                log.append((na, nb))
+                stack[-1] = [sa, na + nb, pa]
+            stack[-1][2] = pw
+        stack.append([start, length, 0])
+        start += length
+    while len(stack) > 1:
+        (sa, na, pa), (sb, nb, _) = stack[-2], stack.pop()
+        log.append((na, nb))
+        stack[-1] = [sa, na + nb, pa]
+    return log
+
+
+def merge_cost(merges: list[tuple[int, int]]) -> int:
+    """Items copied by a list of merges: each merge of sizes a and b copies a + b items."""
+    return sum(a + b for a, b in merges)
+
+
 def merge_sort_comparisons(a: list) -> int:
     c = {"comparisons": 0}
 
@@ -126,4 +212,10 @@ if __name__ == "__main__":
         b = list(data)
         timsort(b, c)
         print(name, c, merge_sort_comparisons(data), b == sorted(data))
+    print([min_run(n) for n in (0, 1, 63, 64, 65, 100, 1000, 2112, 1_000_000)])
+    print(collapse_rule([120, 80, 25], []), collapse_rule([120, 80, 25, 20], []))
+    runs = [1000, 1, 1, 1, 1, 1, 1, 1]
+    print(timsort_merges(runs), merge_cost(timsort_merges(runs)), powersort_merges(runs), merge_cost(powersort_merges(runs)))
+    left_to_right = [(1000 + i, 1) for i in range(7)]
+    print(merge_cost(left_to_right))
     print(builtin_timing())

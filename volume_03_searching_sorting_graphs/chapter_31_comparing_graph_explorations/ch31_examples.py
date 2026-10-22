@@ -56,8 +56,9 @@ def random_graph(n: int, m: int, seed: int = 1) -> list[tuple]:
     return sorted(roads)
 
 
-def timings(n: int = 3000, m: int = 9000, seed: int = 1) -> dict:
-    """Milliseconds for each method on the same random graph of n places and m roads (Figure 31.3)."""
+def timings(n: int = 3000, m: int = 9000, seed: int = 1, repeats: int = 5) -> dict:
+    """Milliseconds for each method on the same random graph of n places and m roads, the median of several runs
+    (Figure 31.3)."""
     roads = random_graph(n, m, seed)
     places = list(range(n))
     adj = bfs_m.adjacency(places, roads)
@@ -69,12 +70,17 @@ def timings(n: int = 3000, m: int = 9000, seed: int = 1) -> dict:
                      ("DFS (recursive)", lambda: dfs_m.dfs(adj, 0)),
                      ("components", lambda: comp_m.components(adj)),
                      ("topological order (Kahn)", lambda: topo_m.kahn(dag)),
-                     ("strongly connected", lambda: comp_m.strongly_connected(dag)),
+                     ("strongly connected (Kosaraju)", lambda: comp_m.strongly_connected(dag)),
+                     ("strongly connected (Tarjan)", lambda: comp_m.tarjan_scc(dag)),
                      ("two-colouring", lambda: bip_m.two_colour(adj)),
-                     ("bridges and cut places", lambda: weak_m.weak_links(adj))):
-        t = time.perf_counter()
-        fn()
-        out[name] = round((time.perf_counter() - t) * 1e3, 1)
+                     ("bridges and cut places", lambda: weak_m.weak_links(adj)),
+                     ("blocks", lambda: weak_m.blocks(adj))):
+        runs = []
+        for _ in range(repeats):
+            t = time.perf_counter()
+            fn()
+            runs.append((time.perf_counter() - t) * 1e3)
+        out[name] = round(sorted(runs)[len(runs) // 2], 1)
     return out
 
 

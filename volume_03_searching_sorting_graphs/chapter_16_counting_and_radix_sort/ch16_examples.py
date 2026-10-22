@@ -40,6 +40,35 @@ def radix_sort(a: list, digits: int, base: int = 10, passes: list | None = None)
     return a
 
 
+def counting_sort_unstable(a: list, k: int, key=lambda x: x) -> list:
+    """A broken variant for Section 16.5: it fills each group from its END while walking from the LEFT, so equal
+    keys come out reversed. Sorted by key, but not stable."""
+    count = [0] * (k + 1)
+    for x in a:
+        count[key(x)] += 1
+    for v in range(1, k + 1):
+        count[v] += count[v - 1]
+    out = [None] * len(a)
+    for x in a:
+        count[key(x)] -= 1
+        out[count[key(x)]] = x
+    return out
+
+
+def radix_sort_unstable(a: list, digits: int, base: int = 10) -> list:
+    """LSD radix sort built on the unstable pass: shows why stability is the step the proof needs."""
+    for d in range(digits):
+        div = base ** d
+        a = counting_sort_unstable(a, base - 1, key=lambda x: (x // div) % base)
+    return a
+
+
+def sorted_by_last_digits(a: list, t: int, base: int = 10) -> bool:
+    """The invariant of Section 16.5: is a in order when each key is cut down to its last t digits?"""
+    m = base ** t
+    return all(a[i] % m <= a[i + 1] % m for i in range(len(a) - 1))
+
+
 def step_counts(n: int, k: int, digits: int, base: int = 10) -> dict:
     """Basic steps (reads and writes of one item or one counter) for each method, against comparisons for a
     comparison sort (Section 16.6)."""

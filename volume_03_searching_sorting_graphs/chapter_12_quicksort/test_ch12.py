@@ -41,6 +41,21 @@ class TestChapter12(unittest.TestCase):
         _, comps, depth = ex.measure(list(range(500)))
         self.assertEqual((comps, depth), (500 * 499 // 2, 499))
 
+    def test_average_case(self) -> None:
+        self.assertEqual(ex.expected_comparisons(0), 0)
+        self.assertEqual(ex.expected_comparisons(1), 0)
+        self.assertAlmostEqual(ex.expected_comparisons(2), 1.0)
+        self.assertAlmostEqual(ex.expected_comparisons(3), 8 / 3)
+        for n in (2, 3, 9, 50, 200):
+            self.assertAlmostEqual(ex.expected_comparisons(n), ex.closed_form(n), places=6)
+        self.assertAlmostEqual(ex.expected_comparisons(9), 20.579, places=3)
+        self.assertAlmostEqual(ex.pair_probability(2, 6), 0.4)
+        self.assertAlmostEqual(ex.average_random_pivot(PILE9, 20000), 20.58, delta=0.1)
+        b = [5, 3, 5, 1]
+        self.assertEqual(ex.random_pivot_comparisons(b, random.Random(1)) >= 0, True)
+        self.assertEqual(b, [1, 3, 5, 5])
+        self.assertEqual(ex.random_pivot_comparisons([], random.Random(1)), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

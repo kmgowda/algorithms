@@ -45,6 +45,73 @@ def first_true(lo: int, hi: int, ok, trace: list | None = None) -> int:
     return lo
 
 
+def last_true(lo: int, hi: int, ok, trace: list | None = None) -> int:
+    """Largest x in [lo, hi] with ok(x) True, given ok is True ... True False ... False and ok(lo) is True.
+    The middle is rounded UP, so lo <- mid always moves lo (Section 2.6)."""
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        good = ok(mid)
+        if trace is not None:
+            trace.append((lo, hi, mid, good))
+        if good:
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo
+
+
+def last_true_rounding_down(lo: int, hi: int, ok, max_rounds: int = 20) -> tuple[int, int, int]:
+    """The buggy version with mid = (lo + hi) // 2, stopped after max_rounds rounds; returns (lo, hi, rounds).
+    Once hi = lo + 1 the middle is lo itself, a "yes" sets lo <- lo, and the range never shrinks again."""
+    rounds = 0
+    while lo < hi and rounds < max_rounds:
+        rounds += 1
+        mid = (lo + hi) // 2
+        if ok(mid):
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo, hi, rounds
+
+
+def pieces(ropes: list[int], length: int) -> int:
+    """How many pieces of the given whole-metre length the ropes give (leftovers thrown away)."""
+    return sum(r // length for r in ropes)
+
+
+def longest_piece(ropes: list[int], k: int, trace: list | None = None) -> int:
+    """Longest whole length giving at least k pieces; 0 if not even length 1 works (Challenge 2.1)."""
+    if pieces(ropes, 1) < k:
+        return 0
+    return last_true(1, max(ropes), lambda L: pieces(ropes, L) >= k, trace)
+
+
+def lamps_fit(desks: list[int], k: int, gap: int) -> bool:
+    """Can k lamps go on desks (sorted positions in metres) with every two lamps at least gap apart? Greedy from the left."""
+    placed, last = 0, None
+    for d in desks:
+        if last is None or d - last >= gap:
+            placed, last = placed + 1, d
+    return placed >= k
+
+
+def widest_spacing(desks: list[int], k: int) -> int:
+    """Largest smallest gap between k lamps on the sorted desks (Challenge 2.1); needs 2 <= k <= len(desks)."""
+    return last_true(1, desks[-1] - desks[0], lambda g: lamps_fit(desks, k, g))
+
+
+def real_threshold(lo: float, hi: float, ok, rounds: int) -> float:
+    """Search on real numbers: ok is False ... True on [lo, hi]; halve the interval a fixed number of times
+    and return the right end, which always passes (Section 2.6)."""
+    for _ in range(rounds):
+        mid = (lo + hi) / 2
+        if ok(mid):
+            hi = mid
+        else:
+            lo = mid
+    return hi
+
+
 def smallest_capacity(boxes: list[int], max_trips: int, trace: list | None = None) -> int:
     """The answer lies between the heaviest box and the total weight."""
     return first_true(max(boxes), sum(boxes), lambda c: trips_needed(boxes, c) <= max_trips, trace)

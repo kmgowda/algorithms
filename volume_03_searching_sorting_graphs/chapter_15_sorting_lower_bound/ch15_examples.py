@@ -73,6 +73,35 @@ def merge_comparisons(a: list) -> int:
     return count
 
 
+def average_depth_sort3() -> float:
+    """Average number of comparisons of the Sort3 tree over the six orders: 16 / 6 = 8/3 (Section 15.6)."""
+    runs = every_order_of_three()
+    return sum(c for _, c, _ in runs) / len(runs)
+
+
+def min_total_leaf_depth(leaves: int) -> int:
+    """Smallest possible sum of leaf depths of a binary tree with this many leaves (Figure 15.4).
+    The best tree is as balanced as possible: all leaves on the last two levels."""
+    if leaves <= 1:
+        return 0
+    h = math.ceil(math.log2(leaves))
+    return h * leaves + leaves - 2 ** h
+
+
+def average_lower_bound(n: int) -> float:
+    """Fewest comparisons any comparison sort can average over the n! orders of n distinct items."""
+    leaves = math.factorial(n)
+    return min_total_leaf_depth(leaves) / leaves
+
+
+def all_distinct_by_sorting(a: list) -> tuple[bool, int]:
+    """Element distinctness, upper bound: merge sort, then compare each neighbour pair once.
+    Returns (all distinct?, comparisons made)."""
+    b = sorted(a)
+    comparisons = merge_comparisons(a) + max(0, len(b) - 1)
+    return all(b[i] != b[i + 1] for i in range(len(b) - 1)), comparisons
+
+
 if __name__ == "__main__":
     for row in every_order_of_three():
         print(row)
@@ -80,3 +109,5 @@ if __name__ == "__main__":
         print(n, math.factorial(n) if n < 20 else "-", lower_bound(n), merge_sort_worst(n), round(n * math.log2(n)))
     print(max(merge_comparisons(p) for p in itertools.permutations(range(5))), lower_bound(5))
     print(max(merge_comparisons(p) for p in itertools.permutations(range(4))), lower_bound(4))
+    print(average_depth_sort3(), [round(average_lower_bound(n), 3) for n in range(1, 7)])
+    print(all_distinct_by_sorting([58, 25, 91, 12, 70, 47, 84, 31, 63]), all_distinct_by_sorting([58, 25, 58]))

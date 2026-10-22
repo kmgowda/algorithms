@@ -30,6 +30,8 @@ class TestChapter08(unittest.TestCase):
         self.assertEqual(ex.selection_sort(sorted(ex.PILE))["swaps"], 0)
         self.assertEqual(ex.selection_sort(sorted(ex.PILE, reverse=True))["swaps"], 4)
         self.assertEqual(ex.selection_sort([5, 4, 3, 2, 1])["swaps"], 2)
+        b = [2, 3, 4, 5, 1]
+        self.assertEqual(ex.selection_sort(b)["swaps"], 4)          # Problem 8.2: a rotation forces n - 1 swaps
         self.assertEqual(ex.insertion_moves(ex.PILE), 17)
         sel, ins = ex.crate_comparison(trials=50)
         self.assertLess(sel, 20)

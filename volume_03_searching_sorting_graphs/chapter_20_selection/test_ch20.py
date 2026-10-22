@@ -34,6 +34,36 @@ class TestChapter20(unittest.TestCase):
         self.assertEqual([(x[0], x[1]) for x in log], [(63, 5), (31, 2), (58, 4)])
         self.assertEqual(ex.smallest_k_heap(ex.PILE, 3), [12, 25, 31])
 
+    def test_median_of_medians_guarantee(self) -> None:
+        a = [89, 42, 55, 93, 77, 13, 69, 41, 16, 30, 24, 57, 70, 92, 58, 79, 23, 86, 11, 37, 62, 45, 33, 59, 90]
+        groups, pivot = ex.mom_pivot(a)
+        self.assertEqual(pivot, 58)
+        self.assertEqual([g[2] for g in groups], [77, 30, 58, 37, 59])
+        self.assertEqual((sum(x < pivot for x in a), sum(x > pivot for x in a)), (13, 11))
+        self.assertEqual(ex.guaranteed_side(0), 0)
+        self.assertEqual(ex.guaranteed_side(25), 3)
+        self.assertEqual(ex.guaranteed_side(100_000), 29_994)
+        self.assertEqual(ex.mom_pivot([7]), ([[7]], 7))
+        rng = random.Random(7)
+        for _ in range(200):
+            n = rng.randint(1, 300)
+            b = rng.sample(range(10_000), n)
+            _, p = ex.mom_pivot(b)
+            self.assertGreaterEqual(min(sum(x < p for x in b), sum(x > p for x in b)), ex.guaranteed_side(n))
+
+    def test_expected_quickselect(self) -> None:
+        E = ex.expected_select(9)
+        self.assertEqual((E[1][1], E[2][1]), (0.0, 1.0))
+        self.assertAlmostEqual(E[3][2], 8 / 3)
+        self.assertAlmostEqual(E[9][5], 16.646, places=3)
+        rng, total = random.Random(3), 0
+        for r in range(20_000):
+            c = {"comparisons": 0}
+            ex.quickselect(ex.PILE, 5, c, rng=rng)
+            total += c["comparisons"]
+        self.assertAlmostEqual(total / 20_000, E[9][5], delta=0.15)
+        self.assertAlmostEqual(ex.average_median_comparisons(20_000, 200), 3.42, delta=0.01)
+
 
 if __name__ == "__main__":
     unittest.main()

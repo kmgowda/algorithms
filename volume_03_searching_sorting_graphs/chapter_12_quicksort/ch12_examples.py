@@ -42,6 +42,47 @@ def quicksort(a: list, lo: int = 0, hi: int | None = None, counter: dict | None 
     quicksort(a, p + 1, hi, counter, log, depth + 1)
 
 
+def pair_probability(i: int, j: int) -> float:
+    """Chance that the i-th and j-th smallest items (i < j) are ever compared by random-pivot quicksort: they are
+    compared exactly when the first pivot chosen from the j - i + 1 items between them is one of the two (Section 12.6)."""
+    return 2 / (j - i + 1)
+
+
+def expected_comparisons(n: int) -> float:
+    """Sum of pair_probability over all pairs: exactly 2(n + 1)H(n) - 4n, about 2n ln n = 1.39 n log2 n."""
+    return sum(pair_probability(i, j) for i in range(1, n + 1) for j in range(i + 1, n + 1))
+
+
+def closed_form(n: int) -> float:
+    harmonic = sum(1 / k for k in range(1, n + 1))
+    return 2 * (n + 1) * harmonic - 4 * n
+
+
+def random_pivot_comparisons(a: list, rng) -> int:
+    """Comparisons made by Lomuto quicksort with a pivot chosen uniformly at random (a is sorted in place)."""
+    count, stack = 0, [(0, len(a) - 1)]
+    while stack:
+        lo, hi = stack.pop()
+        if lo >= hi:
+            continue
+        k = rng.randint(lo, hi)
+        a[k], a[hi] = a[hi], a[k]
+        pivot, i = a[hi], lo
+        for j in range(lo, hi):
+            count += 1
+            if a[j] < pivot:
+                a[i], a[j] = a[j], a[i]
+                i += 1
+        a[i], a[hi] = a[hi], a[i]
+        stack += [(lo, i - 1), (i + 1, hi)]
+    return count
+
+
+def average_random_pivot(values: list, trials: int, seed: int = 1) -> float:
+    rng = random.Random(seed)
+    return sum(random_pivot_comparisons(list(values), rng) for _ in range(trials)) / trials
+
+
 def measure(values: list) -> tuple[float, int, int]:
     a = list(values)
     c = {"comparisons": 0}

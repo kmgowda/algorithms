@@ -81,6 +81,18 @@ class TestChapter03(unittest.TestCase):
             later = [x for x in times if x >= t]
             self.assertEqual(None if i is None else ring[i], later[0] if later else None)
 
+    def test_rotation_point_trace(self) -> None:
+        t = []
+        self.assertEqual(ex.find_rotation(ex.ROTATED, t), 5)
+        self.assertEqual(t, [(0, 8, 4, 91, 47), (5, 8, 6, 25, 47), (5, 6, 5, 12, 25)])
+        self.assertEqual(ex.find_rotation([]), 0)
+        self.assertEqual(ex.find_rotation([5]), 0)
+        self.assertEqual(ex.find_rotation([47, 47, 47, 12, 47]), 0)                 # duplicates fool it
+        self.assertEqual(ex.find_rotation_with_duplicates([47, 47, 47, 12, 47]), 3)
+        for a in ([], [5], [12, 25, 31], [47, 12, 47, 47, 47], [3, 3, 3]):
+            if a:
+                self.assertEqual(a[ex.find_rotation_with_duplicates(a)], min(a))
+
 
 if __name__ == "__main__":
     unittest.main()

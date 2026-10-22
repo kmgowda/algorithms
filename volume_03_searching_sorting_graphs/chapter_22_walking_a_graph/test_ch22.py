@@ -27,6 +27,18 @@ class TestChapter22(unittest.TestCase):
         self.assertEqual(ex.explore(ex.adjacency(["A", "B"], [("A", "B", 1), ("A", "B", 2)]), "A"), ["A", "B"])
         self.assertEqual(ex.explore({"Library": []}, "Library"), ["Library"])
 
+    def test_stack_walk_is_not_dfs(self) -> None:
+        adj = ex.adjacency()
+        t = ex.walk_tree(adj, "Library")
+        self.assertEqual((t["Market"], t["Station"], t["Harbour"]), ("Park", "Museum", "Museum"))
+        cross = ex.cross_roads(adj, t)
+        self.assertIn(("Market", "Station"), cross)
+        self.assertEqual(len(cross), 5)
+        self.assertEqual(ex.walk_tree({"A": []}, "A"), {"A": None})
+        self.assertEqual(ex.cross_roads({"A": []}, {"A": None}), [])
+        self.assertTrue(ex.is_ancestor(t, "Library", "Station"))
+        self.assertFalse(ex.is_ancestor(t, "Market", "Station"))
+
     def test_closed_roads(self) -> None:
         closed = {("Station", "Harbour"), ("Museum", "Harbour"), ("Market", "Museum")}
         roads = [r for r in ex.ROADS if (r[0], r[1]) not in closed]

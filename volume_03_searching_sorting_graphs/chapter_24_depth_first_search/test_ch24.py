@@ -40,6 +40,37 @@ class TestChapter24(unittest.TestCase):
         self.assertEqual(len(ex.dfs_iterative(chain, 0)), 5000)
         self.assertEqual(len(ex.find_path(ex.adjacency(), "Library", "Harbour")) - 1, 6)
 
+    def test_directed_classification(self) -> None:
+        c = ex.classify_directed(ex.QUARTER)
+        kinds = {(a, b): k for a, b, k in c["edges"]}
+        self.assertEqual(kinds, {("Library", "School"): "tree", ("School", "Market"): "tree",
+                                 ("Market", "Library"): "back", ("Library", "Park"): "tree",
+                                 ("Park", "Market"): "cross", ("Park", "Hospital"): "tree",
+                                 ("Library", "Market"): "forward"})
+        self.assertEqual((c["disc"]["Park"], c["fin"]["Park"], c["fin"]["Library"]), (6, 9, 10))
+        self.assertEqual(ex.classify_directed({}), {"disc": {}, "fin": {}, "edges": []})
+        self.assertEqual(ex.classify_directed({"A": ["A"]})["edges"], [("A", "A", "back")])
+        two = ex.classify_directed({"A": [], "B": ["A"]})        # a restart: B -> A goes to another tree
+        self.assertEqual(two["edges"], [("B", "A", "cross")])
+
+    def test_other_order(self) -> None:
+        q = dict(ex.QUARTER, Library=["Market", "Park", "School"])
+        kinds = {(a, b): k for a, b, k in ex.classify_directed(q)["edges"]}
+        self.assertEqual((kinds[("Library", "Market")], kinds[("School", "Market")], kinds[("Market", "Library")]),
+                         ("tree", "cross", "back"))
+        self.assertNotIn("forward", kinds.values())
+
+    def test_white_path(self) -> None:
+        q = ex.QUARTER
+        self.assertEqual(ex.white_path_descendants(q, "Park", {"Library", "School", "Market"}), {"Park", "Hospital"})
+        self.assertEqual(ex.white_path_descendants(q, "Library", set()), set(q))
+        self.assertEqual(ex.white_path_descendants({"A": []}, "A", set()), {"A"})
+        c = ex.classify_directed(q)
+        for u in q:                                       # the theorem, checked against the real DFS
+            before = {v for v in q if c["disc"][v] < c["disc"][u]}
+            desc = {v for v in q if c["disc"][u] <= c["disc"][v] and c["fin"][v] <= c["fin"][u]}
+            self.assertEqual(ex.white_path_descendants(q, u, before), desc)
+
 
 if __name__ == "__main__":
     unittest.main()

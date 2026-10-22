@@ -9,6 +9,16 @@ CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 5
 
 
 class TestChapter11(unittest.TestCase):
+    def test_merge_bounds(self) -> None:                      # Section 11.4 and Problem 11.2
+        c = {"comparisons": 0}
+        self.assertEqual(ex.merge([12, 25, 31, 47], [58, 63, 70, 84, 91], c), sorted(ex.PILE))
+        self.assertEqual(c["comparisons"], 4)
+        c = {"comparisons": 0}
+        ex.merge([12, 25, 58, 91], [31, 47, 63, 70, 84], c)
+        self.assertEqual(c["comparisons"], 8)
+        self.assertEqual(ex.merge([], []), [])
+        self.assertEqual(ex.merge([5], []), [5])
+
     def test_every_case(self) -> None:
         got = []
         for a in CASES:

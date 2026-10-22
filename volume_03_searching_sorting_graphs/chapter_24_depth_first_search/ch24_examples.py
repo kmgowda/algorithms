@@ -43,7 +43,8 @@ def dfs(adj: dict, start) -> dict:
 
 
 def dfs_iterative(adj: dict, start) -> list:
-    """The same visiting order with an explicit stack (no recursion limit)."""
+    """The same visiting order with an explicit stack (Section 24.4): each stack entry remembers how far along its
+    place's neighbour list the search has got, so the stack is exactly the current path (no recursion limit)."""
     order, seen, stack = [], set(), [(start, iter(adj[start]))]
     seen.add(start)
     order.append(start)
@@ -58,6 +59,54 @@ def dfs_iterative(adj: dict, start) -> list:
         else:
             stack.pop()
     return order
+
+
+# Section 24.6, Figure 24.4: one-way streets of the old quarter, with neighbours in this order
+QUARTER = {"Library": ["School", "Park", "Market"], "School": ["Market"], "Market": ["Library"],
+           "Park": ["Market", "Hospital"], "Hospital": []}
+
+
+def classify_directed(adj: dict, starts=None) -> dict:
+    """DFS over a directed graph, restarting from every undiscovered place in list order (Figure 24.4).
+    Each arrow v -> w is a tree, back, forward, or cross arrow, decided by w's state when the arrow is followed:
+    undiscovered (tree); discovered but unfinished, an ancestor (back); finished and discovered after v, a
+    descendant (forward); finished and discovered before v, another branch (cross)."""
+    time = [0]
+    disc, fin, kinds = {}, {}, []
+
+    def visit(v):
+        time[0] += 1
+        disc[v] = time[0]
+        for w in adj[v]:
+            if w not in disc:
+                kinds.append((v, w, "tree"))
+                visit(w)
+            elif w not in fin:
+                kinds.append((v, w, "back"))
+            elif disc[w] > disc[v]:
+                kinds.append((v, w, "forward"))
+            else:
+                kinds.append((v, w, "cross"))
+        time[0] += 1
+        fin[v] = time[0]
+
+    for s in (starts if starts is not None else adj):
+        if s not in disc:
+            visit(s)
+    return {"disc": disc, "fin": fin, "edges": kinds}
+
+
+def white_path_descendants(adj: dict, u, discovered: set) -> set:
+    """The white-path theorem: the places that will become u's descendants are exactly those reachable from u
+    along places all still undiscovered at the moment u is discovered (u itself included)."""
+    seen, stack = {u}, [u]
+    while stack:
+        v = stack.pop()
+        for w in adj[v]:
+            if w not in seen and w not in discovered:
+                seen.add(w)
+                stack.append(w)
+    return seen
 
 
 def find_path(adj: dict, a, b) -> list | None:
@@ -78,3 +127,6 @@ if __name__ == "__main__":
     print({v: (r["disc"][v], r["fin"][v]) for v in r["order"]})
     print([e for e in r["edges"] if e[2] == "back"])
     print(dfs_iterative(adjacency(), "Library"), find_path(adjacency(), "Library", "Harbour"))
+    c = classify_directed(QUARTER)
+    print(c)
+    print(white_path_descendants(QUARTER, "Park", {"Library", "School", "Market"}))

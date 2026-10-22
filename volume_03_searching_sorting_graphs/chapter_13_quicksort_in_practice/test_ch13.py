@@ -41,6 +41,29 @@ class TestChapter13(unittest.TestCase):
         ex.quicksort_practical([7] * 1000, counter=c)
         self.assertLessEqual(c["comparisons"], 1000)
 
+    def test_hoare(self) -> None:
+        a, log = list(ex.PILE), []
+        self.assertEqual(ex.hoare_partition(a, 0, 8, None, log), 5)
+        self.assertEqual(a, [58, 25, 63, 12, 31, 47, 84, 70, 91])
+        self.assertEqual(len(log), 2)
+        b = [4, 1, 3, 2, 5]
+        self.assertEqual(ex.hoare_partition(b, 0, 4), 2)
+        self.assertEqual(b, [2, 1, 3, 4, 5])
+        rng = random.Random(4)
+        for _ in range(300):
+            x = [rng.randint(0, 9) for _ in range(rng.randint(0, 30))]
+            y = list(x)
+            ex.quicksort_hoare(y)
+            self.assertEqual(y, sorted(x))
+        for x in ([], [7], [7] * 9, [2, 1]):
+            y = list(x)
+            ex.quicksort_hoare(y)
+            self.assertEqual(y, sorted(x))
+        c = {"comparisons": 0, "swaps": 0}
+        ex.quicksort_hoare([7] * 4000, counter=c)
+        self.assertEqual(c["comparisons"], 55454)
+        self.assertEqual(ex.lomuto_counts(list(ex.PILE)), {"comparisons": 17, "swaps": 16})
+
 
 if __name__ == "__main__":
     unittest.main()

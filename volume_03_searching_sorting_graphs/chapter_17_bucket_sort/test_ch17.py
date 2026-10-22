@@ -36,6 +36,25 @@ class TestChapter17(unittest.TestCase):
         out = ex.bucket_sort([K(r) for r in recs], 0, 100, 2)
         self.assertEqual([k.r[1] for k in out], ["b", "d", "a", "c"])
 
+    def test_figure_samples(self) -> None:
+        sizes = ex.bucket_sizes(ex.SAMPLE, 10)
+        self.assertEqual(sizes, [1, 0, 1, 1, 2, 0, 1, 3, 1, 0])
+        self.assertEqual(sum(s * s for s in sizes), 18)
+        log = {}
+        self.assertEqual(ex.bucket_sort(ex.SHELF_KEYS, 0, 1, 10, log), sorted(ex.SHELF_KEYS))
+        self.assertEqual(log["comparisons"], 4)
+        self.assertEqual([len(b) for b in log["buckets"]], [0, 2, 3, 1, 0, 0, 1, 1, 1, 1])
+        self.assertEqual(ex.bucket_sizes([], 3), [0, 0, 0])
+
+    def test_expected_square(self) -> None:
+        self.assertEqual(ex.expected_square(0), 0.0)
+        self.assertEqual(ex.expected_square(1), 1.0)            # one bucket always holds the one key
+        self.assertAlmostEqual(ex.expected_square(10_000), 1.9999)
+        self.assertEqual(ex.sum_of_squares(1, random.Random(1)), 1)
+        self.assertEqual(ex.sum_of_squares(0, random.Random(1)), 0)
+        for n in (2, 10, 1000):
+            self.assertAlmostEqual(ex.average_sum_of_squares(n, 400) / (2 * n - 1), 1.0, delta=0.05)
+
 
 if __name__ == "__main__":
     unittest.main()

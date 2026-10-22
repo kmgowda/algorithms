@@ -36,6 +36,28 @@ class TestChapter16(unittest.TestCase):
         self.assertEqual(ex.radix_sort([5, 312, 48, 7, 1000, 99], 4, passes=p), [5, 7, 48, 99, 312, 1000])
         self.assertEqual(p[2], [1000, 5, 7, 48, 99, 312])
 
+    def test_radix_invariant_and_stability(self) -> None:
+        p = []
+        ex.radix_sort(ex.PILE, 2, passes=p)
+        self.assertTrue(all(ex.sorted_by_last_digits(x, t + 1) for t, x in enumerate(p)))
+        rng = random.Random(4)
+        for _ in range(100):
+            a = [rng.randint(0, 999) for _ in range(rng.randint(0, 25))]
+            p = []
+            ex.radix_sort(a, 3, passes=p)
+            self.assertTrue(all(ex.sorted_by_last_digits(x, t + 1) for t, x in enumerate(p)))
+        tens = lambda x: x // 10 % 10
+        self.assertEqual(ex.counting_sort([41, 43, 33, 37, 47], 9, key=tens), [33, 37, 41, 43, 47])
+        self.assertEqual(ex.counting_sort_unstable([41, 43, 33, 37, 47], 9, key=tens), [37, 33, 47, 43, 41])
+        self.assertEqual(ex.radix_sort_unstable([43, 37, 41, 33, 47], 2), [37, 33, 47, 43, 41])
+        self.assertEqual((ex.radix_sort_unstable([], 2), ex.radix_sort_unstable([7], 2)), ([], [7]))
+        self.assertEqual(ex.radix_sort([170, 45, 75, 90, 802, 24, 2, 66], 3), [2, 24, 45, 66, 75, 90, 170, 802])
+        s = {}
+        recs = [("Ana", 2), ("Ben", 0), ("Cai", 2), ("Dev", 1)]
+        self.assertEqual([r[0] for r in ex.counting_sort(recs, 2, key=lambda r: r[1], steps=s)], ["Ben", "Dev", "Ana", "Cai"])
+        self.assertEqual(s["ends"], [1, 2, 4])
+        self.assertTrue(ex.sorted_by_last_digits([], 1) and ex.sorted_by_last_digits([5], 1))
+
 
 if __name__ == "__main__":
     unittest.main()
