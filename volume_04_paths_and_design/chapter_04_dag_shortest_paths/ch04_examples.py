@@ -60,6 +60,34 @@ def route(parent: dict, goal) -> list:
     return out[::-1]
 
 
+# The festival build (Section 4.5, Figure 4.4): hours for each task, and which tasks must finish before it starts.
+BUILD = {"frame": 3, "tents": 5, "lights": 2, "sound": 4, "signs": 1, "rehearsal": 2}
+BEFORE = [("frame", "lights"), ("frame", "sound"), ("tents", "signs"), ("lights", "rehearsal"),
+          ("sound", "rehearsal"), ("signs", "rehearsal")]
+
+
+def critical_path(hours: dict, before: list) -> tuple[int, dict, dict, list]:
+    """Earliest and latest start of every task, by one forward and one backward pass in topological order.
+    Returns (finish time, earliest, latest, critical tasks with zero slack, in order)."""
+    tasks = list(hours)
+    order = topological_order(tasks, [(a, b, 0) for a, b in before])
+    if order is None:
+        raise ValueError("the plan has a cycle")
+    earliest = {t: 0 for t in tasks}
+    for t in order:                                   # forward: a task starts when its last prerequisite ends
+        for a, b in before:
+            if a == t:
+                earliest[b] = max(earliest[b], earliest[t] + hours[t])
+    finish = max((earliest[t] + hours[t] for t in tasks), default=0)
+    latest = {t: finish - hours[t] for t in tasks}
+    for t in reversed(order):                         # backward: a task must end before its first follower starts
+        for a, b in before:
+            if a == t:
+                latest[t] = min(latest[t], latest[b] - hours[t])
+    critical = [t for t in order if latest[t] == earliest[t]]
+    return finish, earliest, latest, critical
+
+
 if __name__ == "__main__":
     dist, parent, order = dag_shortest(STOPS, PATHS, "Gate")
     print(order)

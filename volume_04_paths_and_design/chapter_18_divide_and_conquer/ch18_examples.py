@@ -10,7 +10,7 @@ VISITORS = [12, 7, 21, 15, 3, 18, 9, 26]
 
 
 def total(values: list, depth: int = 0, log: list | None = None) -> int:
-    """Sum by splitting in half (Figure 18.2): each half could be counted by a different volunteer."""
+    """Sum by splitting in half (Figure 18.1): each half could be counted by a different volunteer."""
     if log is not None:
         log.append((depth, list(values)))
     if len(values) == 0:
@@ -22,7 +22,7 @@ def total(values: list, depth: int = 0, log: list | None = None) -> int:
 
 
 def min_max(values: list, counter: list) -> tuple:
-    """Smallest and largest together (Figure 18.3): about 3n/2 comparisons instead of 2n - 2."""
+    """Smallest and largest together (Figure 18.2): about 3n/2 comparisons instead of 2n - 2."""
     if len(values) == 1:
         return values[0], values[0]
     if len(values) == 2:
@@ -44,7 +44,7 @@ def min_max_simple(values: list, counter: list) -> tuple:
 
 
 def best_stretch(values: list) -> tuple[int, int, int]:
-    """The busiest run of consecutive hours by total (values may be negative): best left, best right, or across the middle.
+    """The busiest run of consecutive hours by total (Figures 18.3 and 18.4; values may be negative): best left, best right, or across the middle.
     Returns (total, start, end)."""
     if len(values) == 1:
         return values[0], 0, 0
@@ -64,6 +64,32 @@ def best_stretch(values: list) -> tuple[int, int, int]:
             best_r, e = run, j
     across = (best_l + best_r, s, e)
     return max(left, right, across, key=lambda t: t[0])
+
+
+def crossing(values: list, lo: int, mid: int, hi: int) -> int:
+    """Section 18.5's Crossing: the best run containing positions mid - 1 and mid."""
+    run, best_left = 0, float("-inf")
+    for i in range(mid - 1, lo - 1, -1):
+        run += values[i]
+        best_left = max(best_left, run)
+    run, best_right = 0, float("-inf")
+    for j in range(mid, hi):
+        run += values[j]
+        best_right = max(best_right, run)
+    return best_left + best_right
+
+
+def stretch_summary(values: list, lo: int = 0, hi: int | None = None) -> tuple[int, int, int, int]:
+    """Challenge 3: (total, best, best touching the left end, best touching the right end) with a constant-time
+    combine, so the whole method is O(n)."""
+    hi = len(values) if hi is None else hi
+    if hi - lo == 1:
+        v = values[lo]
+        return v, v, v, v
+    mid = (lo + hi) // 2
+    lt, lb, ll, lr = stretch_summary(values, lo, mid)
+    rt, rb, rl, rr = stretch_summary(values, mid, hi)
+    return lt + rt, max(lb, rb, lr + rl), max(ll, lt + rl), max(rr, rt + lr)
 
 
 if __name__ == "__main__":

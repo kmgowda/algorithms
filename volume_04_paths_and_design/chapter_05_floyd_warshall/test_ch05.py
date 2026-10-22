@@ -25,6 +25,25 @@ class TestChapter5(unittest.TestCase):
         d, _ = ex.floyd_warshall(3, [(0, 1, 4), (1, 2, -2), (0, 2, 5)], directed=True)
         self.assertEqual((d[0][2], ex.has_negative_cycle(d)), (2, False))
 
+    def test_johnson(self) -> None:
+        dist, h = ex.johnson(ex.DEPOTS, ex.LEGS)
+        self.assertEqual(h, {"A": -7, "B": -5, "C": 0, "D": -3, "E": -9})
+        re = ex.reweight(ex.LEGS, h)
+        self.assertTrue(all(w >= 0 for _, _, w in re))
+        self.assertEqual([w for _, _, w in re], [4, 0, 3, 3, 0, 0, 18, 0, 1, 0])
+        self.assertEqual(dist["A"], {"A": 0, "B": 2, "C": 7, "D": 4, "E": -2})
+        self.assertEqual((dist["D"]["A"], dist["C"]["A"]), (-4, -7))
+        self.assertEqual(max(re, key=lambda e: e[2]), ("C", "E", 18))
+        index = {v: i for i, v in enumerate(ex.DEPOTS)}
+        fw, _ = ex.floyd_warshall(5, [(index[a], index[b], w) for a, b, w in ex.LEGS], directed=True)
+        self.assertEqual([[dist[a][b] for b in ex.DEPOTS] for a in ex.DEPOTS], fw)
+        self.assertIsNone(ex.johnson(["A", "B"], [("A", "B", -1), ("B", "A", 0)]))
+        self.assertEqual(ex.johnson([], []), ({}, {}))
+        self.assertEqual(ex.johnson(["A"], []), ({"A": {"A": 0}}, {"A": 0}))
+        self.assertEqual(ex.johnson(["A", "B"], [("A", "B", -1)])[0]["B"]["A"], float("inf"))
+        _, nxt = ex.town_table()
+        self.assertEqual(ex.route_by_next_hop(nxt, ex.PLACES, "School", "Harbour"),
+                         ["School", "Market", "Station", "Harbour"])
 
 if __name__ == "__main__":
     unittest.main()

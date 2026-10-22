@@ -39,6 +39,39 @@ class TestChapter15(unittest.TestCase):
             self.assertEqual(len(ex.earliest_finish(reqs)), ex.most_by_brute_force(reqs))
             self.assertEqual(ex.rooms_needed(reqs)[0], ex.max_overlap(reqs))
 
+    def test_stable_matching(self) -> None:
+        log = []
+        m = ex.gale_shapley(ex.VOLUNTEERS, ex.DESKS, log)
+        self.assertEqual(m, {"Ana": "Stage", "Ben": "Tickets", "Cai": "Cafe", "Dev": "Signs"})
+        self.assertEqual(len(log), 11)
+        self.assertEqual(log[5], ("Dev", "Tickets", "swaps Cai for"))
+        self.assertEqual(ex.blocking_pairs(m, ex.VOLUNTEERS, ex.DESKS), [])
+        self.assertEqual(ex.all_stable(ex.VOLUNTEERS, ex.DESKS), [m])
+        first_choice = {"Ana": "Cafe", "Ben": "Stage", "Cai": "Tickets", "Dev": "Signs"}
+        self.assertEqual(ex.blocking_pairs(first_choice, ex.VOLUNTEERS, ex.DESKS), [("Dev", "Tickets")])
+
+    def test_stable_every_case(self) -> None:
+        self.assertEqual(ex.gale_shapley({}, {}), {})
+        self.assertEqual(ex.gale_shapley({"A": ["X"]}, {"X": ["A"]}), {"A": "X"})
+        p = {"A": ["X", "Y"], "B": ["Y", "X"]}
+        r = {"X": ["B", "A"], "Y": ["A", "B"]}
+        self.assertEqual(ex.gale_shapley(p, r), {"A": "X", "B": "Y"})               # proposers get first choices
+        self.assertEqual(ex.gale_shapley(r, p), {"X": "B", "Y": "A"})               # now the other side does
+        self.assertEqual(len(ex.all_stable(p, r)), 2)
+        import random
+        rng = random.Random(15)
+        for _ in range(100):
+            n = rng.randint(1, 5)
+            ps, rs = [f"p{i}" for i in range(n)], [f"r{i}" for i in range(n)]
+            pp = {x: rng.sample(rs, n) for x in ps}
+            rp = {x: rng.sample(ps, n) for x in rs}
+            log = []
+            m = ex.gale_shapley(pp, rp, log)
+            self.assertEqual(ex.blocking_pairs(m, pp, rp), [])
+            self.assertLessEqual(len(log), n * n)
+            stable = ex.all_stable(pp, rp)
+            for p_ in ps:                                                          # proposer-optimal
+                self.assertEqual(min(pp[p_].index(s[p_]) for s in stable), pp[p_].index(m[p_]))
 
 if __name__ == "__main__":
     unittest.main()

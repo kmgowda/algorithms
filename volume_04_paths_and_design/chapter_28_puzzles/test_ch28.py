@@ -15,5 +15,28 @@ class TestChapter28(unittest.TestCase):
         self.assertEqual(ex.sudoku([[0] * 4 for _ in range(4)])[1], 16)
 
 
+    def test_bits(self) -> None:
+        for n in (1, 2, 3, 4, 5, 6, 8):
+            sols, nodes = ex.queens(n)
+            self.assertEqual(ex.queens_bits(n), (len(sols), nodes))
+        self.assertEqual(ex.queens_bits(10), (724, 35539))
+        self.assertEqual(ex.queens_bits(0), (1, 1))
+
+    def test_propagation(self) -> None:
+        self.assertEqual(ex.sudoku_propagate(ex.PUZZLE4), (ex.sudoku(ex.PUZZLE4)[0], 0))
+        solved, guesses = ex.sudoku_propagate(ex.CLASSIC)
+        self.assertEqual((solved, guesses), (ex.sudoku(ex.CLASSIC)[0], 0))
+        self.assertEqual(ex.sudoku(ex.CLASSIC)[1], 4208)
+        solved, guesses = ex.sudoku_propagate(ex.HARD)
+        self.assertEqual((guesses, ex.sudoku(ex.HARD)[1]), (172, 49558))
+        self.assertEqual(solved, ex.sudoku(ex.HARD)[0])
+        for r in range(9):
+            self.assertEqual(sorted(solved[r]), list(range(1, 10)))
+        self.assertEqual(ex.sudoku_propagate([[1, 1, 0, 0], [0] * 4, [0] * 4, [0] * 4]), (None, 0))
+        g = [list(r) for r in ex.HARD]
+        self.assertTrue(ex.propagate(g))
+        self.assertEqual(g, ex.HARD)                  # no cell is forced at the start of the hard puzzle
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -49,6 +49,21 @@ class TestChapter2(unittest.TestCase):
                             changed = True
             self.assertEqual(ex.dijkstra(adj, 0)[0], best)
 
+    def test_counts_snapshots_and_array(self) -> None:
+        adj = ex.weighted_adjacency()
+        self.assertEqual(ex.offer_counts(adj, "Library"), (7, 3))
+        snaps = ex.snapshots(adj, "Library")
+        self.assertEqual([v for v, _, _ in snaps], ["Library", "Park", "School", "Market", "Hospital", "Station",
+                                                     "Museum", "Harbour"])
+        self.assertEqual(snaps[2][2]["Station"], 13)
+        self.assertEqual(snaps[3][2]["Station"], 10)
+        self.assertEqual(snaps[5][2]["Harbour"], 16)
+        self.assertEqual(snaps[6][2]["Harbour"], 15)
+        dist, looked = ex.dijkstra_array(adj, "Library")
+        self.assertEqual((dist, looked), (ex.dijkstra(adj, "Library")[0], 36))
+        self.assertEqual(ex.dijkstra_array({"A": {}}, "A"), ({"A": 0}, 1))
+        self.assertEqual(ex.dijkstra_array({"A": {}, "B": {}}, "A"), ({"A": 0}, 3))
+        self.assertEqual(ex.offer_counts({"A": {}}, "A"), (0, 0))
 
 if __name__ == "__main__":
     unittest.main()

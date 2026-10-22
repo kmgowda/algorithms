@@ -64,6 +64,50 @@ def first_only(readers: list, feuds: list) -> tuple[list | None, int]:
     return go([]), counter[0]
 
 
+def work(readers: list, feuds: list, early: bool) -> tuple[int, int]:
+    """Section 26.5: the total work of a search is (nodes) x (work per node). Count both.
+    Returns (nodes, feud checks). early=True checks the new neighbour pair as each seat is filled;
+    early=False checks every neighbouring pair of each complete seating."""
+    nodes, checks = [0], [0]
+
+    def go(row):
+        nodes[0] += 1
+        if len(row) == len(readers):
+            if not early:
+                for a, b in zip(row, row[1:]):
+                    checks[0] += 1
+                    if clash(a, b, feuds):
+                        break
+            return
+        for r in readers:
+            if r in row:
+                continue
+            if early and row:
+                checks[0] += 1
+                if clash(row[-1], r, feuds):
+                    continue
+            go(row + [r])
+
+    go([])
+    return nodes[0], checks[0]
+
+
+def nodes_by_level(readers: list, feuds: list) -> list:
+    """How many partial seatings of each length the pruned search visits (Figure 26.3)."""
+    counts = [0] * (len(readers) + 1)
+
+    def go(row):
+        counts[len(row)] += 1
+        if len(row) == len(readers):
+            return
+        for r in readers:
+            if r not in row and not (row and clash(row[-1], r, feuds)):
+                go(row + [r])
+
+    go([])
+    return counts
+
+
 if __name__ == "__main__":
     a, ca, b, cb = [], [0], [], [0]
     backtrack(READERS, FEUDS, [], a, ca)

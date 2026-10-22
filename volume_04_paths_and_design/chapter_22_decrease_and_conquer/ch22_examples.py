@@ -55,6 +55,54 @@ def euclid(a: int, b: int, log: list | None = None) -> int:
     return a
 
 
+def power_steps(n: int) -> list:
+    """The exponents built by Power on the way back up (Figure 22.2), smallest first, e.g. 13 -> [1, 3, 6, 13]."""
+    steps = []
+    while n:
+        steps.append(n)
+        n //= 2
+    return steps[::-1]
+
+
+def insertion_sort_rec(values: list, counter: list) -> list:
+    """Decrease by one: sort all but the last value, then insert the last (T(n) = T(n - 1) + n)."""
+    if len(values) <= 1:
+        return list(values)
+    out = insertion_sort_rec(values[:-1], counter)
+    v, i = values[-1], len(out)
+    while i > 0:
+        counter[0] += 1
+        if out[i - 1] <= v:
+            break
+        i -= 1
+    return out[:i] + [v] + out[i:]
+
+
+def josephus_order(n: int) -> list:
+    """Section 22.5: readers 1..n sit in a circle; going round, every second reader leaves. The order they leave."""
+    circle, out, i = list(range(1, n + 1)), [], 1
+    while len(circle) > 1:
+        i %= len(circle)
+        out.append(circle.pop(i))
+        i += 1
+    return out + circle
+
+
+def josephus(n: int) -> int:
+    """The last reader left, by the halving recurrence J(1) = 1, J(2k) = 2J(k) - 1, J(2k + 1) = 2J(k) + 1."""
+    if n < 1:
+        raise ValueError("at least one reader")
+    if n == 1:
+        return 1
+    return 2 * josephus(n // 2) - 1 if n % 2 == 0 else 2 * josephus(n // 2) + 1
+
+
+def josephus_bits(n: int) -> int:
+    """The same answer by moving the leading 1 bit of n to the end: 10 = 1010 -> 0101 = 5."""
+    b = bin(n)[2:]
+    return int(b[1:] + b[0], 2)
+
+
 if __name__ == "__main__":
     c = [0]
     print(power(3, 13, c), c[0], 3 ** 13)

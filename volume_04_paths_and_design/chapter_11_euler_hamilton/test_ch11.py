@@ -24,6 +24,30 @@ class TestChapter11(unittest.TestCase):
         star = (["A", "B", "C", "D"], [("A", "B"), ("A", "C"), ("A", "D")])
         self.assertEqual((ex.euler_kind(*star), ex.hamiltonian_paths(*star)), ("none", []))
 
+    def test_splicing_and_directed(self) -> None:
+        pieces, walk = ex.hierholzer_pieces(ex.PLACES, ex.ROADS)
+        self.assertEqual([len(p) - 1 for p in pieces], [9, 3])
+        self.assertEqual(pieces[1], ["Station", "Harbour", "Museum", "Station"])
+        self.assertEqual((len(walk), walk[0], walk[-1]), (13, "School", "Park"))
+        self.assertEqual(sorted(tuple(sorted(p)) for p in zip(walk, walk[1:])), sorted(tuple(sorted(r)) for r in ex.ROADS))
+        self.assertEqual(ex.hierholzer_pieces(["A"], []), ([], []))
+        self.assertEqual(ex.euler_walk_directed(["A", "B", "C"], [("A", "B"), ("B", "C"), ("C", "A")]), ["A", "B", "C", "A"])
+        self.assertEqual(ex.euler_walk_directed(["A", "B", "C"], [("A", "B"), ("B", "C"), ("C", "A"), ("A", "C")]),
+                         ["A", "B", "C", "A", "C"])
+        self.assertIsNone(ex.euler_walk_directed(["A", "B"], [("A", "B"), ("A", "B")]))
+        self.assertEqual(ex.euler_walk_directed(["A"], []), [])
+        # two separate loops: every degree is even, but the roads are in two pieces
+        two = [("A", "B"), ("B", "C"), ("C", "A"), ("D", "E"), ("E", "F"), ("F", "D")]
+        self.assertEqual((ex.one_piece(two), ex.euler_kind(list("ABCDEF"), two)), (False, "none"))
+        self.assertEqual(ex.euler_kind(list("ABCZ"), [("A", "B"), ("B", "C"), ("C", "A")]), "circuit")  # Z: no roads
+        self.assertEqual(len(ex.hamiltonian_paths(ex.PLACES, ex.ROADS)) * 2, 56)
+        self.assertEqual((ex.hamiltonian_paths(list("ABCDEF"), two), ex.hamiltonian_paths(list("ABCZ"), two[:3])), ([], []))
+        self.assertEqual(ex.postman_extra(ex.ROADS), (7, [("Park", "School")]))     # Challenge 1: 56 + 7 = 63
+        one_way = [("Market", "Station"), ("Station", "Museum"), ("Museum", "Market"), ("Market", "Park"),
+                   ("Park", "Hospital"), ("Hospital", "Museum")]
+        self.assertEqual(ex.euler_walk_directed(["Market", "Station", "Museum", "Park", "Hospital"], one_way),
+                         ["Market", "Station", "Museum", "Market", "Park", "Hospital", "Museum"])
+
 
 if __name__ == "__main__":
     unittest.main()

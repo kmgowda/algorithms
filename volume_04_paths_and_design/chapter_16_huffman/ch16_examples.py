@@ -53,7 +53,16 @@ def fixed_bits(text: str) -> int:
     return len(text) * max(1, (k - 1).bit_length())
 
 
+def entropy_bits(text: str) -> float:
+    """Shannon's lower limit (Section 16.5): no code that spells each symbol separately can use fewer bits in total
+    than the sum over symbols of count x log2(length / count). Huffman is always less than one bit per symbol above."""
+    from math import log2
+    n = len(text)
+    return sum(c * log2(n / c) for c in Counter(text).values())
+
+
 if __name__ == "__main__":
+    print(round(entropy_bits(MESSAGE), 2), round(entropy_bits("A" * 50 + "B" * 20 + "C" * 20 + "D" * 10), 2))
     log = []
     codes = huffman_codes(MESSAGE, log)
     print(Counter(MESSAGE).most_common())

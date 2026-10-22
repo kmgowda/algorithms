@@ -27,6 +27,16 @@ class TestChapter18(unittest.TestCase):
         for _ in range(200):
             v = [rng.randint(-9, 9) for _ in range(rng.randint(1, 12))]
             self.assertEqual(ex.best_stretch(v)[0], max(sum(v[i:j + 1]) for i in range(len(v)) for j in range(i, len(v))))
+            self.assertEqual(ex.stretch_summary(v)[1], ex.best_stretch(v)[0])
+
+    def test_crossing(self) -> None:
+        changes = [5, -9, 6, -2, 3, -1, 4, -8]
+        self.assertEqual(ex.crossing(changes, 0, 4, 8), 10)
+        self.assertEqual((ex.crossing(changes, 0, 2, 4), ex.crossing(changes, 4, 6, 8)), (2, 6))
+        self.assertEqual(ex.crossing([4, -1, -3, 2, 5, -6, 1, 3], 0, 4, 8), 7)
+        self.assertEqual(ex.crossing([1, 2], 0, 1, 2), 3)
+        self.assertEqual(ex.stretch_summary([7]), (7, 7, 7, 7))
+        self.assertEqual(ex.stretch_summary(changes)[1], 10)
 
 
 if __name__ == "__main__":

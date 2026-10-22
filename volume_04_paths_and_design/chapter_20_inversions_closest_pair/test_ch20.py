@@ -22,6 +22,30 @@ class TestChapter20(unittest.TestCase):
             self.assertTrue(math.isclose(ex.closest_pair(p)[0], ex.closest_brute(p)[0]))
             a = [r.randint(0, 9) for _ in range(r.randint(0, 20))]
             self.assertEqual(ex.sort_count(a)[1], ex.inversions_brute(a))
+            self.assertTrue(math.isclose(ex.closest_pair_resorting(p), ex.closest_brute(p)[0]))
+
+    def test_presorted_closest_pair(self) -> None:
+        self.assertEqual(ex.closest_pair([]), (math.inf, None))
+        self.assertEqual(ex.closest_pair([(4, 4)]), (math.inf, None))
+        self.assertEqual(ex.closest_pair([(1, 1), (1, 1)]), (0.0, ((1, 1), (1, 1))))
+        self.assertEqual(ex.closest_pair([(0, y) for y in (0, 5, 7, 20)])[0], 2.0)     # every x equal
+        r = random.Random(5)
+        for n in (1000, 4000):
+            pts = [(r.random(), r.random()) for _ in range(n)]
+            c = [0]
+            d = ex.closest_pair(pts, c)[0]
+            self.assertTrue(math.isclose(d, ex.closest_pair_resorting(pts)))
+            self.assertLess(c[0], 2 * n)                                              # about 1.15 n distances
+        self.assertLessEqual(ex.strip_candidates([(r.randint(0, 9), r.randint(0, 9)) for _ in range(60)], 5, 1.0), 7)
+        self.assertEqual(ex.jumps([1, 3, 4, 8], [2, 5, 6, 7]), [(2, 3), (5, 1), (6, 1), (7, 1)])
+        self.assertEqual(ex.jumps([], [1]), [])
+        self.assertEqual(ex.sort_count([5, 2, 6, 1])[1], 4)
+        self.assertEqual(round(ex.kendall_tau(ex.RANKS), 2), 0.36)
+        self.assertEqual((ex.kendall_tau([1, 2, 3]), ex.kendall_tau([3, 2, 1])), (1.0, -1.0))
+        for _ in range(200):
+            a = [r.randint(0, 30) for _ in range(r.randint(0, 15))]
+            self.assertEqual(ex.significant_count(a),
+                             sum(1 for i in range(len(a)) for j in range(i + 1, len(a)) if a[i] > 2 * a[j]))
 
 
 if __name__ == "__main__":

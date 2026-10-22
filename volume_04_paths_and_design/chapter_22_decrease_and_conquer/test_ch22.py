@@ -30,6 +30,24 @@ class TestChapter22(unittest.TestCase):
         self.assertEqual(ex.guess_number(1, 1, 1), 1)
         c = [0]
         self.assertEqual((ex.power(5, 10, c), c[0], ex.peasant(9, 15), ex.euclid(84, 36)), (9765625, 6, 135, 12))
+        self.assertEqual((ex.power_steps(13), ex.power_steps(1), ex.power_steps(0)), ([1, 3, 6, 13], [1], []))
+        self.assertEqual(len(ex.power_steps(10 ** 6)), 20)
+        c = [0]
+        self.assertEqual(ex.insertion_sort_rec([58, 25, 91, 12, 70, 47, 84, 31, 63], c), [12, 25, 31, 47, 58, 63, 70, 84, 91])
+        self.assertEqual(c[0], 23)
+        self.assertEqual((ex.insertion_sort_rec([], [0]), ex.insertion_sort_rec([4], [0])), ([], [4]))
+
+    def test_josephus(self) -> None:
+        self.assertEqual(ex.josephus_order(10), [2, 4, 6, 8, 10, 3, 7, 1, 9, 5])
+        self.assertEqual((ex.josephus(1), ex.josephus(10), ex.josephus(41)), (1, 5, 19))
+        self.assertEqual(ex.josephus_order(1), [1])
+        for n in range(1, 200):
+            self.assertEqual(ex.josephus(n), ex.josephus_order(n)[-1])
+            self.assertEqual(ex.josephus_bits(n), ex.josephus(n))
+        with self.assertRaises(ValueError):
+            ex.josephus(0)
+
+    def test_pairs(self) -> None:
         for a in range(0, 60):
             for b in range(0, 60):
                 self.assertEqual(ex.peasant(a, b), a * b)

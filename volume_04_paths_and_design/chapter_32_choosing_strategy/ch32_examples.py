@@ -55,6 +55,64 @@ def ways_remembered(n: int) -> tuple[int, int]:
     return go(n), solved[0]
 
 
+def change_plain(amount: int, coins: list) -> tuple[int, int]:
+    """Fewest coins by splitting into 'one coin, then the rest' and solving the rest the same way, with no memory:
+    divide and conquer in shape, but the rests overlap. Returns (coins, calls)."""
+    calls = [0]
+
+    def go(a):
+        calls[0] += 1
+        if a == 0:
+            return 0
+        return 1 + min((go(a - c) for c in coins if c <= a), default=float("inf"))
+
+    return go(amount), calls[0]
+
+
+def change_backtracking(amount: int, coins: list) -> tuple[int, int]:
+    """Fewest coins by backtracking with a bound: choose how many of each coin, largest coin first, and cut a branch
+    once it already uses as many coins as the best found. Returns (coins, nodes)."""
+    coins = sorted(coins, reverse=True)
+    best, nodes = [float("inf")], [0]
+
+    def go(i, left, used):
+        nodes[0] += 1
+        if left == 0:
+            best[0] = min(best[0], used)
+            return
+        if i == len(coins) or used + 1 >= best[0]:
+            return                                    # out of coin kinds, or cannot beat the best
+        for k in range(left // coins[i], -1, -1):
+            go(i + 1, left - k * coins[i], used + k)
+
+    go(0, amount, 0)
+    return best[0], nodes[0]
+
+
+def change_table(amount: int, coins: list) -> tuple[int, int]:
+    """Fewest coins by filling a table for every amount from 0 up (Volume 5). Returns (coins, entries filled)."""
+    inf = float("inf")
+    best = [0] + [inf] * amount
+    for a in range(1, amount + 1):
+        best[a] = 1 + min((best[a - c] for c in coins if c <= a), default=inf)
+    return best[amount], amount + 1
+
+
+def change_greedy(amount: int, coins: list) -> tuple[int, int]:
+    """Largest coin first (Chapter 13). Returns (coins, coin kinds looked at)."""
+    used = 0
+    for c in sorted(coins, reverse=True):
+        used += amount // c
+        amount %= c
+    return (used if amount == 0 else float("inf")), len(coins)
+
+
+def change_comparison(amount: int, coins: list) -> dict:
+    """Section 32.6: one question, four strategies, (answer, work)."""
+    return {"greedy": change_greedy(amount, coins), "plain recursion": change_plain(amount, coins),
+            "backtracking with a bound": change_backtracking(amount, coins), "table": change_table(amount, coins)}
+
+
 if __name__ == "__main__":
     print(budget_table())
     for n in (10, 20, 25):

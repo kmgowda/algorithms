@@ -32,6 +32,18 @@ class TestChapter1(unittest.TestCase):
             counts.append(sum(1 for _ in ex.all_routes(a, "0", str(n - 1))))
         self.assertEqual(counts, [5, 65, 1957])
 
+    def test_substructure_and_states(self) -> None:
+        adj = ex.weighted_adjacency()
+        best = ["Library", "Park", "Hospital", "Museum", "Harbour"]
+        self.assertEqual(ex.prefix_lengths(adj, best), [("Library", 0, 0), ("Park", 3, 3), ("Hospital", 8, 8),
+                                                        ("Museum", 12, 12), ("Harbour", 15, 15)])
+        bfs = ["Library", "School", "Station", "Harbour"]
+        self.assertEqual([(a, b) for _, a, b in ex.prefix_lengths(adj, bfs)], [(0, 0), (4, 4), (13, 10), (19, 15)])
+        self.assertEqual(ex.quickest_via(adj, "Library", "Market", "Harbour"),
+                         (16, ["Library", "Park", "Market", "Station", "Harbour"], 16))
+        self.assertEqual(ex.quickest_via(adj, "Library", "Library", "Harbour")[0], 15)
+        self.assertEqual(ex.quickest_via(adj, "Library", "School", "Harbour")[0], 18)
+        self.assertEqual(ex.prefix_lengths(adj, ["Park"]), [("Park", 0, 0)])
 
 if __name__ == "__main__":
     unittest.main()

@@ -48,7 +48,57 @@ def best_fraction_check(books: list, budget, steps: int = 4) -> Fraction:
     return best
 
 
+# Section 14.6: book repairs at the bindery desk, one at a time: (book, hours of work, hours until it is due).
+REPAIRS = [("Atlas", 3, 6), ("Novel", 2, 8), ("Poems", 1, 9), ("Comic", 4, 9), ("Cookbook", 2, 14)]
+
+
+def lateness(order: list) -> tuple[int, list]:
+    """Run the jobs back to back in this order from hour 0. Returns (largest lateness, [(job, start, end, late)])."""
+    t, rows = 0, []
+    for name, hours, due in order:
+        rows.append((name, t, t + hours, max(0, t + hours - due)))
+        t += hours
+    return max((r[3] for r in rows), default=0), rows
+
+
+def total_lateness(order: list) -> int:
+    """Challenge 2: the sum of every job's lateness, a different goal from the largest lateness."""
+    return sum(late for *_, late in lateness(order)[1])
+
+
+def earliest_deadline_first(jobs: list) -> list:
+    """Greedy: do the job that is due soonest first (Figure 14.4). Ties keep the input order."""
+    return sorted(jobs, key=lambda j: j[2])
+
+
+def inversions(order: list) -> int:
+    """Pairs done in the wrong order: an earlier job that is due strictly later than a later one."""
+    return sum(1 for i in range(len(order)) for j in range(i + 1, len(order)) if order[i][2] > order[j][2])
+
+
+def remove_inversions(order: list) -> list:
+    """The exchange argument as a procedure (Figure 14.5): swap neighbouring jobs that are due in the wrong order,
+    one swap at a time, recording (order, largest lateness) after each swap. The lateness never goes up."""
+    order, steps = list(order), [(list(order), lateness(order)[0])]
+    swapped = True
+    while swapped:
+        swapped = False
+        for i in range(len(order) - 1):
+            if order[i][2] > order[i + 1][2]:
+                order[i], order[i + 1] = order[i + 1], order[i]
+                steps.append((list(order), lateness(order)[0]))
+                swapped = True
+    return steps
+
+
+def best_lateness(jobs: list) -> int:
+    """Brute force over every order (n! of them)."""
+    return min((lateness(list(p))[0] for p in itertools.permutations(jobs)), default=0)
+
+
 if __name__ == "__main__":
+    print(lateness(earliest_deadline_first(REPAIRS)), best_lateness(REPAIRS))
+    print(lateness(sorted(REPAIRS, key=lambda j: j[1]))[0], lateness(sorted(REPAIRS, key=lambda j: j[2] - j[1]))[0])
     votes, taken = fractional(BOOKS, 20)
     print(votes, float(votes), taken)
     plan = {"Atlas": Fraction(1), "Novel": Fraction(1), "Poems": Fraction(1), "Comic": Fraction(0), "Cookbook": Fraction(0)}

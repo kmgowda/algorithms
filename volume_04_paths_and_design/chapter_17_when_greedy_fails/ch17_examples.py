@@ -80,7 +80,88 @@ SUPPLIERS2 = {"Everything Ltd": {"poetry", "maps", "science", "crime"}, "North S
               "South Shop": {"science", "crime", "travel"}}
 
 
+# Section 17.6: the desk's reserve shelf holds 3 books; readers ask for books in this order (a day's requests).
+REQUESTS = ["A", "B", "C", "D", "A", "B", "E", "A", "B", "C", "D", "E"]
+SHELF = 3
+
+
+def farthest_in_future(requests: list, k: int, log: list | None = None) -> int:
+    """Belady's rule (Figure 17.4): on a miss with a full shelf, remove the book whose next request is farthest away
+    (or never comes). Returns the number of misses; log gets (request, hit or miss, book removed or None)."""
+    shelf, misses = [], 0
+    for i, book in enumerate(requests):
+        if book in shelf:
+            if log is not None:
+                log.append((book, "hit", None))
+            continue
+        misses += 1
+        out = None
+        if 0 < k == len(shelf):
+            def next_use(b):
+                rest = requests[i + 1:]
+                return rest.index(b) if b in rest else len(rest)
+            out = max(shelf, key=next_use)            # ties: the book listed first on the shelf
+            shelf.remove(out)
+        if k > 0:
+            shelf.append(book)
+        if log is not None:
+            log.append((book, "miss", out))
+    return misses
+
+
+def least_recently_used(requests: list, k: int) -> int:
+    """Remove the book whose last request is longest ago: the usual rule when the future is unknown."""
+    shelf, misses = [], 0                             # most recently used at the end
+    for book in requests:
+        if book in shelf:
+            shelf.remove(book)
+        else:
+            misses += 1
+            if len(shelf) == k and k > 0:
+                shelf.pop(0)
+        if k > 0:
+            shelf.append(book)
+    return misses
+
+
+def first_in_first_out(requests: list, k: int) -> int:
+    """Remove the book that has been on the shelf longest."""
+    shelf, misses = [], 0
+    for book in requests:
+        if book not in shelf:
+            misses += 1
+            if len(shelf) == k and k > 0:
+                shelf.pop(0)
+            if k > 0:
+                shelf.append(book)
+    return misses
+
+
+def fewest_misses(requests: list, k: int) -> int:
+    """Brute force over every possible choice of book to remove at every miss (remembering states already seen)."""
+    from functools import lru_cache
+
+    @lru_cache(maxsize=None)
+    def go(i, shelf):
+        if i == len(requests):
+            return 0
+        book = requests[i]
+        if book in shelf:
+            return go(i + 1, shelf)
+        if k == 0:
+            return 1 + go(i + 1, shelf)
+        if len(shelf) < k:
+            return 1 + go(i + 1, shelf | {book})
+        return 1 + min(go(i + 1, (shelf - {b}) | {book}) for b in shelf)
+
+    return go(0, frozenset())
+
+
 if __name__ == "__main__":
+    log = []
+    print(farthest_in_future(REQUESTS, SHELF, log), least_recently_used(REQUESTS, SHELF),
+          first_in_first_out(REQUESTS, SHELF), fewest_misses(REQUESTS, SHELF))
+    print(log)
     print(nearest_neighbour(), best_tour())
     print(greedy_cover(GENRES, SUPPLIERS), smallest_cover(GENRES, SUPPLIERS))
     print(greedy_cover(GENRES, SUPPLIERS2), smallest_cover(GENRES, SUPPLIERS2))

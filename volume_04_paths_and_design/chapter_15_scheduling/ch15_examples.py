@@ -43,7 +43,7 @@ def most_by_brute_force(requests: list) -> int:
 
 
 def rooms_needed(requests: list) -> tuple[int, dict]:
-    """Give every request a room, reusing a room as soon as it is free (Figure 15.4). Returns (rooms, room of each)."""
+    """Give every request a room, reusing a room as soon as it is free (Figure 15.5). Returns (rooms, room of each)."""
     free, room_of, busy = [], {}, []                     # busy: (end, room)
     count = 0
     for name, s, e in sorted(requests, key=lambda r: r[1]):
@@ -68,7 +68,66 @@ def max_overlap(requests: list) -> int:
     return best
 
 
+# Section 15.6: four volunteers rank four desks, and each desk leader ranks the volunteers (best first).
+VOLUNTEERS = {"Ana": ["Cafe", "Tickets", "Stage", "Signs"], "Ben": ["Cafe", "Stage", "Tickets", "Signs"],
+              "Cai": ["Tickets", "Cafe", "Signs", "Stage"], "Dev": ["Cafe", "Tickets", "Signs", "Stage"]}
+DESKS = {"Tickets": ["Ben", "Dev", "Ana", "Cai"], "Cafe": ["Cai", "Ana", "Dev", "Ben"],
+         "Stage": ["Ana", "Ben", "Cai", "Dev"], "Signs": ["Dev", "Cai", "Ben", "Ana"]}
+
+
+def gale_shapley(proposers: dict, receivers: dict, log: list | None = None) -> dict:
+    """Stable matching (Figure 15.6): a free proposer asks the best receiver not yet asked; the receiver keeps
+    whichever of the asker and its current partner it ranks higher. Returns {proposer: receiver}."""
+    rank = {r: {p: i for i, p in enumerate(prefs)} for r, prefs in receivers.items()}
+    next_choice = {p: 0 for p in proposers}
+    partner = {}                                      # receiver -> proposer
+    free = list(proposers)
+    while free:
+        p = free.pop(0)
+        r = proposers[p][next_choice[p]]
+        next_choice[p] += 1
+        held = partner.get(r)
+        if held is None:
+            partner[r] = p
+            outcome = "accepts"
+        elif rank[r][p] < rank[r][held]:
+            partner[r] = p
+            free.append(held)
+            outcome = f"swaps {held} for"
+        else:
+            free.append(p)
+            outcome = "rejects"
+        if log is not None:
+            log.append((p, r, outcome))
+    return {p: r for r, p in partner.items()}
+
+
+def blocking_pairs(match: dict, proposers: dict, receivers: dict) -> list:
+    """Pairs (p, r) not matched together who both prefer each other to their partners: what 'unstable' means."""
+    owner = {r: p for p, r in match.items()}
+    out = []
+    for p, prefs in proposers.items():
+        for r in prefs[:prefs.index(match[p])]:       # receivers p likes better than its own
+            if receivers[r].index(p) < receivers[r].index(owner[r]):
+                out.append((p, r))
+    return out
+
+
+def all_stable(proposers: dict, receivers: dict) -> list:
+    """Brute force: every perfect matching (n! of them) that has no blocking pair."""
+    ps, rs = sorted(proposers), sorted(receivers)
+    out = []
+    for perm in itertools.permutations(rs):
+        m = dict(zip(ps, perm))
+        if not blocking_pairs(m, proposers, receivers):
+            out.append(m)
+    return out
+
+
 if __name__ == "__main__":
+    log = []
+    print(gale_shapley(VOLUNTEERS, DESKS, log), log)
+    print(all_stable(VOLUNTEERS, DESKS))
     print(earliest_finish(REQUESTS), most_by_brute_force(REQUESTS))
     print(len(by_rule(REQUESTS, lambda r: r[1])), len(by_rule(REQUESTS, lambda r: r[2] - r[1])))
     print(rooms_needed(REQUESTS), max_overlap(REQUESTS))

@@ -72,6 +72,38 @@ def fewest_roads_route(adj: dict, start, goal) -> list | None:
     return out[::-1]
 
 
+def prefix_lengths(adj: dict, route: list) -> list:
+    """Section 1.5: (place, minutes along the route so far, quickest possible minutes) for every stop on a route.
+    On a shortest route the two numbers always agree: every first part of a shortest route is itself shortest."""
+    out = []
+    for i in range(len(route)):
+        so_far = route_length(adj, route[:i + 1])
+        out.append((route[i], so_far, shortest_by_brute_force(adj, route[0], route[i])[0]))
+    return out
+
+
+def state_graph(adj: dict, via) -> dict:
+    """Section 1.5: an implicit graph whose vertices are states (place, collected?). A van must pick up a parcel at
+    `via` before the end; arriving at `via` switches the state from False to True. Same minutes as the town."""
+    states = {}
+    for p in adj:
+        for got in (False, True):
+            states[(p, got)] = {}
+    for p in adj:
+        for q, w in adj[p].items():
+            for got in (False, True):
+                states[(p, got)][(q, got or q == via)] = w
+    return states
+
+
+def quickest_via(adj: dict, start, via, goal) -> tuple[float, list | None, int]:
+    """The quickest route from start to goal that passes through via, found by brute force on the state graph.
+    Returns (minutes, list of places, number of states)."""
+    g = state_graph(adj, via)
+    minutes, r, _ = shortest_by_brute_force(g, (start, start == via), (goal, True))
+    return minutes, (None if r is None else [p for p, _ in r]), len(g)
+
+
 if __name__ == "__main__":
     adj = weighted_adjacency()
     bfs = fewest_roads_route(adj, "Library", "Harbour")

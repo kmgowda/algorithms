@@ -21,6 +21,32 @@ class TestChapter21(unittest.TestCase):
         self.assertEqual(got, [(4, 4, 3), (16, 16, 9), (64, 64, 43), (256, 175, 115), (1024, 886, 365),
                                (4096, 3634, 1073), (16384, 13822, 3103)])
 
+    def test_calls_and_ops(self) -> None:
+        def leaves(t):
+            return 1 if not t[2] else sum(leaves(k) for k in t[2])
+        self.assertEqual(leaves(ex.karatsuba_calls(1234, 5678)), 11)
+        self.assertEqual(ex.karatsuba_calls(7, 8), (7, 8, []))
+        c = [0]
+        self.assertEqual((ex.karatsuba(99, 99, c), c[0]), (9801, 5))
+        self.assertEqual(ex.ops_table(), [(16, 512, 1411, 512), (32, 2048, 5108, 1860), (64, 8192, 15030, 6097),
+                                          (128, 32768, 45695, 19228), (256, 131072, 139537, 59957),
+                                          (512, 524288, 419325, 184183), (1024, 2097152, 1261027, 558709)])
+
+    def test_strassen(self) -> None:
+        c = [0]
+        self.assertEqual(ex.strassen([[1, 3], [7, 5]], [[6, 8], [4, 2]], c), [[18, 14], [62, 66]])
+        self.assertEqual(c[0], 7)
+        self.assertEqual(ex.strassen([[4]], [[5]], [0]), [[20]])
+        self.assertEqual(ex.strassen([[2, 0], [1, 3]], [[1, 4], [2, 1]], [0]), [[2, 8], [7, 7]])
+        self.assertEqual((ex.school(99, 99, c), ex.split_four(99, 99, [0])), (9801, 9801))
+        r = random.Random(2)
+        for n, s_count, school_count in ((2, 7, 8), (4, 49, 64), (8, 343, 512), (16, 2401, 4096)):
+            A = [[r.randint(-9, 9) for _ in range(n)] for _ in range(n)]
+            B = [[r.randint(-9, 9) for _ in range(n)] for _ in range(n)]
+            c1, c2 = [0], [0]
+            self.assertEqual(ex.strassen(A, B, c1), ex.matrix_school(A, B, c2))
+            self.assertEqual((c1[0], c2[0]), (s_count, school_count))
+
     def test_every_case(self) -> None:
         c = [0]
         self.assertEqual((ex.karatsuba(0, 12345, c), c[0]), (0, 1))

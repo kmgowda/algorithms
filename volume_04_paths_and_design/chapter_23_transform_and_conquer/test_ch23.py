@@ -25,5 +25,43 @@ class TestChapter23(unittest.TestCase):
         self.assertEqual((ex.k_smallest([], 3), ex.k_smallest([5, 1], 5)), ([], [1, 5]))
 
 
+class TestChapter23Depth(unittest.TestCase):
+    def test_gaussian(self) -> None:
+        log, c = [], [0]
+        self.assertEqual(ex.gaussian(ex.ORDERS, ex.TOTALS, log, c), [6, 9, 5])
+        self.assertEqual([row[-1] for row in log[-1][4]], [20, -4, 15])
+        self.assertEqual(c[0], 14)
+        self.assertEqual(ex.gaussian([[0, 1], [1, 0]], [3, 4]), [4, 3])          # a zero pivot needs a swap
+        self.assertEqual(ex.gaussian([[4]], [10]), [ex.gaussian([[2]], [5])[0]])
+        with self.assertRaises(ValueError):
+            ex.gaussian([[1, 2], [2, 4]], [3, 6])
+        import random
+        from fractions import Fraction
+        r = random.Random(1)
+        for _ in range(50):
+            n = r.randint(1, 5)
+            A = [[r.randint(-9, 9) for _ in range(n)] for _ in range(n)]
+            b = [r.randint(-9, 9) for _ in range(n)]
+            try:
+                x = ex.gaussian(A, b)
+            except ValueError:
+                continue
+            self.assertEqual([sum(Fraction(A[i][j]) * x[j] for j in range(n)) for i in range(n)], b)
+
+    def test_reductions(self) -> None:
+        self.assertEqual((ex.break_even(100), ex.break_even(1000), ex.break_even(10 ** 6)), (16, 21, 40))
+        got = [ex.count_walks(ex.TOWN, ex.TOWN_ROADS, "Library", "Harbour", k) for k in range(7)]
+        self.assertEqual(got, [0, 0, 0, 1, 6, 15, 71])
+        self.assertEqual(got, [ex.count_walks_brute(ex.TOWN, ex.TOWN_ROADS, "Library", "Harbour", k) for k in range(7)])
+        self.assertEqual(ex.count_walks(ex.TOWN, ex.TOWN_ROADS, "Library", "Library", 0), 1)
+        self.assertEqual(ex.count_walks(ex.TOWN, ex.TOWN_ROADS, "Library", "Harbour", 20), 978511743)
+        self.assertEqual((ex.lcm(12, 18), ex.lcm(7, 1), ex.lcm(0, 5)), (36, 7, 0))
+        self.assertEqual([ex.elimination_cost(n) for n in (3, 40)], [14, 22880])
+        self.assertEqual(ex.gaussian([[0, 2], [3, 1]], [6, 9]), [2, 3])
+        square = [("L", "S"), ("S", "M"), ("M", "P"), ("P", "L")]
+        self.assertEqual([ex.count_walks(["L", "S", "M", "P"], square, "L", "M", k) for k in (2, 3)], [2, 0])
+        self.assertEqual(ex.gaussian([[1, 1], [1, -1]], [10, 2]), [6, 4])
+
+
 if __name__ == "__main__":
     unittest.main()

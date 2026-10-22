@@ -22,6 +22,10 @@ class TestChapter12(unittest.TestCase):
         self.assertEqual(ex.brute_force(ex.BOOKS, 25)[0], 19)
         self.assertEqual(ex.greedy(ex.BOOKS, 25, key=lambda b: -b[2] / b[1])[0], 19)
 
+    def test_counting_branches(self) -> None:
+        self.assertEqual(ex.backtracking(ex.BOOKS, ex.BUDGET, check_first=True), (16, ("Atlas", "Novel", "Poems"), 51))
+        self.assertEqual(ex.backtracking(ex.BOOKS, 0), (0, (), 11))
+        self.assertEqual(ex.backtracking([], 0, check_first=True), (0, (), 1))
 
 if __name__ == "__main__":
     unittest.main()

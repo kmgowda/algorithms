@@ -34,6 +34,26 @@ class TestChapter4(unittest.TestCase):
                  ("tents", "signs", 5), ("lights", "rehearsal", 2), ("sound", "rehearsal", 4), ("signs", "rehearsal", 1)]
         self.assertEqual(ex.dag_shortest(tasks, after, "start", longest=True)[0]["rehearsal"] + 2, 9)
 
+    def test_critical_path(self) -> None:
+        finish, early, late, critical = ex.critical_path(ex.BUILD, ex.BEFORE)
+        self.assertEqual(finish, 9)
+        self.assertEqual(early, {"frame": 0, "tents": 0, "lights": 3, "sound": 3, "signs": 5, "rehearsal": 7})
+        self.assertEqual(late, {"frame": 0, "tents": 1, "lights": 5, "sound": 3, "signs": 6, "rehearsal": 7})
+        self.assertEqual(critical, ["frame", "sound", "rehearsal"])
+        slow = dict(ex.BUILD, tents=7)
+        self.assertEqual(ex.critical_path(slow, ex.BEFORE)[0], 10)
+        self.assertEqual(ex.critical_path(slow, ex.BEFORE)[3], ["tents", "signs", "rehearsal"])
+        self.assertEqual(ex.critical_path({}, []), (0, {}, {}, []))
+        self.assertEqual(ex.critical_path({"a": 4}, []), (4, {"a": 0}, {"a": 0}, ["a"]))
+        with self.assertRaises(ValueError):
+            ex.critical_path({"a": 1, "b": 1}, [("a", "b"), ("b", "a")])
+        late = [ex.critical_path(dict(ex.BUILD, van=4, sound=s), ex.BEFORE + [("van", "sound")]) for s in (4, 3, 2)]
+        self.assertEqual([r[0] for r in late], [10, 9, 8])
+        self.assertEqual(late[0][3], ["van", "sound", "rehearsal"])
+        self.assertEqual(late[2][3], ["tents", "van", "signs", "sound", "rehearsal"])
+        neg = ex.dag_shortest(["A", "B", "C"], [("A", "B", 3), ("A", "C", 5), ("C", "B", -4)], "A")[0]
+        self.assertEqual(neg, {"A": 0, "B": 1, "C": 5})
+        self.assertEqual(ex.dag_shortest(["A", "B"], [("B", "A", 2)], "A")[0], {"A": 0, "B": float("inf")})
 
 if __name__ == "__main__":
     unittest.main()

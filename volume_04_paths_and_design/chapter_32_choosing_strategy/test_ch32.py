@@ -19,5 +19,20 @@ class TestChapter32(unittest.TestCase):
         self.assertEqual((len(ex.coins.greedy_change(6, ex.coins.ODD)), len(ex.coins.fewest_coins(6, ex.coins.ODD))), (3, 2))
 
 
+    def test_change_four_ways(self) -> None:
+        self.assertEqual(ex.change_comparison(30, [25, 10, 1]),
+                         {"greedy": (6, 3), "plain recursion": (3, 570), "backtracking with a bound": (3, 66),
+                          "table": (3, 31)})
+        self.assertEqual(ex.change_comparison(6, [4, 3, 1]),
+                         {"greedy": (3, 3), "plain recursion": (2, 24), "backtracking with a bound": (2, 17),
+                          "table": (2, 7)})
+        self.assertEqual(ex.change_plain(40, [25, 10, 1]), (4, 3558))
+        inf = float("inf")
+        self.assertEqual([v[0] for v in ex.change_comparison(3, [5, 2]).values()], [inf] * 4)
+        self.assertEqual([v[0] for v in ex.change_comparison(0, [4, 3, 1]).values()], [0] * 4)
+        for a in range(25):
+            self.assertEqual(ex.change_backtracking(a, [7, 5, 1])[0], ex.change_table(a, [7, 5, 1])[0])
+
+
 if __name__ == "__main__":
     unittest.main()

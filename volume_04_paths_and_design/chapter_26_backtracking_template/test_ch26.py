@@ -27,5 +27,16 @@ class TestChapter26(unittest.TestCase):
         self.assertEqual((len(o), c[0]), (0, 37))
 
 
+    def test_work(self) -> None:
+        self.assertEqual((ex.work(ex.READERS, ex.FEUDS, True), ex.work(ex.READERS, ex.FEUDS, False)),
+                         ((547, 742), (1957, 2052)))
+        self.assertEqual(ex.nodes_by_level(ex.READERS, ex.FEUDS), [1, 6, 22, 60, 126, 192, 140])
+        self.assertEqual(ex.nodes_by_level(ex.READERS, []), [1, 6, 30, 120, 360, 720, 720])
+        more = ex.READERS + ["Gus", "Hal"]
+        feuds = ex.FEUDS + [("Gus", "Hal"), ("Ben", "Gus")]
+        self.assertEqual((ex.work(more, feuds, True)[0], ex.work(more, feuds, False)[0]), (24933, 109601))
+        self.assertEqual((ex.work([], [], True), ex.work(["Ana"], [], False)), ((1, 0), (2, 0)))
+
+
 if __name__ == "__main__":
     unittest.main()

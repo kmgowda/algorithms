@@ -25,5 +25,30 @@ class TestChapter31(unittest.TestCase):
         self.assertEqual(ex.hamiltonian(["A", "B", "C", "D"], [("A", "B"), ("A", "C"), ("A", "D")], "A"), ([], 4))
 
 
+    def test_dead_end_pruning(self) -> None:
+        routes, nodes = ex.hamiltonian_pruned(ex.PLACES, ex.ROADS, "Library")
+        self.assertEqual((routes, nodes), (ex.hamiltonian(ex.PLACES, ex.ROADS, "Library")[0], 80))
+        places, roads = ex.grid_map(4, 5)
+        plain, pruned = ex.hamiltonian(places, roads, (0, 0)), ex.hamiltonian_pruned(places, roads, (0, 0))
+        self.assertEqual((len(plain[0]), plain[1], len(pruned[0]), pruned[1]), (160, 13591, 160, 3266))
+        self.assertEqual(sorted(plain[0]), sorted(pruned[0]))
+        self.assertEqual(ex.hamiltonian_pruned(["A"], [], "A"), ([["A"]], 1))
+        self.assertEqual(ex.hamiltonian_pruned(["A", "B", "C", "D"], [("A", "B"), ("A", "C"), ("A", "D")], "B"), ([], 4))
+        found, n = ex.hamiltonian_first(places, roads, (0, 0))
+        self.assertEqual(found, plain[0][0])
+
+    def test_ordering(self) -> None:
+        self.assertEqual([ex.fewest_colours(ex.PLACES, ex.ROADS, o) for o in ("list", "degree", "dsatur")],
+                         [(3, 20), (3, 16), (3, 16)])
+        places, roads = ex.random_graph(30, 0.3, 3)
+        self.assertEqual(len(roads), 122)
+        self.assertEqual([ex.fewest_colours(places, roads, o) for o in ("list", "degree", "dsatur")],
+                         [(5, 271705), (5, 4687), (5, 437)])
+        col, _ = ex.colour_ordered(places, roads, 5, "dsatur")
+        self.assertTrue(all(col[a] != col[b] for a, b in roads))
+        self.assertEqual(ex.fewest_colours([], [], "dsatur"), (0, 1))
+        self.assertEqual([ex.colour_ordered(ex.PLACES, ex.ROADS, 2, o)[1] for o in ("list", "degree", "dsatur")], [9, 5, 5])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -21,14 +21,36 @@ def degrees(places: list, roads: list) -> dict:
     return deg
 
 
+def one_piece(roads: list) -> bool:
+    """True when every road can be reached from every other: all the places that have a road are connected.
+    (Places with no road at all do not matter.)"""
+    if not roads:
+        return True
+    adj: dict = {}
+    for a, b in roads:
+        adj.setdefault(a, []).append(b)
+        adj.setdefault(b, []).append(a)
+    start = roads[0][0]
+    seen, stack = {start}, [start]
+    while stack:
+        for w in adj[stack.pop()]:
+            if w not in seen:
+                seen.add(w)
+                stack.append(w)
+    return len(seen) == len(adj)
+
+
 def euler_kind(places: list, roads: list) -> str:
-    """'circuit', 'trail', or 'none' for a connected map (Figure 11.2): count the odd-degree places."""
+    """'circuit', 'trail', or 'none' (Figure 11.2): the roads must form one piece, and the number of odd-degree places
+    must be 0 (a circuit) or 2 (a trail)."""
+    if not one_piece(roads):
+        return "none"
     odd = sum(1 for d in degrees(places, roads).values() if d % 2)
     return {0: "circuit", 2: "trail"}.get(odd, "none")
 
 
 def euler_walk(places: list, roads: list) -> list | None:
-    """Hierholzer's method (Figure 11.3): walk until stuck, then splice in side loops. None if impossible."""
+    """Hierholzer's method, stack form (Section 11.4): walk until stuck, then splice in side loops. None if impossible."""
     kind = euler_kind(places, roads)
     if kind == "none" or not roads:
         return None if kind == "none" else []
@@ -91,6 +113,73 @@ def postman_extra(roads: list) -> tuple[int, list]:
 
     return min((sum(d[p] for p in pr), pr) for pr in pairings(odd))
 
+
+def hierholzer_pieces(places: list, roads: list) -> tuple[list, list]:
+    """Hierholzer's method by splicing (Figure 11.3): walk from the start until stuck, trying each place's roads in
+    list order; then, while some place on the
+    walk still has unused roads, walk a side loop from it and splice the loop in at that place.
+    Returns (the pieces walked, in order, the final walk)."""
+    if euler_kind(places, roads) == "none":
+        return [], []
+    if not roads:
+        return [], []
+    adj = {p: [] for p in places}
+    for i, (a, b) in reversed(list(enumerate(roads))):  # so each place tries its roads in list order
+        adj[a].append((b, i))
+        adj[b].append((a, i))
+    used: set = set()
+
+    def walk_from(v):
+        piece = [v]
+        while True:
+            while adj[v] and adj[v][-1][1] in used:
+                adj[v].pop()
+            if not adj[v]:
+                return piece
+            w, i = adj[v].pop()
+            used.add(i)
+            piece.append(w)
+            v = w
+
+    deg = degrees(places, roads)
+    start = next((p for p in places if deg[p] % 2), next(p for p in places if deg[p]))
+    walk = walk_from(start)
+    pieces = [list(walk)]
+    while len(used) < len(roads):
+        k = next(k for k, v in enumerate(walk) if any(i not in used for _, i in adj[v]))
+        loop = walk_from(walk[k])
+        pieces.append(loop)
+        walk = walk[:k] + loop + walk[k + 1:]
+    return pieces, walk
+
+
+def euler_walk_directed(places: list, streets: list) -> list | None:
+    """Every one-way street exactly once (Section 11.4): possible when the streets form one piece and every place has
+    as many streets in as out (a circuit), or one place has one extra out (the start) and one has one extra in (the
+    end). Hierholzer's method, following streets forwards only. None if impossible."""
+    out_deg = {p: 0 for p in places}
+    in_deg = {p: 0 for p in places}
+    for a, b in streets:
+        out_deg[a] += 1
+        in_deg[b] += 1
+    starts = [p for p in places if out_deg[p] - in_deg[p] == 1]
+    ends = [p for p in places if in_deg[p] - out_deg[p] == 1]
+    balanced = all(abs(out_deg[p] - in_deg[p]) <= 1 for p in places)
+    if not streets:
+        return []
+    if not balanced or not one_piece(streets) or (len(starts), len(ends)) not in ((0, 0), (1, 1)):
+        return None
+    adj = {p: [] for p in places}
+    for a, b in reversed(streets):
+        adj[a].append(b)
+    stack, walk = [starts[0] if starts else streets[0][0]], []
+    while stack:
+        v = stack[-1]
+        if adj[v]:
+            stack.append(adj[v].pop())
+        else:
+            walk.append(stack.pop())
+    return walk[::-1] if len(walk) == len(streets) + 1 else None
 
 if __name__ == "__main__":
     print(degrees(PLACES, ROADS), euler_kind(PLACES, ROADS))

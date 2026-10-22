@@ -30,5 +30,34 @@ class TestChapter30(unittest.TestCase):
         self.assertEqual(ex.branch_and_bound(shop, cap)[0], brute)
 
 
+    def test_best_first(self) -> None:
+        self.assertEqual(ex.best_first(ex.BOOKS, 20), (16, ["Poems", "Atlas", "Novel"], 6))
+        got = []
+        for n in (10, 20, 30, 40):
+            shop = ex.random_shop(n, n)
+            cap = sum(p for _, p, _ in shop) // 3
+            depth, best = ex.branch_and_bound(shop, cap), ex.best_first(shop, cap)
+            self.assertEqual(depth[0], best[0])
+            got.append((depth[2], best[2]))
+        self.assertEqual(got, [(15, 10), (21, 11), (128, 100), (129, 91)])
+        self.assertEqual((ex.best_first([], 20), ex.best_first(ex.BOOKS, 0)), ((0, [], 0), (0, [], 0)))
+
+    def test_tours(self) -> None:
+        got = {k: ex.tour_branch_and_bound(ex.BRANCHES, ex.town_minutes, k) for k in ("none", "cheapest", "tree")}
+        self.assertEqual({k: (v[0], v[2]) for k, v in got.items()}, {"none": (21, 62), "cheapest": (21, 26), "tree": (21, 22)})
+        self.assertEqual(got["tree"][1], ["Library", "North", "South", "West", "East", "Library"])
+        for n in (5, 6, 7, 8):
+            places, dist = ex.random_map(n, n)
+            brute = min(sum(dist(a, b) for a, b in zip((0,) + p + (0,), p + (0,)))
+                        for p in itertools.permutations(places[1:]))
+            for k in ("none", "cheapest", "tree"):
+                self.assertEqual(ex.tour_branch_and_bound(places, dist, k)[0], brute)
+        places, dist = ex.random_map(10, 10)
+        self.assertEqual([ex.tour_branch_and_bound(places, dist, k)[2] for k in ("none", "cheapest", "tree")],
+                         [345790, 8807, 4298])
+        self.assertEqual(ex.tour_branch_and_bound(["Home"], lambda a, b: 0, "tree"), (0, ["Home", "Home"], 1))
+        self.assertEqual(ex.tree_weight([], ex.town_minutes), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

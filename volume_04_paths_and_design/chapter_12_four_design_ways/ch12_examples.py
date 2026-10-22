@@ -44,8 +44,10 @@ def divide_and_conquer_max(values: list) -> int:
     return max(divide_and_conquer_max(values[:mid]), divide_and_conquer_max(values[mid:]))
 
 
-def backtracking(books: list, budget: int) -> tuple[int, tuple, int]:
+def backtracking(books: list, budget: int, check_first: bool = False) -> tuple[int, tuple, int]:
     """Decide each book in turn (take it or not), abandoning any branch that is over budget.
+    Every call counts as one branch, including a call that finds itself over budget and stops at once;
+    check_first=True tests the price before calling instead, so those calls are never made.
     Returns (votes, names, branches explored)."""
     best = [0, ()]
     explored = [0]
@@ -59,7 +61,8 @@ def backtracking(books: list, budget: int) -> tuple[int, tuple, int]:
         if i == len(books):
             return
         name, price, v = books[i]
-        go(i + 1, left - price, votes + v, chosen + [name])
+        if not check_first or price <= left:
+            go(i + 1, left - price, votes + v, chosen + [name])
         go(i + 1, left, votes, chosen)
 
     go(0, budget, 0, [])

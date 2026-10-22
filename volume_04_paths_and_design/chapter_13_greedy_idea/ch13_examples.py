@@ -39,7 +39,21 @@ def first_failure(coins: list, limit: int = 500) -> int | None:
     return None
 
 
+def largest_smaller_total(coins: list, c: int, limit: int = 1000) -> tuple[int, list]:
+    """Section 13.5's test of the greedy-choice property: the largest amount whose fewest-coin answer uses only
+    coins smaller than c (with the fewest coins found by the exact method). If it is below c, every best answer for an
+    amount of at least c must contain a coin of at least c. Returns (amount, those coins)."""
+    small = [x for x in coins if x < c]
+    best = (0, [])
+    for a in range(1, limit + 1):
+        exact, only_small = fewest_coins(a, coins), fewest_coins(a, small) if small else None
+        if only_small is not None and len(only_small) == len(exact):
+            best = (a, sorted(only_small, reverse=True))
+    return best
+
+
 if __name__ == "__main__":
+    print([(c, largest_smaller_total(UK, c, 400)) for c in UK[:-1]], largest_smaller_total(ODD, 4, 50))
     print(greedy_change(87, UK), fewest_coins(87, UK))
     print(greedy_change(6, ODD), fewest_coins(6, ODD))
     print(first_failure(UK), first_failure(ODD), first_failure([25, 10, 1]), first_failure([50, 20, 10, 5, 2, 1]))
