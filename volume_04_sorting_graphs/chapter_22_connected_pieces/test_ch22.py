@@ -39,7 +39,8 @@ class TestChapter28(unittest.TestCase):
 
     def test_tarjan(self) -> None:
         log, final = [], {}
-        groups = ex.tarjan_scc(ex.directed(), log, final)
+        groups = ex.tarjan_traced(ex.directed(), log, final)
+        self.assertEqual(ex.tarjan_scc(ex.directed()), groups)
         self.assertEqual(groups, [["Harbour", "Station", "Museum"], ["Hospital"], ["Park", "Market", "School", "Library"]])
         self.assertEqual([(v, d, lo) for v, d, lo, _ in log], [("Museum", 6, 6), ("Hospital", 5, 5), ("Library", 1, 1)])
         self.assertEqual(final["Station"], (7, 6))
@@ -59,6 +60,7 @@ class TestChapter28(unittest.TestCase):
             a = sorted(sorted(x) for x in ex.tarjan_scc(g))
             b = sorted(sorted(x) for x in ex.strongly_connected(g))
             self.assertEqual(a, b)
+            self.assertEqual(ex.tarjan_traced(g), ex.tarjan_scc(g))
 
 
 if __name__ == "__main__":

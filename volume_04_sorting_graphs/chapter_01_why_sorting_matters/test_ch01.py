@@ -9,7 +9,7 @@ PILE9 = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 58, 12, 25, 47, 58, 12, 47], [47], []]
 
 
-class TestChapter07(unittest.TestCase):
+class TestChapter01(unittest.TestCase):
     def test_every_case(self) -> None:
         self.assertEqual([len(ex.inversions(a)) for a in CASES], [17, 0, 36, 0, 17, 0, 0])
 

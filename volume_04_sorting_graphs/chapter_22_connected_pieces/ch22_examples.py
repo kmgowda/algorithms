@@ -14,7 +14,7 @@ ROADS = [("Library", "School"), ("Library", "Park"), ("School", "Market"), ("Par
 # the storm closes seven roads (Figure 22.1)
 CLOSED = {("School", "Market"), ("Park", "Market"), ("School", "Station"), ("Park", "Hospital"), ("Market", "Station"),
           ("Station", "Harbour"), ("Museum", "Harbour")}
-# after the storm the council makes some streets one-way (Figure 22.4): (from, to)
+# after the storm the council makes some streets one-way (Figure 22.2): (from, to)
 ONE_WAY = [("Library", "School"), ("School", "Market"), ("Market", "Park"), ("Park", "Library"), ("Market", "Station"),
            ("Station", "Harbour"), ("Harbour", "Museum"), ("Museum", "Station"), ("Park", "Hospital"),
            ("Hospital", "Museum")]
@@ -29,7 +29,7 @@ def adjacency(places=PLACES, roads=ROADS) -> dict:
 
 
 def components(adj: dict) -> list[list]:
-    """Each piece of an undirected graph: start a BFS from every place not yet reached (Figure 22.2)."""
+    """Each piece of an undirected graph: start a BFS from every place not yet reached (Section 22.4)."""
     seen, pieces = set(), []
     for start in adj:
         if start in seen:
@@ -55,39 +55,29 @@ def directed(places=PLACES, arrows=ONE_WAY) -> dict:
 
 
 def strongly_connected(g: dict) -> list[list]:
-    """Kosaraju: DFS to get finishing order; then DFS on the reversed graph in reverse finishing order (Figure 22.5).
-    Each second-pass tree is one group of places that can all reach each other."""
+    """Kosaraju (Figure 22.3): pass 1 records the finishing order; pass 2 searches the reversed graph."""
     seen, finish = set(), []
 
-    def dfs1(v):
+    def dfs(v, graph, out):
         seen.add(v)
-        for w in g[v]:
+        for w in graph[v]:
             if w not in seen:
-                dfs1(w)
-        finish.append(v)
+                dfs(w, graph, out)
+        out.append(v)                       # v finishes: everything it reaches is done
 
-    for v in g:
+    for v in g:                             # pass 1, on the one-way streets
         if v not in seen:
-            dfs1(v)
+            dfs(v, g, finish)
     rev = {v: [] for v in g}
     for v in g:
         for w in g[v]:
             rev[w].append(v)
     seen.clear()
     groups = []
-
-    def dfs2(v, group):
-        seen.add(v)
-        group.append(v)
-        for w in rev[v]:
-            if w not in seen:
-                dfs2(w, group)
-
-    for v in reversed(finish):
+    for v in reversed(finish):              # pass 2, latest finish first, on the reversed streets
         if v not in seen:
-            group = []
-            dfs2(v, group)
-            groups.append(group)
+            groups.append([])
+            dfs(v, rev, groups[-1])
     return groups
 
 
@@ -112,9 +102,37 @@ def finish_times(g: dict) -> dict:
     return times
 
 
-def tarjan_scc(g: dict, log: list | None = None, final: dict | None = None) -> list[list]:
-    """Tarjan's one-pass method (Section 22.6). One DFS gives every place a discovery number disc and a low-link low:
-    the smallest disc reachable from its subtree using at most one arrow back to a place still on the stack.
+def tarjan_scc(g: dict) -> list[list]:
+    """Tarjan's one pass (Section 22.6): a place whose low-link equals its own number closes a group."""
+    disc, low, on_stack, stack, groups = {}, {}, set(), [], []
+
+    def visit(v):
+        disc[v] = low[v] = len(disc) + 1    # discovery numbers 1, 2, 3, ...
+        stack.append(v)
+        on_stack.add(v)
+        for w in g[v]:
+            if w not in disc:               # a tree arrow: go deeper, then take the child's low-link
+                visit(w)
+                low[v] = min(low[v], low[w])
+            elif w in on_stack:             # an arrow back into the open group
+                low[v] = min(low[v], disc[w])
+        if low[v] == disc[v]:               # v is the first place of its group to be reached
+            group = []
+            while not group or group[-1] != v:
+                group.append(stack.pop())
+                on_stack.discard(group[-1])
+            groups.append(group)
+
+    for v in g:
+        if v not in disc:
+            visit(v)
+    return groups
+
+
+def tarjan_traced(g: dict, log: list | None = None, final: dict | None = None) -> list[list]:
+    """Tarjan's method with a record of its work, for the figures and tests (the same steps as tarjan_scc).
+    One DFS gives every place a discovery number disc and a low-link low: the smallest disc
+    reachable from its subtree using at most one arrow back to a place still on the stack.
     A place with low = disc is the root of a group: pop the stack down to it. Groups come out sinks first.
     log, if given, receives (place, disc, low, group) as each group root closes its group; final, if given,
     receives {place: (disc, low)} when the search ends."""
@@ -164,4 +182,5 @@ if __name__ == "__main__":
     print(strongly_connected(directed()))
     print(finish_times(directed()))
     log = []
-    print(tarjan_scc(directed(), log), log)
+    print(tarjan_traced(directed(), log), log)
+    print(tarjan_scc(directed()))

@@ -21,9 +21,7 @@ def adjacency(places=PLACES, roads=ROADS) -> dict[str, list[str]]:
 
 
 def explore(adj: dict, start, log: list | None = None) -> list:
-    """The generic walk (Figure 16.3): keep a frontier of places seen but not yet visited, and a visited set.
-    Taking from the end of the frontier makes it a stack (a "stack walk"); taking from the front makes it a queue,
-    which is breadth-first search (Chapter 17). The stack walk is NOT depth-first search (Section 16.5)."""
+    """The stack walk of Figure 16.3: take from the end of the frontier; mark places as they are seen."""
     visited, frontier, order = {start}, [start], []
     while frontier:
         v = frontier.pop()

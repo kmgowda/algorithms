@@ -4,7 +4,7 @@ import unittest
 import ch12_examples as ex
 
 
-class TestChapter18(unittest.TestCase):
+class TestChapter12(unittest.TestCase):
     def test_sorts_and_stable(self) -> None:
         rng = random.Random(1)
         for _ in range(300):

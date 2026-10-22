@@ -12,7 +12,7 @@ PILE9 = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 58, 12, 25, 47, 58, 12, 47], [47], []]
 
 
-class TestChapter09(unittest.TestCase):
+class TestChapter03(unittest.TestCase):
     def test_every_case(self) -> None:
         self.assertEqual([tuple(ex.insertion_sort(list(a)).values()) for a in CASES], [(23, 17), (8, 0), (36, 36), (8, 0), (23, 17), (0, 0), (0, 0)])
 
@@ -33,7 +33,7 @@ class TestChapter09(unittest.TestCase):
         self.assertEqual(b, sorted(r[0] for r in recs))
         self.assertEqual(sorted(keys), sorted(keys))
 
-    def test_one_book_out_of_place(self) -> None:          # Problem 9.2
+    def test_one_book_out_of_place(self) -> None:          # Practice Problem 2 (Section 3.13)
         self.assertEqual(ex.insertion_sort([91, 12, 25, 31, 47, 58, 63, 70, 84]), {"comparisons": 15, "shifts": 8})
         self.assertEqual(ex.insertion_sort([12, 25, 31, 47, 58, 63, 70, 84, 5]), {"comparisons": 15, "shifts": 8})
 

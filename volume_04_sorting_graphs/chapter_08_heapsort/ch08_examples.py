@@ -58,15 +58,18 @@ def top_k_by_heapsort(a: list, k: int, counter: dict | None = None) -> list:
 
 
 def timing(n: int = 100_000, seed: int = 1) -> dict:
+    """Section 8.5: milliseconds (timed without counting) and comparisons on random, sorted and reversed input."""
     rng = random.Random(seed)
     base = [rng.random() for _ in range(n)]
     out = {}
     for name, data in (("random", base), ("sorted", sorted(base)), ("reversed", sorted(base, reverse=True))):
         a = list(data)
-        c = {"comparisons": 0}
         t = time.perf_counter()
-        heapsort(a, c)
-        out[name] = (round((time.perf_counter() - t) * 1e3), c["comparisons"])
+        heapsort(a)
+        ms = round((time.perf_counter() - t) * 1e3)
+        c = {"comparisons": 0}
+        heapsort(list(data), c)
+        out[name] = (ms, c["comparisons"])
     return out
 
 

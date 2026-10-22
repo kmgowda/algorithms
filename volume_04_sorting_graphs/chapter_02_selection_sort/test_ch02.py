@@ -8,7 +8,7 @@ PILE9 = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 58, 12, 25, 47, 58, 12, 47], [47], []]
 
 
-class TestChapter08(unittest.TestCase):
+class TestChapter02(unittest.TestCase):
     def test_every_case(self) -> None:
         self.assertEqual([tuple(ex.selection_sort(list(a)).values()) for a in CASES], [(36, 7), (36, 0), (36, 4), (36, 0), (36, 6), (0, 0), (0, 0)])
 
@@ -31,7 +31,7 @@ class TestChapter08(unittest.TestCase):
         self.assertEqual(ex.selection_sort(sorted(ex.PILE, reverse=True))["swaps"], 4)
         self.assertEqual(ex.selection_sort([5, 4, 3, 2, 1])["swaps"], 2)
         b = [2, 3, 4, 5, 1]
-        self.assertEqual(ex.selection_sort(b)["swaps"], 4)          # Problem 8.2: a rotation forces n - 1 swaps
+        self.assertEqual(ex.selection_sort(b)["swaps"], 4)          # Practice Problem 2 (Section 2.13): a rotation forces n - 1 swaps
         self.assertEqual(ex.insertion_moves(ex.PILE), 17)
         sel, ins = ex.crate_comparison(trials=50)
         self.assertLess(sel, 20)

@@ -13,7 +13,7 @@ PILE = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 
 
 def quicksort_random(a: list, lo: int = 0, hi: int | None = None, rng=None, counter: dict | None = None) -> None:
-    """Quicksort with a random pivot (Figure 7.2): no input order is reliably bad."""
+    """Quicksort with a random pivot (Section 7.4): no input order is reliably bad."""
     if hi is None:
         hi, rng = len(a) - 1, rng or random.Random(1)
     while lo < hi:
@@ -36,14 +36,14 @@ def quicksort_random(a: list, lo: int = 0, hi: int | None = None, rng=None, coun
 
 
 def median_of_three(a: list, lo: int, hi: int) -> int:
-    """Index of the median of the first, middle and last items (Figure 7.3)."""
+    """Index of the median of the first, middle and last items (Figure 7.1)."""
     mid = (lo + hi) // 2
     trio = sorted([(a[lo], lo), (a[mid], mid), (a[hi], hi)])
     return trio[1][1]
 
 
 def partition3(a: list, lo: int, hi: int, counter: dict | None = None) -> tuple[int, int]:
-    """Dutch national flag: < pivot | = pivot | > pivot (Figure 7.4). Returns the bounds of the middle part."""
+    """Dutch national flag: < pivot | = pivot | > pivot (Figure 7.2). Returns the bounds of the middle part."""
     pivot = a[median_of_three(a, lo, hi)]
     lt, i, gt = lo, lo, hi
     while i <= gt:
@@ -162,7 +162,17 @@ def lomuto_counts(a: list) -> dict:
     return c
 
 
+def timing_random(n: int = 100_000, seed: int = 1) -> float:
+    """Milliseconds for the practical quicksort on n random numbers (the comparison table of Chapter 8, Section 8.5)."""
+    rng = random.Random(seed)
+    a = [rng.random() for _ in range(n)]
+    t = time.perf_counter()
+    quicksort_practical(a)
+    return round((time.perf_counter() - t) * 1e3)
+
+
 def compare(n: int = 4000, seed: int = 1) -> dict:
+    """The timing table of Section 7.7: milliseconds for three quicksorts on four kinds of input."""
     rng = random.Random(seed)
     inputs = {"random": [rng.random() for _ in range(n)], "sorted": sorted(rng.random() for _ in range(n)),
               "all equal": [7] * n, "few values": [rng.randint(1, 5) for _ in range(n)]}

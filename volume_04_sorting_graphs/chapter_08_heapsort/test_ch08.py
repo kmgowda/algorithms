@@ -9,7 +9,7 @@ CASES = [PILE9, sorted(PILE9), sorted(PILE9, reverse=True), [47] * 9, [58, 25, 5
 
 
 class TestChapter14(unittest.TestCase):
-    def test_build_traces(self) -> None:                      # Section 8.4 and Problem 14.3
+    def test_build_traces(self) -> None:                      # Section 8.4 and Problem 8.3
         for start, heap, comps in (([58, 25, 91, 12, 70, 47, 84, 31, 63], [91, 70, 84, 63, 25, 47, 58, 31, 12], 10),
                                    ([12, 25, 31, 47, 58, 63, 70], [70, 58, 63, 47, 25, 12, 31], 8),
                                    ([], [], 0), ([5], [5], 0)):

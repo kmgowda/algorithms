@@ -11,35 +11,40 @@ import random
 PILE = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 
 
+def partition(a: list, lo: int, hi: int, counter: dict | None = None) -> int:
+    """Lomuto partition of a[lo..hi] around the pivot a[hi]; returns the pivot's final position."""
+    pivot, i = a[hi], lo
+    for j in range(lo, hi):
+        if counter is not None:
+            counter["comparisons"] += 1
+        if a[j] < pivot:
+            a[i], a[j] = a[j], a[i]
+            i += 1
+    a[i], a[hi] = a[hi], a[i]
+    return i
+
+
 def quickselect(a: list, k: int, counter: dict | None = None, log: list | None = None, rng=None) -> object:
-    """The k-th smallest (k = 1 is the minimum): partition, then keep only the side that holds position k-1
+    """The k-th smallest (k = 1 is the minimum): partition, then keep only the side that holds position k - 1
     (Figure 14.2). Last item as pivot unless rng is given."""
     if not 1 <= k <= len(a):
         raise ValueError("k must be between 1 and len(a)")
     a = list(a)
     lo, hi, target = 0, len(a) - 1, k - 1
-    while True:
-        if lo == hi:
-            return a[lo]
+    while lo < hi:
         if rng is not None:
             r = rng.randint(lo, hi)
             a[r], a[hi] = a[hi], a[r]
-        pivot, i = a[hi], lo
-        for j in range(lo, hi):
-            if counter is not None:
-                counter["comparisons"] += 1
-            if a[j] < pivot:
-                a[i], a[j] = a[j], a[i]
-                i += 1
-        a[i], a[hi] = a[hi], a[i]
+        p = partition(a, lo, hi, counter)
         if log is not None:
-            log.append((pivot, i, list(a[lo:hi + 1])))
-        if i == target:
-            return a[i]
-        if target < i:
-            hi = i - 1
+            log.append((a[p], p, list(a[lo:hi + 1])))
+        if p == target:
+            return a[p]
+        if target < p:
+            hi = p - 1
         else:
-            lo = i + 1
+            lo = p + 1
+    return a[lo]
 
 
 def median_of_medians(a: list, k: int, counter: dict | None = None) -> object:
@@ -68,7 +73,7 @@ def median_of_medians(a: list, k: int, counter: dict | None = None) -> object:
 
 
 def mom_pivot(a: list) -> tuple[list, object]:
-    """One round of median of medians (Figure 14.4): the groups of five, each sorted, and the pivot chosen."""
+    """One round of median of medians (Figure 14.5): the groups of five, each sorted, and the pivot chosen."""
     groups = [sorted(a[i:i + 5]) for i in range(0, len(a), 5)]
     meds = [g[(len(g) - 1) // 2] for g in groups]
     return groups, median_of_medians(meds, (len(meds) + 1) // 2)

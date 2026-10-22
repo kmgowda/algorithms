@@ -33,7 +33,7 @@ PLACES, ROADS = bfs_m.PLACES, bfs_m.ROADS
 
 
 def town_answers() -> dict:
-    """The question each method answers, asked of the town (Figure 25.1)."""
+    """The question each method answers, asked of the town (Section 25.4)."""
     adj = bfs_m.adjacency()
     dist, parent = bfs_m.bfs(adj, "Library")
     d = dfs_m.dfs(adj, "Library")
@@ -58,7 +58,7 @@ def random_graph(n: int, m: int, seed: int = 1) -> list[tuple]:
 
 def timings(n: int = 3000, m: int = 9000, seed: int = 1, repeats: int = 5) -> dict:
     """Milliseconds for each method on the same random graph of n places and m roads, the median of several runs
-    (Figure 25.3)."""
+    (Figure 25.2)."""
     roads = random_graph(n, m, seed)
     places = list(range(n))
     adj = bfs_m.adjacency(places, roads)

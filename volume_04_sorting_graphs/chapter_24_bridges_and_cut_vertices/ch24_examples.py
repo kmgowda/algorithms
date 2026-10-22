@@ -47,40 +47,30 @@ def road_ids(adj: dict) -> dict:
 
 
 def weak_links(adj: dict) -> dict:
-    """One DFS (Figure 24.3). low[v] = the earliest discovery time reachable from v's subtree using at most one
-    back road. Tree road (u, v) is a bridge if low[v] > disc[u]; u is a cut vertex if some child v has
-    low[v] >= disc[u] (the root: if it has two or more children). Only the one road DFS arrived along is skipped:
-    the first copy of the parent in u's list is that road, and any further copy is a parallel road, a real way round."""
-    disc, low, parent = {}, {}, {}
-    bridges, cuts = [], set()
-    time = [0]
-
-    def visit(u):
-        time[0] += 1
-        disc[u] = low[u] = time[0]
+    """Bridges and cut vertices from one DFS with discovery times and low-links (Figure 24.3)."""
+    disc, low, bridges, cuts = {}, {}, [], set()
+    def visit(u, parent):
+        disc[u] = low[u] = len(disc) + 1                # the next discovery time
         children, skipped = 0, False
         for v in adj[u]:
-            if v not in disc:
-                parent[v] = u
+            if v not in disc:                           # a tree road u-v
                 children += 1
-                visit(v)
+                visit(v, u)
                 low[u] = min(low[u], low[v])
                 if low[v] > disc[u]:
                     bridges.append((u, v))
-                if parent.get(u) is not None and low[v] >= disc[u]:
+                if parent is not None and low[v] >= disc[u]:
                     cuts.add(u)
-            elif v == parent.get(u) and not skipped:
-                skipped = True                          # the road we arrived along
+            elif v == parent and not skipped:
+                skipped = True                          # the one road we arrived along
             else:
-                low[u] = min(low[u], disc[v])           # a back road (or a parallel road to the parent)
-        if parent.get(u) is None and children >= 2:
+                low[u] = min(low[u], disc[v])           # a back road, or a parallel road
+        if parent is None and children >= 2:
             cuts.add(u)
-
     for s in adj:
         if s not in disc:
-            parent[s] = None
-            visit(s)
-    return {"disc": disc, "low": low, "bridges": bridges, "cuts": sorted(cuts, key=lambda p: disc[p])}
+            visit(s, None)
+    return {"disc": disc, "low": low, "bridges": bridges, "cuts": sorted(cuts, key=disc.get)}
 
 
 def blocks(adj: dict) -> list[list]:

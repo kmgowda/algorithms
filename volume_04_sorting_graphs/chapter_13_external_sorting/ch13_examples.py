@@ -115,6 +115,8 @@ def polyphase(runs_a: int, runs_b: int) -> list[tuple[int, int, int]]:
     Returns, for every phase, (runs left on the three files, total, initial runs written in that phase) as
     ((a, b, c), written). Run sizes are counted in initial runs."""
     files = [[1] * runs_a, [1] * runs_b, []]
+    if runs_a + runs_b > 1 and min(runs_a, runs_b) == 0:
+        raise ValueError("polyphase needs runs on both input files")   # else no phase can ever merge
     log = []
     while sum(len(f) for f in files) > 1:
         empty = next(i for i, f in enumerate(files) if not f)

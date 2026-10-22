@@ -12,22 +12,29 @@ PILE = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 GRADES = [3, 1, 4, 1, 5, 2, 4, 3, 1, 5, 2, 4]            # books borrowed by twelve readers (0..5)
 
 
-def counting_sort(a: list, k: int, key=lambda x: x, steps: dict | None = None) -> list:
-    """Stable counting sort of items whose key is 0..k (Figure 10.2): count, prefix-sum, place from the right."""
+def counting_sort(a: list, k: int, key=lambda x: x) -> list:
+    """Stable counting sort of items whose key is 0..k (Figure 10.2): count, running total, place from the right."""
     count = [0] * (k + 1)
     for x in a:
         count[key(x)] += 1
-    if steps is not None:
-        steps["counts"] = list(count)
     for v in range(1, k + 1):
-        count[v] += count[v - 1]                      # count[v] = how many keys are <= v
-    if steps is not None:
-        steps["ends"] = list(count)
+        count[v] += count[v - 1]                      # count[v] = how many keys are <= v: the group ends
     out = [None] * len(a)
     for x in reversed(a):                             # right to left keeps equal keys in order: stable
         count[key(x)] -= 1
         out[count[key(x)]] = x
     return out
+
+
+def group_ends(a: list, k: int, key=lambda x: x) -> tuple[list, list]:
+    """The counts and the running totals (group ends) that counting sort computes (Figures 10.1 and 10.2)."""
+    count = [0] * (k + 1)
+    for x in a:
+        count[key(x)] += 1
+    ends = list(count)
+    for v in range(1, k + 1):
+        ends[v] += ends[v - 1]
+    return count, ends
 
 
 def radix_sort(a: list, digits: int, base: int = 10, passes: list | None = None) -> list:
@@ -98,8 +105,7 @@ def timing(n: int = 1_000_000, seed: int = 1) -> dict:
 
 
 if __name__ == "__main__":
-    s = {}
-    print(counting_sort(GRADES, 5, steps=s), s)
+    print(counting_sort(GRADES, 5), group_ends(GRADES, 5))
     p = []
     print(radix_sort(PILE, 2, passes=p), p)
     print(timing())

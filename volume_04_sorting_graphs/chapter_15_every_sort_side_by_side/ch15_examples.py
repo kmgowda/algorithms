@@ -6,6 +6,7 @@ Run:  python3 ch15_examples.py
 from __future__ import annotations
 
 import importlib.util
+import itertools
 import os
 import random
 import sys
@@ -60,7 +61,7 @@ PROPERTIES = {  # stable, in place, adaptive, worst case
     "bubble": ("yes", "yes", "yes", "n\u00b2"), "Shell": ("no", "yes", "partly", "about n^1.5"),
     "merge": ("yes", "no", "no", "n log n"), "quick (random pivot)": ("no", "yes", "no", "n\u00b2 (rare)"),
     "quick (practical)": ("no", "yes", "no", "n\u00b2 (very rare)"), "heap": ("no", "yes", "no", "n log n"),
-    "Timsort (teaching)": ("yes", "no", "yes", "n log n"), "counting": ("yes", "no", "no", "n + k"),
+    "Timsort (teaching)": ("yes", "no", "yes", "n^1.5 (full Timsort: n log n)"), "counting": ("yes", "no", "no", "n + k"),
 }
 
 
@@ -83,6 +84,77 @@ def run_all(data: list) -> dict:
     sorted(data)
     out["sorted() built in"] = (None, round((time.perf_counter() - t) * 1e3, 1))
     return out
+
+
+# ---------------------------------------------------------------- sorting networks (Section 15.6)
+
+def odd_even_merge(lo: int, n: int, r: int, out: list) -> None:
+    """Comparators merging the two sorted halves of wires lo .. lo + n - 1, looking at every r-th wire."""
+    step = 2 * r
+    if step < n:
+        odd_even_merge(lo, n, step, out)          # the even-numbered wires
+        odd_even_merge(lo + r, n, step, out)      # the odd-numbered wires
+        for i in range(lo + r, lo + n - r, step):
+            out.append((i, i + r))                # one last layer fixes neighbours
+    else:
+        out.append((lo, lo + r))
+
+
+def odd_even_merge_sort(lo: int, n: int, out: list) -> None:
+    """Batcher's odd-even merge sort on wires lo .. lo + n - 1 (n a power of two)."""
+    if n > 1:
+        half = n // 2
+        odd_even_merge_sort(lo, half, out)
+        odd_even_merge_sort(lo + half, half, out)
+        odd_even_merge(lo, n, 1, out)
+
+
+def sorting_network(n: int) -> list[tuple[int, int]]:
+    """Batcher's network for any n >= 0: build it for the next power of two, then drop every comparator that
+    touches a wire >= n (those wires would hold +infinity, which never moves)."""
+    size = 1
+    while size < n:
+        size *= 2
+    out: list[tuple[int, int]] = []
+    odd_even_merge_sort(0, size, out)
+    return [(i, j) for i, j in out if j < n]
+
+
+def stages(network: list[tuple[int, int]]) -> list[list[tuple[int, int]]]:
+    """Group the comparators into parallel stages: each goes in the first stage after the last one using its wires."""
+    ready: dict[int, int] = {}
+    layers: list[list[tuple[int, int]]] = []
+    for i, j in network:
+        t = max(ready.get(i, 0), ready.get(j, 0))
+        if t == len(layers):
+            layers.append([])
+        layers[t].append((i, j))
+        ready[i] = ready[j] = t + 1
+    return layers
+
+
+def apply_network(network: list[tuple[int, int]], a: list, counter: dict | None = None) -> list:
+    """Run the items through the comparators in order; each comparator puts the smaller item on wire i < j."""
+    a = list(a)
+    for i, j in network:
+        if counter is not None:
+            counter["comparisons"] += 1
+        if a[j] < a[i]:
+            a[i], a[j] = a[j], a[i]
+    return a
+
+
+def sorts_all_01(network: list[tuple[int, int]], n: int) -> bool:
+    """The 0-1 principle as a test: a network sorts every input if it sorts all 2**n inputs of 0s and 1s."""
+    return all(apply_network(network, bits) == sorted(bits) for bits in itertools.product((0, 1), repeat=n))
+
+
+def network_sort(a: list, counter: dict | None = None) -> list:
+    """Sort with Batcher's network for len(a) wires (the network row of Figure 15.4)."""
+    return apply_network(sorting_network(len(a)), a, counter)
+
+
+SORTS["odd-even network"] = _with_counter(network_sort)
 
 
 if __name__ == "__main__":

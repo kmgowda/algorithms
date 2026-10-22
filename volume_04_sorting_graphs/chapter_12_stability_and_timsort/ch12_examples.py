@@ -15,43 +15,29 @@ import time
 PILE = [58, 25, 91, 12, 70, 47, 84, 31, 63]
 
 
-def find_runs(a: list, counter: dict | None = None) -> list[tuple[int, int]]:
-    """Split a into maximal rising (non-decreasing) runs; a strictly falling run is reversed in place (Figure 12.2)."""
+def find_runs(a: list) -> list[tuple[int, int]]:
+    """Cut a into maximal runs, as (start, end) pairs; a strictly falling run is reversed in place (Figure 12.2)."""
     runs, i, n = [], 0, len(a)
     while i < n:
-        j = i + 1
+        j = i + 1                                     # the run so far is a[i:j]
         if j < n:
-            if counter is not None:
-                counter["comparisons"] += 1
-            if a[j] < a[i]:                                   # strictly falling: extend, then reverse
-                while j + 1 < n and a[j + 1] < a[j]:
-                    if counter is not None:
-                        counter["comparisons"] += 1
-                    j += 1
-                if counter is not None and j + 1 < n:
-                    counter["comparisons"] += 1
+            falling = a[j] < a[i]                     # strictly falling, or rising (equal keys count as rising)
+            j += 1
+            while j < n and (a[j] < a[j - 1]) == falling:
                 j += 1
-                a[i:j] = a[i:j][::-1]
-            else:
-                while j + 1 < n and a[j + 1] >= a[j]:
-                    if counter is not None:
-                        counter["comparisons"] += 1
-                    j += 1
-                if counter is not None and j + 1 < n:
-                    counter["comparisons"] += 1
-                j += 1
+            if falling:
+                a[i:j] = a[i:j][::-1]                 # no equal keys inside, so stability is safe
         runs.append((i, j))
         i = j
     return runs
 
 
-def merge(a: list, lo: int, mid: int, hi: int, counter: dict | None = None) -> None:
+def merge(a: list, lo: int, mid: int, hi: int) -> None:
+    """Stable merge of the sorted runs a[lo:mid] and a[mid:hi], in place."""
     left, right = a[lo:mid], a[mid:hi]
     i = j = 0
     k = lo
     while i < len(left) and j < len(right):
-        if counter is not None:
-            counter["comparisons"] += 1
         if left[i] <= right[j]:                       # ties from the left: stable
             a[k] = left[i]; i += 1
         else:
@@ -60,9 +46,50 @@ def merge(a: list, lo: int, mid: int, hi: int, counter: dict | None = None) -> N
     a[k:hi] = left[i:] + right[j:]
 
 
+class Counted:
+    """An item that adds 1 to a shared tally whenever it is compared, so the sorts can stay free of counters."""
+
+    def __init__(self, key, tally: list):
+        self.key, self.tally = key, tally
+
+    def __lt__(self, other):
+        self.tally[0] += 1
+        return self.key < other.key
+
+    def __le__(self, other):
+        self.tally[0] += 1
+        return self.key <= other.key
+
+    def __ge__(self, other):
+        self.tally[0] += 1
+        return self.key >= other.key
+
+    def __gt__(self, other):
+        self.tally[0] += 1
+        return self.key > other.key
+
+
+def count_comparisons(sort, a: list) -> tuple[list, int]:
+    """Run an in-place sort on a copy of a; return (the sorted values, the comparisons it made)."""
+    tally = [0]
+    b = [Counted(x, tally) for x in a]
+    sort(b)
+    return [x.key for x in b], tally[0]
+
+
 def timsort(a: list, counter: dict | None = None, log: list | None = None) -> None:
-    """Sort a in place by merging natural runs, smaller neighbours first."""
-    runs = find_runs(a, counter)
+    """Sort a in place by merging natural runs, smaller neighbours first (the teaching version of Section 12.5).
+    counter: if given, counter["comparisons"] grows by the comparisons made; log: the runs and every merge."""
+    if counter is not None:                           # count by wrapping the items; the sort itself stays clean
+        inner = [] if log is not None else None
+        values, comps = count_comparisons(lambda b: timsort(b, log=inner), a)
+        a[:] = values
+        counter["comparisons"] = counter.get("comparisons", 0) + comps
+        if log is not None:
+            plain = lambda part: [plain(x) if isinstance(x, list) else x.key for x in part]
+            log += [(kind, plain(part)) for kind, part in inner]
+        return
+    runs = find_runs(a)
     if log is not None:
         log.append(("runs", [a[s:e] for s, e in runs]))
     stack: list[tuple[int, int]] = []
@@ -70,13 +97,13 @@ def timsort(a: list, counter: dict | None = None, log: list | None = None) -> No
         stack.append(run)
         while len(stack) >= 2 and (stack[-2][1] - stack[-2][0]) <= (stack[-1][1] - stack[-1][0]):
             (s1, e1), (s2, e2) = stack[-2], stack.pop()
-            merge(a, s1, e1, e2, counter)
+            merge(a, s1, e1, e2)
             stack[-1] = (s1, e2)
             if log is not None:
                 log.append(("merge", a[s1:e2]))
     while len(stack) >= 2:
         (s1, e1), (s2, e2) = stack[-2], stack.pop()
-        merge(a, s1, e1, e2, counter)
+        merge(a, s1, e1, e2)
         stack[-1] = (s1, e2)
         if log is not None:
             log.append(("merge", a[s1:e2]))
@@ -168,19 +195,18 @@ def merge_cost(merges: list[tuple[int, int]]) -> int:
     return sum(a + b for a, b in merges)
 
 
-def merge_sort_comparisons(a: list) -> int:
-    c = {"comparisons": 0}
-
-    def ms(lo, hi):
-        if hi - lo <= 1:
-            return
+def merge_sort(a: list, lo: int = 0, hi: int | None = None) -> None:
+    """Top-down merge sort of a[lo:hi] in place, with the same stable merge."""
+    hi = len(a) if hi is None else hi
+    if hi - lo > 1:
         mid = (lo + hi) // 2
-        ms(lo, mid)
-        ms(mid, hi)
-        merge(b, lo, mid, hi, c)
-    b = list(a)
-    ms(0, len(b))
-    return c["comparisons"]
+        merge_sort(a, lo, mid)
+        merge_sort(a, mid, hi)
+        merge(a, lo, mid, hi)
+
+
+def merge_sort_comparisons(a: list) -> int:
+    return count_comparisons(merge_sort, a)[1]
 
 
 def builtin_timing(n: int = 1_000_000, seed: int = 1) -> dict:

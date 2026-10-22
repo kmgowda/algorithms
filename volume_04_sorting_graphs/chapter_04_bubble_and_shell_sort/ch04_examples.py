@@ -30,14 +30,19 @@ def bubble_sort(a: list, passes: list | None = None) -> dict:
     return {"comparisons": comparisons, "swaps": swaps}
 
 
+def knuth_gaps(n: int) -> list[int]:
+    """The gaps 1, 4, 13, 40, ... (each three times the last plus one) below n, largest first."""
+    gaps, g = [], 1
+    while g < n:
+        gaps.insert(0, g)
+        g = 3 * g + 1
+    return gaps
+
+
 def shell_sort(a: list, gaps=None, rounds: list | None = None) -> dict:
     """Insertion sort on items a gap apart, for shrinking gaps ending with 1 (Figure 4.2)."""
     n = len(a)
-    if gaps is None:
-        gaps, g = [], 1
-        while g < n:
-            gaps.insert(0, g)
-            g = 3 * g + 1                    # 1, 4, 13, 40, ... (Knuth's gaps)
+    gaps = knuth_gaps(n) if gaps is None else gaps
     comparisons = shifts = 0
     for gap in gaps:
         for i in range(gap, n):
