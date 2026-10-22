@@ -5,16 +5,17 @@ Companion code for the book series **Algorithms Simplified**.
 
 ## Layout
 
-One folder per volume of the six-volume series, one folder per chapter inside it:
+One folder per volume of the seven-volume series, one folder per chapter inside it:
 
 | Folder | Book |
 |---|---|
 | `volume_01_foundations/` | Volume 1, Foundations |
-| `volume_02_hashing_trees_heaps/` | Volume 2, Data Structures |
-| `volume_03_searching_sorting_graphs/` | Volume 3, Searching, Sorting, and Graph Exploration |
-| `volume_04_paths_and_design/` | Volume 4, Shortest Paths and Algorithm Design |
-| `volume_05_dynamic_programming_strings/` | Volume 5, Dynamic Programming and Strings |
-| `volume_06_math_and_advanced/` | Volume 6, Mathematics and Advanced Algorithms |
+| `volume_02_linear_structures_hashing/` | Volume 2, Linear Structures and Hashing |
+| `volume_03_trees_heaps/` | Volume 3, Trees and Heaps |
+| `volume_04_sorting_graphs/` | Volume 4, Sorting and Graph Exploration |
+| `volume_05_paths_greedy_divide/` | Volume 5, Shortest Paths, Greedy, and Divide and Conquer |
+| `volume_06_backtracking_dp_strings/` | Volume 6, Backtracking, Dynamic Programming, and Strings |
+| `volume_07_math_and_advanced/` | Volume 7, Mathematics and Advanced Algorithms |
 
 ```
 volume_01_foundations/
@@ -26,8 +27,7 @@ volume_01_foundations/
 run_tests.py            # runs every chapter's tests
 ```
 
-Chapter numbers restart at 1 in every volume, matching the books. Folders for Volumes 4-6 are added as those volumes are
-written.
+Chapter numbers restart at 1 in every volume, matching the books.
 
 ## Requirements
 
@@ -37,6 +37,6 @@ Python 3.10 or newer. No third-party packages.
 
 ```bash
 python3 run_tests.py                 # all tests
-python3 run_tests.py volume_02_hashing   # one volume (any part of the folder name)
-python3 volume_01_foundations/chapter_09_first_real_algorithms/ch09_examples.py   # run a chapter's demos
+python3 run_tests.py volume_02      # one volume (any part of the folder name)
+python3 volume_01_foundations/chapter_11_binary_search/ch11_examples.py   # run a chapter's demos
 ```
