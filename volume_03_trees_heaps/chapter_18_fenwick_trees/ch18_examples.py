@@ -23,7 +23,7 @@ class Fenwick:
             self.add(i, v)
 
     def add(self, i: int, delta: int) -> list[int]:
-        """Add delta to day i: climb to every box responsible for it (Figure 18.4)."""
+        """Add delta to day i: climb to every box responsible for it (Figure 18.3)."""
         if i < 1:                                     # lowbit(0) is 0: the climb would never move
             raise IndexError("days are numbered from 1")
         touched = []
@@ -34,7 +34,7 @@ class Fenwick:
         return touched
 
     def prefix(self, i: int) -> tuple[int, list[int]]:
-        """Total of days 1..i: hop down through boxes that tile the stretch (Figure 18.3)."""
+        """Total of days 1..i: hop down through boxes that tile the stretch (Figure 18.2)."""
         total, hops = 0, []
         while i > 0:
             total += self.tree[i]
@@ -63,7 +63,7 @@ def build_linear(values: list[int]) -> tuple[Fenwick, list[tuple[int, int]]]:
 
 
 class RangeFenwick:
-    """Add to a whole range and total a range, both O(log n), with two Fenwick trees (Section 18.16).
+    """Add to a whole range and total a range, both O(log n), with two Fenwick trees (Section 18.17).
     b1 holds the differences d(j); b2 holds d(j) * (j - 1). Then days 1..i total i * b1(i) - b2(i)."""
 
     def __init__(self, n: int):

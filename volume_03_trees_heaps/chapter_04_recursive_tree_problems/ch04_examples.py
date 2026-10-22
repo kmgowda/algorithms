@@ -88,6 +88,16 @@ def lowest_common_ancestor(n, a, b):
     return found
 
 
+def paths_with_total(n, target, so_far=0) -> int:
+    """Section 4.15: carry the running total down; count the root-to-leaf paths whose total is target."""
+    if n is None:
+        return 0
+    so_far += n.value
+    if n.left is None and n.right is None:
+        return 1 if so_far == target else 0
+    return paths_with_total(n.left, target, so_far) + paths_with_total(n.right, target, so_far)
+
+
 if __name__ == "__main__":
     lib = library()
     print(size(lib), total(lib), height(lib), largest(lib), best_walk(lib))

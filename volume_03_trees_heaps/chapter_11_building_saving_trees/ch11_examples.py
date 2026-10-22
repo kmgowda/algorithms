@@ -69,7 +69,7 @@ def from_pre_in(pre: list, ino: list):
 
 
 def balanced_from_sorted(keys: list, lo: int = 0, hi: int | None = None):
-    """Section 11.6: the middle key becomes the root; each half builds a subtree. O(n)."""
+    """Section 11.7: the middle key becomes the root; each half builds a subtree. O(n)."""
     hi = len(keys) - 1 if hi is None else hi
     if lo > hi:
         return None

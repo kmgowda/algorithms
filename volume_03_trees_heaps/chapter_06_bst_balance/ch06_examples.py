@@ -56,7 +56,7 @@ def median_first(lo: int, hi: int) -> list[int]:
 
 
 def average_random_height(n: int, trials: int = 20) -> float:
-    """Figures 6.3 and 6.7: average height over 20 random insertion orders."""
+    """Figure 6.3 and Section 6.16: average height over 20 random insertion orders."""
     return sum(insert_all(random.Random(s).sample(range(10 ** 6), n))[0] for s in range(trials)) / trials
 
 

@@ -73,6 +73,11 @@ class TestChapter44(unittest.TestCase):
         self.assertTrue(ex.symmetric(ex.Node(1, ex.Node(2, ex.Node(3), ex.Node(4)), ex.Node(2, ex.Node(4), ex.Node(3)))))
         self.assertFalse(ex.symmetric(ex.Node(1, ex.Node(2), ex.Node(3))))
 
+    def test_paths_with_total(self) -> None:
+        t = search_tree([50, 30, 70, 20, 40, 60, 80, 35])          # Section 4.15: totals 100, 155, 180, 200
+        self.assertEqual([ex.paths_with_total(t, s) for s in (100, 155, 180, 200, 150)], [1, 1, 1, 1, 0])
+        self.assertEqual((ex.paths_with_total(None, 0), ex.paths_with_total(ex.Node(7), 7)), (0, 1))
+
 
 if __name__ == "__main__":
     unittest.main()

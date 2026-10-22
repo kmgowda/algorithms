@@ -15,7 +15,8 @@ def parents(children: dict) -> dict:
 
 
 def path_from_root(children: dict, node) -> list:
-    """Walk up through parents to the root, then reverse (Section 1.8): O(depth)."""
+    """Walk up through parents to the root, then reverse (Section 1.8): O(n) to build the parent map, then
+    O(depth) for the walk. A program answering many questions builds the map once."""
     up, path = parents(children), [node]
     while path[-1] in up:
         path.append(up[path[-1]])
