@@ -16,7 +16,7 @@ def address(r: int, c: int, cols: int, start: int = 1000, size: int = 1) -> int:
 
 
 def column_major_address(r: int, c: int, rows: int, start: int = 1000, size: int = 1) -> int:
-    """Column-major address of cell (r, c): whole columns are stored one after another (Section 2.6)."""
+    """Column-major address of cell (r, c): whole columns are stored one after another (Section 2.5)."""
     return start + (c * rows + r) * size
 
 
@@ -54,6 +54,16 @@ def lonely_seats(grid: list[list[int]]) -> list[tuple[int, int]]:
     rows, cols = len(grid), len(grid[0])
     return [(r, c) for r in range(rows) for c in range(cols)
             if grid[r][c] and all(grid[nr][nc] == 0 for nr, nc in neighbours(r, c, rows, cols))]
+
+
+def row_append_copies(n: int) -> int:
+    """References copied while n rows are appended to an outer list that doubles from capacity 1 (Theorem 2.1)."""
+    copies, capacity = 0, 1
+    for size in range(n):
+        if size == capacity:
+            copies += size
+            capacity *= 2
+    return copies
 
 
 def make_grid(rows: int, cols: int) -> list[list[int]]:

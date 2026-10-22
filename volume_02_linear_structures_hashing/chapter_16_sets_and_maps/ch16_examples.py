@@ -1,6 +1,6 @@
-"""Volume 2, Chapter 14 - Sets and Maps in Practice.
+"""Volume 2, Chapter 16 - Sets and Maps in Practice.
 
-Run:  python3 ch14_examples.py
+Run:  python3 ch16_examples.py
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ SCIENCE = {"Cai", "Dev", "Eva", "Fay", "Gus"}
 
 
 def count_loans(loans: list[str]) -> dict[str, int]:
-    """How many times each title appears, in one pass (Figure 14.2)."""
+    """How many times each title appears, in one pass (Figure 16.2)."""
     counts: dict[str, int] = {}
     for title in loans:
         counts[title] = counts.get(title, 0) + 1
@@ -20,7 +20,7 @@ def count_loans(loans: list[str]) -> dict[str, int]:
 
 
 def group_by(items, key) -> dict:
-    """A map from key(item) to the list of items with that key (Figure 14.3)."""
+    """A map from key(item) to the list of items with that key (Figure 16.3)."""
     groups: dict = {}
     for it in items:
         groups.setdefault(key(it), []).append(it)
@@ -28,13 +28,13 @@ def group_by(items, key) -> dict:
 
 
 def intersection(a: set, b: set) -> set:
-    """Walk the smaller set and test each member against the larger (Section 14.4)."""
+    """Walk the smaller set and test each member against the larger (Section 16.4)."""
     small, large = (a, b) if len(a) <= len(b) else (b, a)
     return {x for x in small if x in large}
 
 
 def reminders_fast(overdue: list[tuple[str, str]], opted_out: list[str]) -> dict[str, list[str]]:
-    """Section 14.8: one entry per reader with their overdue titles, skipping opted-out readers."""
+    """Section 16.8: one entry per reader with their overdue titles, skipping opted-out readers."""
     skip = set(opted_out)
     out: dict[str, list[str]] = {}
     for reader, title in overdue:

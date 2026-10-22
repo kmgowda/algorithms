@@ -1,6 +1,6 @@
-"""Volume 2, Chapter 19 - Prefix Sums and Difference Arrays.
+"""Volume 2, Chapter 21 - Prefix Sums and Difference Arrays.
 
-Run:  python3 ch19_examples.py
+Run:  python3 ch21_examples.py
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ VISITS = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
 
 
 def prefix_sums(values: list[int]) -> list[int]:
-    """P[i] = total of the first i values, with P[0] = 0 (Figure 19.1)."""
+    """P[i] = total of the first i values, with P[0] = 0 (Figure 21.1)."""
     p = [0]
     for v in values:
         p.append(p[-1] + v)
@@ -24,7 +24,7 @@ def range_sum(p: list[int], a: int, b: int) -> int:
 
 
 def chairs_in_use(bookings: list[tuple[int, int, int]], hours: int) -> list[int]:
-    """Two marks per booking (a, b, chairs), then one running total (Figure 19.4)."""
+    """Two marks per booking (a, b, chairs), then one running total (Figure 21.4)."""
     d = [0] * (hours + 1)
     for a, b, c in bookings:
         d[a] += c
@@ -37,7 +37,7 @@ def chairs_in_use(bookings: list[tuple[int, int, int]], hours: int) -> list[int]
 
 
 def count_stretches_with_sum(values: list[int], k: int) -> int:
-    """How many stretches sum to exactly k: prefixes plus the complement pattern (Section 19.4, Figure 19.3)."""
+    """How many stretches sum to exactly k: prefixes plus the complement pattern (Section 21.4, Figure 21.3)."""
     seen, running, count = {0: 1}, 0, 0
     for v in values:
         running += v
@@ -47,7 +47,7 @@ def count_stretches_with_sum(values: list[int], k: int) -> int:
 
 
 def grid_prefix(g: list[list[int]]) -> list[list[int]]:
-    """P[r][c] = total of the rectangle above-left of (r, c) (Figure 19.5). An empty grid gives [[0]]."""
+    """P[r][c] = total of the rectangle above-left of (r, c) (Figure 21.5). An empty grid gives [[0]]."""
     rows, cols = len(g), len(g[0]) if g else 0
     p = [[0] * (cols + 1) for _ in range(rows + 1)]
     for r in range(rows):

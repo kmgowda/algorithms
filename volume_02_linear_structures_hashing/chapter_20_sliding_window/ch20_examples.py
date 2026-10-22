@@ -1,6 +1,6 @@
-"""Volume 2, Chapter 18 - Sliding Window.
+"""Volume 2, Chapter 20 - Sliding Window.
 
-Run:  python3 ch18_examples.py
+Run:  python3 ch20_examples.py
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ VISITS = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
 
 
 def window_totals(counts: list[int], k: int) -> list[int]:
-    """Total of every k-length stretch: add the newcomer, subtract the leaver (Figure 18.1)."""
+    """Total of every k-length stretch: add the newcomer, subtract the leaver (Figure 20.1)."""
     if k > len(counts):
         return []
     total = sum(counts[:k])
@@ -21,7 +21,7 @@ def window_totals(counts: list[int], k: int) -> list[int]:
 
 
 def shortest_stretch(counts: list[int], target: int) -> int:
-    """Length of the shortest run of neighbouring days summing to at least target (0 if none) (Figure 18.2).
+    """Length of the shortest run of neighbouring days summing to at least target (0 if none) (Figure 20.2).
     Counts must not be negative."""
     left, total, best = 0, 0, 0
     for right, c in enumerate(counts):
@@ -35,7 +35,7 @@ def shortest_stretch(counts: list[int], target: int) -> int:
 
 
 def longest_without_repeats(log: str) -> tuple[int, int]:
-    """(length, start) of the longest run with no repeated character (Figure 18.3)."""
+    """(length, start) of the longest run with no repeated character (Figure 20.3)."""
     last: dict[str, int] = {}
     left, best = 0, (0, 0)
     for right, ch in enumerate(log):
@@ -48,7 +48,7 @@ def longest_without_repeats(log: str) -> tuple[int, int]:
 
 
 def longest_quiet(noise: list[int], limit: int) -> tuple[int, int]:
-    """Section 18.8: (length, start) of the longest stretch whose total stays at most limit (non-negative values)."""
+    """Section 20.8: (length, start) of the longest stretch whose total stays at most limit (non-negative values)."""
     left, total, best = 0, 0, (0, 0)
     for right, x in enumerate(noise):
         total += x
@@ -61,7 +61,7 @@ def longest_quiet(noise: list[int], limit: int) -> tuple[int, int]:
 
 
 def count_at_most(log: str, k: int) -> int:
-    """How many stretches hold at most k different readers (Section 18.7).
+    """How many stretches hold at most k different readers (Section 20.7).
 
     For each right edge, shrink until the window is legal; every start from left to right then gives a legal
     stretch ending here, so the window adds right - left + 1."""
@@ -79,7 +79,7 @@ def count_at_most(log: str, k: int) -> int:
 
 
 def count_exactly(log: str, k: int) -> int:
-    """Stretches with exactly k different readers: at most k, minus at most k - 1 (Section 18.7)."""
+    """Stretches with exactly k different readers: at most k, minus at most k - 1 (Section 20.7)."""
     if k <= 0:
         return 0
     return count_at_most(log, k) - count_at_most(log, k - 1)

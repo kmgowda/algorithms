@@ -1,6 +1,6 @@
-"""Volume 2, Chapter 20 - Grid Techniques: Flood Fill and Counting Regions.
+"""Volume 2, Chapter 22 - Grid Techniques: Flood Fill and Counting Regions.
 
-Run:  python3 ch20_examples.py
+Run:  python3 ch22_examples.py
 """
 
 from __future__ import annotations
@@ -20,8 +20,8 @@ FLOOR = ["##########",
 
 
 def study_groups(grid: list[str]) -> list[int]:
-    """Sizes of the groups of side-by-side occupied seats ('1'), found by flood fill (Figure 20.1)."""
-    rows, cols, visited, sizes = len(grid), len(grid[0]), set(), []
+    """Sizes of the groups of side-by-side occupied seats ('1'), found by flood fill (Figure 22.1)."""
+    rows, cols, visited, sizes = len(grid), len(grid[0]) if grid else 0, set(), []
     for r in range(rows):
         for c in range(cols):
             if grid[r][c] == "1" and (r, c) not in visited:
@@ -40,7 +40,7 @@ def study_groups(grid: list[str]) -> list[int]:
 
 def groups_with_diagonals(grid: list[str]) -> int:
     """Exercise 1: count groups when the 8 surrounding cells all count as touching."""
-    rows, cols, seen, count = len(grid), len(grid[0]), set(), 0
+    rows, cols, seen, count = len(grid), len(grid[0]) if grid else 0, set(), 0
     for r in range(rows):
         for c in range(cols):
             if grid[r][c] == "1" and (r, c) not in seen:
@@ -59,7 +59,7 @@ def groups_with_diagonals(grid: list[str]) -> int:
 
 
 def distances_from_exit(floor: list[str]) -> dict[tuple[int, int], int]:
-    """Section 20.7: breadth-first flood fill from 'E' through open squares; steps to every reachable square."""
+    """Section 22.7: breadth-first flood fill from 'E' through open squares; steps to every reachable square."""
     start = next((r, c) for r, row in enumerate(floor) for c, ch in enumerate(row) if ch == "E")
     dist = {start: 0}
     q = deque([start])

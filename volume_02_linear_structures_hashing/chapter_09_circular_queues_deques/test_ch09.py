@@ -26,6 +26,7 @@ class TestChapter27(unittest.TestCase):
                          (v, [9], [], []))
         self.assertEqual((ex.window_max([5, 5, 5], 2), ex.window_max([1, 2, 3, 4], 2), ex.window_max([4, 3, 2, 1], 2)),
                          ([5, 5], [2, 3, 4], [4, 3, 2]))
+        self.assertEqual((ex.window_max(v, 0), ex.window_max([], 0)), ([], []))   # used to raise IndexError
 
     def test_ring(self) -> None:
         rng = random.Random(1)

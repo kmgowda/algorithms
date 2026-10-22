@@ -1,13 +1,13 @@
-"""Volume 2, Chapter 16 - Two Pointers.
+"""Volume 2, Chapter 18 - Two Pointers.
 
-Run:  python3 ch16_examples.py
+Run:  python3 ch18_examples.py
 """
 
 from __future__ import annotations
 
 
 def dedupe_sorted(a: list[int]) -> int:
-    """Remove repeats from a sorted list in place; returns how many unique items now lead the list (Figure 16.1)."""
+    """Remove repeats from a sorted list in place; returns how many unique items now lead the list (Figure 18.1)."""
     if not a:
         return 0
     write = 1
@@ -19,7 +19,7 @@ def dedupe_sorted(a: list[int]) -> int:
 
 
 def merge_sorted(a: list[int], b: list[int]) -> tuple[list[int], int]:
-    """Merge two sorted lists with one pointer in each (Figure 16.2). Returns (merged, comparisons)."""
+    """Merge two sorted lists with one pointer in each (Figure 18.2). Returns (merged, comparisons)."""
     i = j = comparisons = 0
     out = []
     while i < len(a) and j < len(b):
@@ -34,7 +34,7 @@ def merge_sorted(a: list[int], b: list[int]) -> tuple[list[int], int]:
 
 
 def best_bookends(h: list[int]) -> tuple[int, list[tuple[int, int, int]]]:
-    """Largest (distance x shorter height) over all pairs, moving the shorter end inward (Figure 16.3)."""
+    """Largest (distance x shorter height) over all pairs, moving the shorter end inward (Figure 18.3)."""
     left, right, best, visited = 0, len(h) - 1, 0, []
     while left < right:
         area = (right - left) * min(h[left], h[right])
@@ -48,7 +48,7 @@ def best_bookends(h: list[int]) -> tuple[int, list[tuple[int, int, int]]]:
 
 
 def common_sorted(a: list[int], b: list[int]) -> list[int]:
-    """Members of both sorted lists, with two pointers and no extra memory (Section 16.8)."""
+    """Members of both sorted lists, with two pointers and no extra memory (Section 18.8)."""
     i = j = 0
     out = []
     while i < len(a) and j < len(b):
@@ -62,7 +62,7 @@ def common_sorted(a: list[int], b: list[int]) -> list[int]:
 
 
 def remove_value(a: list[int], unwanted: int) -> int:
-    """Read/write pointers on any list: keep the items that are not `unwanted`, in order (Practice Problem 16.2)."""
+    """Read/write pointers on any list: keep the items that are not `unwanted`, in order (Practice Problem 18.2)."""
     write = 0
     for read in range(len(a)):
         if a[read] != unwanted:

@@ -59,11 +59,11 @@ _EMPTY, _TOMB = object(), object()
 
 
 def probe_sequence(key, m: int, mode: str = "linear"):
-    """The slots tried for key in a table of m slots, m a power of two (Section 13.5, Figure 13.3).
+    """The slots tried for key in m slots, m a power of two (Figure 13.3).
 
     linear:    home, home + 1, home + 2, ...
-    quadratic: home + 0, 1, 3, 6, 10, ... (the triangular numbers, which reach every slot when m is a power of two)
-    double:    home, home + step, home + 2 step, ... with an odd step taken from the rest of the hash
+    quadratic: home + 0, 1, 3, 6, 10, ... (triangular jumps)
+    double:    home, home + step, home + 2 step, ... (odd step)
     """
     h = hash(key)
     home = h % m

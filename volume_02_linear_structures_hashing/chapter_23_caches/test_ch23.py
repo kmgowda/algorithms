@@ -2,7 +2,7 @@ import random
 import unittest
 from collections import OrderedDict
 
-import ch21_examples as ex
+import ch23_examples as ex
 
 
 class TestChapter39(unittest.TestCase):
@@ -21,6 +21,9 @@ class TestChapter39(unittest.TestCase):
         self.assertEqual((ex.count_hits(cyc, 2), ex.count_hits(cyc, 2, "fifo")), (0, 0))
         pop = list("abaca")
         self.assertEqual((ex.count_hits(pop, 2), ex.count_hits(pop, 2, "fifo")), (2, 1))
+        zero = ex.LRUCache(0)
+        zero.put("a", 1)                               # no room: nothing is stored (this used to crash)
+        self.assertEqual((zero.keys_oldest_first(), zero.get("a"), ex.count_hits("aa", 0, "fifo")), ([], None, 0))
         n = ex.LRUCache(2)
         n.put("k", None)
         self.assertIsNone(n.get("k"))                  # looks like a miss: the documented caveat

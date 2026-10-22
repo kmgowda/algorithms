@@ -1,6 +1,6 @@
-"""Volume 2, Chapter 21 - Caches: Keeping the Most Useful Things Close.
+"""Volume 2, Chapter 23 - Caches: Keeping the Most Useful Things Close.
 
-Run:  python3 ch21_examples.py
+Run:  python3 ch23_examples.py
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ class _Node:
 
 
 class LRUCache:
-    """A map from key to node plus a doubly linked list from least to most recently used (Figure 21.4)."""
+    """A map from key to node plus a doubly linked list from least to most recently used (Figure 23.4)."""
 
     def __init__(self, capacity: int):
         self.capacity = capacity
@@ -42,6 +42,8 @@ class LRUCache:
         return node.value
 
     def put(self, key, value) -> None:
+        if self.capacity <= 0:                           # a cache with no room stores nothing
+            return
         if key in self.map:
             node = self.map[key]
             node.value = value
@@ -65,7 +67,9 @@ class LRUCache:
 
 
 def count_hits(requests, capacity: int, policy: str = "lru") -> int:
-    """Hits for a request sequence under LRU or FIFO (Figure 21.2)."""
+    """Hits for a request sequence under LRU or FIFO (Figure 23.2). A cache with no room never hits."""
+    if capacity <= 0:
+        return 0
     hits = 0
     if policy == "lru":
         c = LRUCache(capacity)
@@ -88,7 +92,7 @@ def count_hits(requests, capacity: int, policy: str = "lru") -> int:
 
 def optimal_hits(requests, capacity: int) -> int:
     """Belady's ideal policy, which knows the future: on a miss with a full shelf, evict the item whose next
-    request is furthest away (or never comes). No real policy can beat it (Practice Problem 21.3)."""
+    request is furthest away (or never comes). No real policy can beat it (Practice Problem 23.3)."""
     if capacity <= 0:
         return 0
     hits, shelf = 0, set()
@@ -108,7 +112,7 @@ def optimal_hits(requests, capacity: int) -> int:
 
 
 def popular_requests(n: int, items: int = 200, seed: int = 7) -> list[int]:
-    """Requests where an item's popularity falls off as 1/rank (Figure 21.3)."""
+    """Requests where an item's popularity falls off as 1/rank (Figure 23.3)."""
     rng = random.Random(seed)
     return rng.choices(range(items), weights=[1 / (k + 1) for k in range(items)], k=n)
 

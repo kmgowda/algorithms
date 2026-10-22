@@ -1,6 +1,6 @@
-"""Volume 2, Chapter 22 - Comparing Hashing, Sorting, and Searching.
+"""Volume 2, Chapter 24 - Comparing Hashing, Sorting, and Searching.
 
-Run:  python3 ch22_examples.py
+Run:  python3 ch24_examples.py
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ def range_hashed(items: set[int], a: int, b: int) -> list[int]:
 
 
 def measure(n: int = 100_000, seed: int = 1) -> dict[str, float]:
-    """Milliseconds for the experiments of Figure 22.3, best of 3."""
+    """Milliseconds for the experiments of Figure 24.3, best of 3."""
     rng = random.Random(seed)
     data = rng.sample(range(10 ** 7), n)
     queries = rng.sample(range(10 ** 7), 1000)

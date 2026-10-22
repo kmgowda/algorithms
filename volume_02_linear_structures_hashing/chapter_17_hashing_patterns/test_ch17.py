@@ -2,7 +2,7 @@ import itertools
 import random
 import unittest
 
-import ch15_examples as ex
+import ch17_examples as ex
 
 
 class TestChapter33(unittest.TestCase):

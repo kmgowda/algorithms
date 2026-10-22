@@ -85,6 +85,8 @@ class OneEmptyRing:
 
 def window_max(values: list[int], k: int) -> list[int]:
     """The maximum of every window of length k, with a deque of decreasing candidates: O(n) (Figure 9.5)."""
+    if k <= 0:
+        return []                                # a window of no hours has no maximum
     candidates: deque[int] = deque()             # positions, values decreasing front to back
     result = []
     for i, v in enumerate(values):

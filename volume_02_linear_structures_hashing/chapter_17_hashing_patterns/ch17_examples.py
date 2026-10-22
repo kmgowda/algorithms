@@ -1,6 +1,6 @@
-"""Volume 2, Chapter 15 - Hashing Patterns.
+"""Volume 2, Chapter 17 - Hashing Patterns.
 
-Run:  python3 ch15_examples.py
+Run:  python3 ch17_examples.py
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ import random
 
 
 def group_anagrams(words: list[str]) -> dict[str, list[str]]:
-    """Group words by their sorted letters (Figure 15.1)."""
+    """Group words by their sorted letters (Figure 17.1)."""
     groups: dict[str, list[str]] = {}
     for w in words:
         groups.setdefault("".join(sorted(w)), []).append(w)
@@ -17,7 +17,7 @@ def group_anagrams(words: list[str]) -> dict[str, list[str]]:
 
 
 def letter_counts(word: str) -> tuple[int, ...]:
-    """The 26 letter counts of a lower-case word: an O(k) anagram signature (Section 15.5)."""
+    """The 26 letter counts of a lower-case word: an O(k) anagram signature (Section 17.5)."""
     counts = [0] * 26
     for c in word:
         counts[ord(c) - ord("a")] += 1
@@ -25,7 +25,7 @@ def letter_counts(word: str) -> tuple[int, ...]:
 
 
 def group_anagrams_by_counts(words: list[str]) -> dict[tuple[int, ...], list[str]]:
-    """Group lower-case words by their letter counts, with no sorting (Figure 15.6)."""
+    """Group lower-case words by their letter counts, with no sorting (Figure 17.6)."""
     groups: dict[tuple[int, ...], list[str]] = {}
     for w in words:
         groups.setdefault(letter_counts(w), []).append(w)
@@ -33,7 +33,7 @@ def group_anagrams_by_counts(words: list[str]) -> dict[tuple[int, ...], list[str
 
 
 def first_repeat(items: list):
-    """The first item seen a second time, in one pass with a set (Practice Problem 15.4)."""
+    """The first item seen a second time, in one pass with a set (Practice Problem 17.4)."""
     seen = set()
     for x in items:
         if x in seen:
@@ -43,7 +43,7 @@ def first_repeat(items: list):
 
 
 def pair_for_card(prices: list[int], card: int) -> tuple[int, int] | None:
-    """Two prices summing to card, in one pass with a set of prices seen so far (Figure 15.2)."""
+    """Two prices summing to card, in one pass with a set of prices seen so far (Figure 17.2)."""
     seen: set[int] = set()
     for p in prices:
         if card - p in seen:
@@ -53,7 +53,7 @@ def pair_for_card(prices: list[int], card: int) -> tuple[int, int] | None:
 
 
 def first_unique(text: str) -> str | None:
-    """The first character that appears exactly once: count, then scan (Figure 15.3)."""
+    """The first character that appears exactly once: count, then scan (Figure 17.3)."""
     counts: dict[str, int] = {}
     for ch in text:
         counts[ch] = counts.get(ch, 0) + 1
@@ -64,7 +64,7 @@ def first_unique(text: str) -> str | None:
 
 
 def dedupe(items: list) -> list:
-    """Keep the first occurrence of each item, in order (Section 15.8)."""
+    """Keep the first occurrence of each item, in order (Section 17.8)."""
     seen, out = set(), []
     for x in items:
         if x not in seen:
@@ -74,7 +74,7 @@ def dedupe(items: list) -> list:
 
 
 def leaderboard(log: list[tuple[str, str]], popular: int = 100):
-    """Section 15.10: distinct books per reader, popular books, and double logs, in one pass."""
+    """Section 17.10: distinct books per reader, popular books, and double logs, in one pass."""
     books_of: dict[str, set[str]] = {}
     readers_of: dict[str, int] = {}
     doubles = []
