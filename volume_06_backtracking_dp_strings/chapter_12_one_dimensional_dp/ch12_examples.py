@@ -27,7 +27,7 @@ def fewest_coins(amount: int, coins: list) -> tuple[int | None, list, list]:
 
 
 def best_evenings(talks: list) -> tuple[int, list, list]:
-    """Most members in total, never attending two evenings in a row (Figure 12.3).
+    """Most members in total, never attending two evenings in a row (Figure 12.2).
     best[i] = max(best[i-1], best[i-2] + talks[i]). Returns (total, evenings chosen, table)."""
     n = len(talks)
     best = [0] * (n + 1)                              # best[i]: using only the first i evenings

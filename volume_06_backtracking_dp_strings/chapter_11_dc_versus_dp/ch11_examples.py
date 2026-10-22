@@ -28,7 +28,7 @@ def choose(n: int, k: int, seen: Counter) -> int:
 
 
 def choose_table(n: int, k: int) -> tuple[int, int]:
-    """Pascal's triangle row by row, each entry once (Figure 11.3). Returns (answer, entries filled)."""
+    """Pascal's triangle row by row, each entry once (Figure 11.2). Returns (answer, entries filled)."""
     if k < 0 or k > n:
         return 0, 0
     row, filled = [1], 1
@@ -39,7 +39,7 @@ def choose_table(n: int, k: int) -> tuple[int, int]:
 
 
 def sub_problem_graph(n: int, k: int) -> tuple[list, list]:
-    """The different sub-problems of choose(n, k) with an arrow from each to the two it needs (Figure 11.4).
+    """The different sub-problems of choose(n, k) with an arrow from each to the two it needs (Figure 11.3).
     Returns (edges, a fill order): smaller n first, so every arrow points to an earlier entry."""
     edges, seen, todo = [], {(n, k)}, [(n, k)]
     while todo:
