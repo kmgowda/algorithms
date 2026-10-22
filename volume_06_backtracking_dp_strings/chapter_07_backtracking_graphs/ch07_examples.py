@@ -41,7 +41,7 @@ def colour(places: list, roads: list, k: int) -> tuple[dict | None, int]:
 
 
 def hamiltonian(places: list, roads: list, start) -> tuple[list, int]:
-    """Every route from start visiting each place once, extending only along roads (Figure 7.3)."""
+    """Every route from start visiting each place once, extending only along roads (Section 7.5)."""
     adj, out, nodes = neighbours(places, roads), [], [0]
 
     def go(path, seen):

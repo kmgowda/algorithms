@@ -9,7 +9,7 @@ import itertools
 import math
 import random
 
-BRANCHES = ["Library", "North", "East", "South", "West"]      # Volume 5, Chapter 17's van round
+BRANCHES = ["Library", "North", "East", "South", "West"]      # Volume 5, Chapter 18's van round
 TRAVEL = {("Library", "North"): 2, ("Library", "East"): 9, ("Library", "South"): 10, ("Library", "West"): 7,
           ("North", "East"): 6, ("North", "South"): 4, ("North", "West"): 3, ("East", "South"): 8,
           ("East", "West"): 5, ("South", "West"): 1}
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     length, route, entries = held_karp(d)
     print(length, [BRANCHES[i] for i in route], entries, brute(d))
     for n in (5, 10, 15, 20):
-        print(n, math.factorial(n - 1), (n - 1) * 2 ** (n - 1))
+        print(n, math.factorial(n - 1), (n - 1) * 2 ** (n - 2))
     r = random.Random(13)
     pts = [(r.random(), r.random()) for _ in range(12)]
     dd = [[round(100 * math.dist(p, q)) for q in pts] for p in pts]

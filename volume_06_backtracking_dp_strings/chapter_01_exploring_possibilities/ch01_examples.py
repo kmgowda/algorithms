@@ -20,7 +20,7 @@ def allowed(row: list) -> bool:
 
 
 def explore(readers: list, row: list | None = None, log: list | None = None) -> list:
-    """Build a seating one seat at a time, trying every reader left for the next seat (Figure 1.2)."""
+    """Build a seating one seat at a time, trying every reader left for the next seat (Figure 1.1)."""
     row = row or []
     if log is not None:
         log.append(list(row))
@@ -79,7 +79,7 @@ def seatings_by_search(readers: list, check_early: bool = False) -> tuple[list, 
 
 
 def merge_sort_calls(values: list, log: list | None = None) -> list:
-    """Merge sort that records every call (Figure 1.4, left): every call is needed for the one answer."""
+    """Merge sort that records every call (Figure 1.3, left): every call is needed for the one answer."""
     if log is not None:
         log.append(list(values))
     if len(values) <= 1:

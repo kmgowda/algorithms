@@ -39,6 +39,8 @@ def knapsack_one_row(books: list, budget: int) -> int:
 
 def unlimited(books: list, budget: int) -> int:
     """Copies allowed (several of the same book for different groups): fill from the left instead."""
+    if any(price <= 0 for _, price, _ in books):
+        raise ValueError("with unlimited copies, every book must cost at least 1")
     row = [0] * (budget + 1)
     for _, price, votes in books:
         for b in range(price, budget + 1):

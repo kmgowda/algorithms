@@ -19,13 +19,20 @@ def _load(folder: str, name: str):
     return mod
 
 
-four = _load("../volume_05_paths_greedy_divide/chapter_12_four_design_ways", "ch12_examples")
+def _load_v5(slug: str):
+    """Load a Volume 5 companion module by its folder slug, whatever its chapter number."""
+    base = os.path.join(HERE, "..", "..", "volume_05_paths_greedy_divide")
+    folder = next(f for f in sorted(os.listdir(base)) if f.startswith("chapter_") and f.endswith("_" + slug))
+    return _load(os.path.join("..", "volume_05_paths_greedy_divide", folder), "ch" + folder.split("_")[1] + "_examples")
+
+
+four = _load_v5("four_design_ways")
 bnb = _load("chapter_06_branch_and_bound", "ch06_examples")
-coins = _load("../volume_05_paths_greedy_divide/chapter_13_greedy_idea", "ch13_examples")
+coins = _load_v5("greedy_idea")
 
 
 def budget_table() -> dict:
-    """The club's \u00a320 budget under each strategy (Figure 8.1): (votes, work)."""
+    """The club's \u00a320 budget under each strategy (Section 8.1): (votes, work)."""
     b = four.BOOKS
     return {
         "brute force": four.brute_force(b, 20)[::2],
@@ -99,7 +106,7 @@ def change_table(amount: int, coins: list) -> tuple[int, int]:
 
 
 def change_greedy(amount: int, coins: list) -> tuple[int, int]:
-    """Largest coin first (Volume 5, Chapter 13). Returns (coins, coin kinds looked at)."""
+    """Largest coin first (Volume 5, Chapter 14). Returns (coins, coin kinds looked at)."""
     used = 0
     for c in sorted(coins, reverse=True):
         used += amount // c
@@ -108,7 +115,7 @@ def change_greedy(amount: int, coins: list) -> tuple[int, int]:
 
 
 def change_comparison(amount: int, coins: list) -> dict:
-    """Section 8.6: one question, four strategies, (answer, work)."""
+    """Section 8.5: one question, four strategies, (answer, work)."""
     return {"greedy": change_greedy(amount, coins), "plain recursion": change_plain(amount, coins),
             "backtracking with a bound": change_backtracking(amount, coins), "table": change_table(amount, coins)}
 

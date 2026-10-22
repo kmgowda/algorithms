@@ -41,6 +41,16 @@ def party(reports: dict, fun: dict, root) -> tuple[int, list, dict]:
     return max(pair[root]), sorted(guests), pair
 
 
+def party_pair(reports: dict, fun: dict, p) -> tuple[int, int]:
+    """Party(p) of Section 20.4: (most fun in p's subtree if p comes, most if p stays away)."""
+    come, away = fun[p], 0
+    for r in reports[p]:
+        rc, ra = party_pair(reports, fun, r)
+        come += ra                                     # p comes: r must stay away
+        away += max(rc, ra)                            # p stays away: r chooses freely
+    return come, away
+
+
 def subtree_sizes(reports: dict, root) -> dict:
     """People in each person's part of the tree, including themselves: another answer that flows up."""
     size = {}

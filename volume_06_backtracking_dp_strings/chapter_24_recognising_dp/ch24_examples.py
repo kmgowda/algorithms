@@ -14,14 +14,15 @@ def best_plain(n: int, price: dict, calls: list) -> int:
     calls[0] += 1
     if n == 0:
         return 0
-    return max(price[k] + best_plain(n - k, price, calls) for k in range(1, n + 1) if k in price)
+    return max((price[k] + best_plain(n - k, price, calls) for k in range(1, n + 1) if k in price), default=float("-inf"))
 
 
 def best_memo(n: int, price: dict, memo: dict) -> int:
     if n == 0:
         return 0
     if n not in memo:
-        memo[n] = max(price[k] + best_memo(n - k, price, memo) for k in range(1, n + 1) if k in price)
+        memo[n] = max((price[k] + best_memo(n - k, price, memo) for k in range(1, n + 1) if k in price),
+                      default=float("-inf"))      # -inf: this length cannot be cut exactly
     return memo[n]
 
 

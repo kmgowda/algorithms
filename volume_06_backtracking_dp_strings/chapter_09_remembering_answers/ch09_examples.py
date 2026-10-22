@@ -20,8 +20,10 @@ def ways(n: int, steps=(1, 2), calls: Counter | None = None) -> int:
 
 
 def ways_memo(n: int, steps=(1, 2), memo: dict | None = None, solved: list | None = None) -> int:
-    """The same recursion, remembering each answer the first time it is found (Figure 9.4)."""
+    """The same recursion, remembering each answer the first time it is found (Figure 9.3)."""
     if memo is None:
+        if any(s <= 0 for s in steps):
+            raise ValueError("every step must climb at least one stair")
         memo = {}
     if n < 0:
         return 0
@@ -57,7 +59,7 @@ def ways_avoiding(n: int, blocked=(), steps=(1, 2), memo: dict | None = None) ->
 
 def memo_trace(n: int, steps=(1, 2)) -> list:
     """The order in which the remembering version first solves each sub-problem, and its look-ups
-    (Figure 9.5): a list of ("solve", m) and ("look up", m) events."""
+    (Figure 9.3): a list of ("solve", m) and ("look up", m) events."""
     memo, events = {}, []
 
     def go(m: int) -> int:

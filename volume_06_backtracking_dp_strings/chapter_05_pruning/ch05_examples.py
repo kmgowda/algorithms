@@ -65,7 +65,7 @@ def sudoku(grid: list, fewest_first: bool) -> tuple[list | None, int]:
     return (g if go() else None), guesses[0]
 
 
-# Section 5.6: Saturday's duties, and the volunteer teams that offer to cover them. Each duty must be done by
+# Section 5.5: Saturday's duties, and the volunteer teams that offer to cover them. Each duty must be done by
 # exactly one team, so the chosen teams must cover every duty exactly once: an exact cover.
 DUTIES = ["Desk", "Shelving", "Storytime", "Displays", "Tea", "Leaflets"]
 TEAMS = {"A": ["Desk", "Tea"], "B": ["Shelving", "Storytime"], "C": ["Desk", "Displays"],
@@ -98,7 +98,7 @@ class Column(Node):
 
 
 def build_links(columns: list, rows: dict) -> Column:
-    """The header, a ring of column headers, and one node for every 1 of the matrix (Figure 5.6)."""
+    """The header, a ring of column headers, and one node for every 1 of the matrix (Figure 5.4)."""
     head = Column("head")
     cols = {}
     for name in columns:

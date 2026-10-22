@@ -38,8 +38,23 @@ def edit_distance(a: str, b: str) -> tuple[int, list, list]:
     return D[n][m], edits[::-1], D
 
 
+def edit_distance_value(a: str, b: str) -> int:
+    """Only the number: the fewest edits turning a into b (Section 17.4)."""
+    n, m = len(a), len(b)
+    D = [[0] * (m + 1) for _ in range(n + 1)]
+    for i in range(n + 1):
+        D[i][0] = i
+    for j in range(m + 1):
+        D[0][j] = j
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            pair = D[i - 1][j - 1] + (0 if a[i - 1] == b[j - 1] else 1)
+            D[i][j] = min(pair, D[i - 1][j] + 1, D[i][j - 1] + 1)
+    return D[n][m]
+
+
 def suggest(typed: str, titles: list) -> list:
-    """Titles sorted by edit distance from what was typed (Section 17.7)."""
+    """Titles sorted by edit distance from what was typed (Section 17.5)."""
     return sorted((edit_distance(typed, t)[0], t) for t in titles)
 
 

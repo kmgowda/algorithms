@@ -7,7 +7,7 @@ from __future__ import annotations
 
 
 def queens(n: int, first_only: bool = False) -> tuple[list, int]:
-    """Place n queens, one per row, so that none attack each other (Figure 4.2). Returns (solutions, nodes)."""
+    """Place n queens, one per row, so that none attack each other (Figure 4.1). Returns (solutions, nodes)."""
     cols, d1, d2, row, out, nodes = set(), set(), set(), [], [], [0]
 
     def go(r):
@@ -104,7 +104,7 @@ def units(n: int) -> list:
 
 
 def propagate(g: list) -> bool:
-    """Fill every forced cell (Figure 4.5) until none is left. A naked single is a cell with one possible digit;
+    """Fill every forced cell (Figure 4.3) until none is left. A naked single is a cell with one possible digit;
     a hidden single is a digit with only one possible cell in some row, column, or box.
     Returns False if a contradiction appears (a cell with no digit, or a digit with no cell)."""
     n = len(g)

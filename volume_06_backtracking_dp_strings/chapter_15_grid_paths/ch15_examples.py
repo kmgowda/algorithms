@@ -21,6 +21,8 @@ DUST = [[1, 3, 1, 2],
 
 def count_paths(floor: list) -> tuple[int, list]:
     """paths[r][c] = paths[r-1][c] + paths[r][c-1] on open squares (Figure 15.2)."""
+    if not floor or not floor[0]:
+        return 0, []                                  # no floor, no route
     rows, cols = len(floor), len(floor[0])
     paths = [[0] * cols for _ in range(rows)]
     for r in range(rows):
@@ -36,6 +38,8 @@ def count_paths(floor: list) -> tuple[int, list]:
 
 def cheapest(dust: list) -> tuple[int, list, list]:
     """least[r][c] = dust[r][c] + min(above, left) (Figure 15.3). Returns (total, table, route)."""
+    if not dust or not dust[0]:
+        raise ValueError("an empty room has no route")
     rows, cols = len(dust), len(dust[0])
     least = [[0] * cols for _ in range(rows)]
     for r in range(rows):

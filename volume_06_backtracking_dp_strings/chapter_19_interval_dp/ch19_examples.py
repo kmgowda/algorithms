@@ -34,12 +34,56 @@ def merge_cost(stacks: list) -> tuple[int, list, str]:
     return C[0][n - 1], C, plan(0, n - 1)
 
 
+def knuth_merge_cost(stacks: list) -> int:
+    """Knuth's speed-up (Section 19.6): the best split of i..j lies between the best splits of i..j-1 and
+    i+1..j (the largest best split is kept), so each stretch tries only that range. O(n^2) in total."""
+    n = len(stacks)
+    pre = [0]
+    for s in stacks:
+        pre.append(pre[-1] + s)
+    C = [[0] * n for _ in range(n)]
+    opt = [[i] * n for i in range(n)]
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            best = None
+            for k in range(opt[i][j - 1], min(opt[i + 1][j], j - 1) + 1):
+                if best is None or C[i][k] + C[k + 1][j] <= best:
+                    best, opt[i][j] = C[i][k] + C[k + 1][j], k
+            C[i][j] = best + pre[j + 1] - pre[i]
+    return C[0][n - 1] if n else 0
+
+
+def knuth_trace(stacks: list) -> tuple[list, int, int]:
+    """The best-split table of the speed-up (stacks counted from 1) and the number of splits tried,
+    with Knuth's ranges and with every split, for Figure 19.4."""
+    n = len(stacks)
+    pre = [0]
+    for s in stacks:
+        pre.append(pre[-1] + s)
+    C = [[0] * n for _ in range(n)]
+    opt = [[i] * n for i in range(n)]
+    tried = 0
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            best = None
+            for k in range(opt[i][j - 1], min(opt[i + 1][j], j - 1) + 1):
+                tried += 1
+                if best is None or C[i][k] + C[k + 1][j] <= best:
+                    best, opt[i][j] = C[i][k] + C[k + 1][j], k
+            C[i][j] = best + pre[j + 1] - pre[i]
+    table = [[opt[i][j] + 1 if j > i else None for j in range(n)] for i in range(n)]
+    every = sum(length - 1 for length in range(2, n + 1) for _ in range(n - length + 1))
+    return table, tried, every
+
+
 # Four tables to multiply in a chain (rows x columns): A is 10 x 30, B 30 x 5, C 5 x 60, D 60 x 10.
 CHAIN = [10, 30, 5, 60, 10]
 
 
 def matrix_chain(dims: list) -> tuple[int, list, list, str]:
-    """Matrix-chain order (Section 19.7): tables M1..Mn, where Mi is dims[i-1] x dims[i]. cost[i][j] = fewest scalar
+    """Matrix-chain order (Section 19.8): tables M1..Mn, where Mi is dims[i-1] x dims[i]. cost[i][j] = fewest scalar
     multiplications for Mi..Mj = min over k of cost[i][k] + cost[k+1][j] + dims[i-1] * dims[k] * dims[j].
     Returns (cost, cost table, split table, bracketing), with tables indexed from 1."""
     n = len(dims) - 1

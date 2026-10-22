@@ -86,7 +86,7 @@ def distinct_permutations(items: list) -> list:
 
 
 def output_cost(n: int) -> dict:
-    """Section 3.6: items written out when listing every subset and every order of n items.
+    """Section 3.4: items written out when listing every subset and every order of n items.
     Subsets write n * 2^(n-1) items in all (each item is in half of them); orders write n * n!."""
     items = list(range(n))
     return {"subsets": len(subsets(items)), "subset items": sum(map(len, subsets(items))),
@@ -98,7 +98,7 @@ GENRES = [("poetry", ["Odes", "Haiku"]), ("maps", ["Atlas"]), ("science", ["Star
 
 
 def cartesian(options: list) -> list:
-    """Every way to pick one option for each position (Figure 3.4): positions are fixed, choices differ."""
+    """Every way to pick one option for each position (Figure 3.3): positions are fixed, choices differ."""
     out = []
 
     def go(i, chosen):
@@ -115,7 +115,7 @@ def cartesian(options: list) -> list:
 
 
 def brackets(n: int, valid_only: bool = True) -> tuple[list, int]:
-    """Every balanced string of n pairs of brackets (Figure 3.5). valid_only=True only ever adds a bracket that keeps
+    """Every balanced string of n pairs of brackets (Figure 3.4). valid_only=True only ever adds a bracket that keeps
     the string fixable: '(' while fewer than n are open, ')' while it closes an open one.
     valid_only=False builds all 2^(2n) strings and checks each at the end. Returns (strings, nodes)."""
     out, nodes = [], [0]
@@ -152,7 +152,7 @@ def catalan(n: int) -> int:
 
 
 def next_permutation(row: list) -> list | None:
-    """The order that comes next alphabetically, or None after the last (Challenge 3.2)."""
+    """The order that comes next alphabetically, or None after the last (Section 3.5)."""
     a = list(row)
     i = len(a) - 2
     while i >= 0 and a[i] >= a[i + 1]:

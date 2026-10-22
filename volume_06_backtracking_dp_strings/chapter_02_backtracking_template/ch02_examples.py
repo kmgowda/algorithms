@@ -15,7 +15,7 @@ def clash(a, b, feuds) -> bool:
 
 
 def backtrack(readers: list, feuds: list, row: list, out: list, counter: list) -> None:
-    """The template (Figure 2.2): try each choice, check it at once, explore, then undo it."""
+    """The template (Section 2.4): try each choice, check it at once, explore, then undo it."""
     counter[0] += 1
     if len(row) == len(readers):
         out.append(list(row))
@@ -93,7 +93,7 @@ def work(readers: list, feuds: list, early: bool) -> tuple[int, int]:
 
 
 def nodes_by_level(readers: list, feuds: list) -> list:
-    """How many partial seatings of each length the pruned search visits (Figure 2.3)."""
+    """How many partial seatings of each length the pruned search visits (Figure 2.2)."""
     counts = [0] * (len(readers) + 1)
 
     def go(row):

@@ -20,6 +20,8 @@ def merge_sort_ranges(lo: int, hi: int, seen: Counter) -> None:
 def choose(n: int, k: int, seen: Counter) -> int:
     """Ways to choose k of n books, by Pascal's rule C(n, k) = C(n-1, k-1) + C(n-1, k) (Figure 11.2): sub-problems repeat."""
     seen[(n, k)] += 1
+    if k < 0 or k > n:
+        return 0                                      # no way to choose more books than there are
     if k == 0 or k == n:
         return 1
     return choose(n - 1, k - 1, seen) + choose(n - 1, k, seen)
@@ -27,6 +29,8 @@ def choose(n: int, k: int, seen: Counter) -> int:
 
 def choose_table(n: int, k: int) -> tuple[int, int]:
     """Pascal's triangle row by row, each entry once (Figure 11.3). Returns (answer, entries filled)."""
+    if k < 0 or k > n:
+        return 0, 0
     row, filled = [1], 1
     for i in range(1, n + 1):
         row = [1] + [row[j - 1] + row[j] for j in range(1, i)] + [1]

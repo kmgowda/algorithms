@@ -9,7 +9,7 @@ NEWSLETTER = "the reading club meets on monday; the club reads maps and poems at
 
 
 def naive_search(text: str, pattern: str) -> tuple[list, int]:
-    """Try the pattern at every position, comparing letter by letter until a mismatch (Figure 25.2).
+    """Try the pattern at every position, comparing letter by letter until a mismatch (Section 25.4).
     Returns (positions where it occurs, letter comparisons)."""
     found, comparisons = [], 0
     n, m = len(text), len(pattern)

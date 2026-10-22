@@ -4,7 +4,7 @@ import unittest
 import ch17_examples as ex
 
 
-class TestChapter9(unittest.TestCase):
+class TestChapter17(unittest.TestCase):
     def test_examples(self) -> None:
         self.assertEqual(ex.edit_distance("LIBRAY", "LIBRARY")[:2], (1, ["insert R"]))
         d, e, t = ex.edit_distance("PEOMS", "POEMS")
@@ -27,6 +27,7 @@ class TestChapter9(unittest.TestCase):
             self.assertEqual(len(edits), d)
             self.assertEqual(d, ex.edit_distance(b, a)[0])
             self.assertLessEqual(abs(len(a) - len(b)), d)
+            self.assertEqual(ex.edit_distance_value(a, b), d)
 
 
     def test_alignment(self) -> None:

@@ -12,6 +12,8 @@ COINS = [1, 2, 5]
 
 def count_sets(amount: int, coins: list) -> tuple[int, list]:
     """Ways to make amount where order does not matter (coins outer loop) (Figure 13.2). Returns (ways, table)."""
+    if any(c <= 0 for c in coins):
+        raise ValueError("every coin must be worth at least 1")
     ways = [1] + [0] * amount
     for c in coins:
         for a in range(c, amount + 1):
@@ -20,7 +22,9 @@ def count_sets(amount: int, coins: list) -> tuple[int, list]:
 
 
 def count_orders(amount: int, coins: list) -> tuple[int, list]:
-    """Ways where order matters (amount outer loop): 1+2 and 2+1 count separately (Figure 13.3)."""
+    """Ways where order matters (amount outer loop): 1+2 and 2+1 count separately (Section 13.5)."""
+    if any(c <= 0 for c in coins):
+        raise ValueError("every coin must be worth at least 1")
     ways = [1] + [0] * amount
     for a in range(1, amount + 1):
         ways[a] = sum(ways[a - c] for c in coins if c <= a)
@@ -36,7 +40,7 @@ def brute_sets(amount: int, coins: list) -> int:
 
 
 def decodings(message: str) -> int:
-    """Ways to read a string of digits as letters A=1 ... Z=26 (Section 13.7): one digit or two at a time."""
+    """Ways to read a string of digits as letters A=1 ... Z=26 (Section 13.8): one digit or two at a time."""
     n = len(message)
     ways = [1] + [0] * n
     for i in range(1, n + 1):
@@ -48,7 +52,7 @@ def decodings(message: str) -> int:
 
 
 def free_digit_table(length: int, total: int) -> list:
-    """F[r][t] = ways to write r free digits (0-9, leading zeros allowed) adding up to t (Section 13.7)."""
+    """F[r][t] = ways to write r free digits (0-9, leading zeros allowed) adding up to t (Section 13.6)."""
     f = [[0] * (total + 1) for _ in range(length + 1)]
     f[0][0] = 1
     for r in range(1, length + 1):
@@ -58,7 +62,7 @@ def free_digit_table(length: int, total: int) -> list:
 
 
 def count_digit_sum(limit: int, s: int) -> tuple[int, list]:
-    """Digit DP: how many numbers from 0 to limit have digits adding up to s (Section 13.7).
+    """Digit DP: how many numbers from 0 to limit have digits adding up to s (Section 13.6).
     Walk the digits of limit from the left; at each position every smaller digit frees the rest, counted by
     the table F; then keep the limit's own digit ("tight") and move on. Returns (count, the walk's additions)."""
     if limit < 0 or s < 0:

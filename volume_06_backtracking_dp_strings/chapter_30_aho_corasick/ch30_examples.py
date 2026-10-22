@@ -12,7 +12,7 @@ BANNED = ["spoiler", "ending", "dies"]                  # words the book club's 
 
 
 def build(words: list) -> tuple[list, list, list]:
-    """Trie of the words (goto), fallback links (fail), and words ending at each node (out) (Figure 30.2)."""
+    """Trie of the words (goto), fallback links (fail), and words ending at each node (out) (Figure 30.1)."""
     goto, fail, out = [{}], [0], [[]]
     for w in words:
         node = 0
@@ -69,7 +69,7 @@ def links(words: list) -> dict:
 
 
 def walk(text: str, words: list) -> list:
-    """The search step by step (Figure 30.3): for each letter, (letter, links followed as node names,
+    """The search step by step (Figure 30.2): for each letter, (letter, links followed as node names,
     node reached, words reported)."""
     goto, fail, out = build(words)
     names = node_names(goto)

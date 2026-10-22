@@ -4,7 +4,7 @@ import unittest
 import ch19_examples as ex
 
 
-class TestChapter11(unittest.TestCase):
+class TestChapter19(unittest.TestCase):
     def test_stacks(self) -> None:
         cost, table, plan = ex.merge_cost(ex.STACKS)
         self.assertEqual((cost, plan, table[0]), (36, "((4 + (1 + 3)) + (6 + 2))", [0, 5, 12, 26, 36]))
@@ -18,6 +18,19 @@ class TestChapter11(unittest.TestCase):
             s = [r.randint(1, 9) for _ in range(r.randint(1, 6))]
             self.assertEqual(ex.merge_cost(s)[0], ex.brute(s))
 
+
+    def test_knuth(self) -> None:
+        self.assertEqual(ex.knuth_merge_cost(ex.STACKS), 36)
+        table, tried, every = ex.knuth_trace(ex.STACKS)
+        self.assertEqual((table[0], table[1][4], tried, every), ([None, 1, 1, 3, 3], 3, 15, 20))
+        self.assertEqual([ex.knuth_merge_cost(s) for s in ([], [7], [3, 4], [2, 2, 2, 2], [9, 8, 8, 9, 4])], [0, 0, 7, 16, 89])
+        r = random.Random(6)
+        for _ in range(400):
+            s = [r.randint(0, 9) for _ in range(r.randint(0, 12))]       # zeros make many ties
+            self.assertEqual(ex.knuth_merge_cost(s), ex.merge_cost(s)[0])
+        s = [r.randint(1, 50) for _ in range(200)]
+        self.assertEqual(ex.knuth_merge_cost(s), ex.merge_cost(s)[0])
+        self.assertLess(ex.knuth_trace(s)[1], 3 * 200 * 200)
 
     def test_matrix_chain(self) -> None:
         import random

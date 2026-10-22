@@ -8,12 +8,12 @@ from __future__ import annotations
 import heapq
 import random
 
-# Volume 5, Chapter 12's books: (name, price, votes); budget 20 pounds, whole books only.
+# Volume 5, Chapter 13's books: (name, price, votes); budget 20 pounds, whole books only.
 BOOKS = [("Atlas", 9, 6), ("Novel", 6, 4), ("Poems", 5, 6), ("Comic", 5, 2), ("Cookbook", 10, 7)]
 
 
 def fractional_bound(items: list, i: int, room: float) -> float:
-    """The most votes still possible if the remaining items could be bought in part (Volume 5, Chapter 14)."""
+    """The most votes still possible if the remaining items could be bought in part (Volume 5, Chapter 15)."""
     best = 0.0
     for _, price, votes in items[i:]:
         if price <= room:
@@ -54,7 +54,7 @@ def branch_and_bound(books: list, budget: int, use_bound: bool = True, log: list
 
 
 def best_first(books: list, budget: int) -> tuple[int, list, int]:
-    """Branch and bound that always expands the waiting node with the highest bound (Section 6.6).
+    """Branch and bound that always expands the waiting node with the highest bound (Section 6.5).
     Nodes wait in a heap; the search stops when the best bound left cannot beat the incumbent.
     Returns (votes, names, nodes expanded)."""
     items = sorted(books, key=lambda b: b[2] / b[1], reverse=True)
@@ -81,7 +81,7 @@ def best_first(books: list, budget: int) -> tuple[int, list, int]:
     return best, best_names, expanded
 
 
-# Section 6.7: Volume 5, Chapter 17's van round (minutes between the Library and four branches), solved exactly.
+# Section 6.5: Volume 5, Chapter 18's van round (minutes between the Library and four branches), solved exactly.
 BRANCHES = ["Library", "North", "East", "South", "West"]
 TRAVEL = {("Library", "North"): 2, ("Library", "East"): 9, ("Library", "South"): 10, ("Library", "West"): 7,
           ("North", "East"): 6, ("North", "South"): 4, ("North", "West"): 3, ("East", "South"): 8,

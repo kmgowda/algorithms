@@ -4,12 +4,13 @@ import unittest
 import ch20_examples as ex
 
 
-class TestChapter12(unittest.TestCase):
+class TestChapter20(unittest.TestCase):
     def test_party(self) -> None:
         total, guests, pair = ex.party(ex.REPORTS, ex.FUN, "Director")
         self.assertEqual((total, guests), (26, ["Ben", "Cai", "Dev", "Director", "Eva", "Fay"]))
         self.assertEqual((pair["Maya"], pair["Omar"], pair["Director"]), ((12, 10), (9, 13), (26, 25)))
         self.assertEqual(ex.brute(ex.REPORTS, ex.FUN), 26)
+        self.assertEqual((ex.party_pair(ex.REPORTS, ex.FUN, "Director"), ex.party_pair(ex.REPORTS, ex.FUN, "Fay")), ((26, 25), (7, 5)))
         self.assertEqual(ex.subtree_sizes(ex.REPORTS, "Director")["Maya"], 5)
 
     def test_every_case(self) -> None:
