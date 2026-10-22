@@ -31,6 +31,34 @@ class TestChapter14(unittest.TestCase):
         ex.hanoi(4, "A", "C", "B", four)
         self.assertEqual(" ".join(a + b for a, b in four), "AB AC BC AB CA CB AB AC BC BA CA BC AB AC BC")
 
+    def test_hanoi_with_stack(self) -> None:
+        self.assertEqual(ex.hanoi_with_stack(0, "A", "C", "B"), [])
+        self.assertEqual(ex.hanoi_with_stack(1, "A", "C", "B"), [("A", "C")])
+        for n in range(0, 11):
+            rec: list[tuple[str, str]] = []
+            ex.hanoi(n, "A", "C", "B", rec)
+            self.assertEqual(ex.hanoi_with_stack(n, "A", "C", "B"), rec)
+        snaps: list[list[str]] = []
+        ex.hanoi_with_stack(3, "A", "C", "B", snaps)
+        self.assertEqual(max(len(t) for t in snaps), 5)                # 2n - 1 tasks at most for n = 3
+        self.assertEqual(snaps[-1], [])
+        for n in range(1, 9):
+            snaps = []
+            ex.hanoi_with_stack(n, "A", "C", "B", snaps)
+            self.assertEqual(max(len(t) for t in snaps), 2 * n - 1)
+
+    def test_disk_counts_and_adjacent(self) -> None:
+        self.assertEqual(ex.moves_of_each_disk(4), [8, 4, 2, 1])
+        self.assertEqual(ex.moves_of_each_disk(0), [])
+        for n in range(1, 9):
+            self.assertEqual(ex.moves_of_each_disk(n), [2 ** (n - k) for k in range(1, n + 1)])
+        for n in range(0, 7):
+            adj: list[tuple[str, str]] = []
+            ex.adjacent_hanoi(n, "A", "C", "B", adj)
+            self.assertEqual(len(adj), 3 ** n - 1)
+            self.assertTrue(all({a, b} != {"A", "C"} for a, b in adj))   # never jumps between the ends
+            self.assertEqual(ex.replay(n, adj), {"A": [], "B": [], "C": list(range(n, 0, -1))})
+
 
 if __name__ == "__main__":
     unittest.main()

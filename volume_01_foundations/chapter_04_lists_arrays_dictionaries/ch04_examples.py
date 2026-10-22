@@ -9,9 +9,10 @@ SHELF = [12, 25, 31, 47, 58, 63, 70, 84, 91]
 TITLES = {63: "Maps of the World", 12: "First Steps in Python", 84: "Ocean Life", 31: "Clocks and Calendars"}
 
 
-def address_of(start: int, index: int) -> int:
-    """Where item `index` of an array starting at `start` lives (Figure 4.1)."""
-    return start + index
+def address_of(start: int, index: int, size: int = 1) -> int:
+    """Where item `index` of an array starting at `start` lives, when each item fills `size` cells
+    (Figure 4.1 uses size 1; Practice Problem 1 uses 8-byte numbers)."""
+    return start + index * size
 
 
 def insert_sorted(shelf: list[int], new: int) -> int:
@@ -37,7 +38,8 @@ def remove_at(shelf: list[int], index: int) -> int:
 
 
 def copies_while_appending(items: int, capacity: int = 1) -> int:
-    """How many whole-block copies happen when appending `items` to a list that doubles when full (Figure 4.4)."""
+    """How many resizes (whole-block copies) happen when appending `items` to a list that doubles when full
+    (Figure 4.4)."""
     size, copies = 0, 0
     for _ in range(items):
         if size == capacity:
@@ -45,6 +47,17 @@ def copies_while_appending(items: int, capacity: int = 1) -> int:
             copies += 1
         size += 1
     return copies
+
+
+def items_copied_while_appending(items: int, capacity: int = 1) -> int:
+    """How many single items are copied in total, over all resizes, while appending `items` (Problem 3)."""
+    size, copied = 0, 0
+    for _ in range(items):
+        if size == capacity:
+            capacity *= 2
+            copied += size
+        size += 1
+    return copied
 
 
 if __name__ == "__main__":

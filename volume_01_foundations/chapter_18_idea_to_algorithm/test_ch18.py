@@ -28,6 +28,10 @@ class TestChapter18(unittest.TestCase):
             prices = sorted(rng.randint(1, 30) for _ in range(rng.randint(0, 12)))
             self.assertTrue(ex.agree(prices, rng.randint(0, 60)))
 
+    def test_zigzag_practice(self) -> None:
+        self.assertEqual(ex.pair_two_pointers(ex.PRICES, 22), (2, 3))
+        self.assertEqual(ex.pair_brute(ex.PRICES, 22), (2, 3))
+
 
 if __name__ == "__main__":
     unittest.main()

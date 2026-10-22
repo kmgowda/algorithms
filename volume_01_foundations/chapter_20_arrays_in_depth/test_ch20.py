@@ -30,6 +30,19 @@ class TestChapter20(unittest.TestCase):
         g[0][0] = 1
         self.assertEqual([row[0] for row in g], [1, 0, 0])
 
+    def test_layouts(self) -> None:
+        self.assertEqual(ex.address(1, 3, 5), 1008)
+        self.assertEqual(ex.address(1, 3, 5, size=8), 1064)
+        self.assertEqual(ex.address(0, 0, 5, size=8), 1000)
+        self.assertEqual(ex.column_major_address(1, 3, 3), 1010)
+        self.assertEqual(ex.column_major_address(2, 4, 3), 1014)
+        self.assertEqual(sorted({ex.address(r, c, 5) for r in range(3) for c in range(5)}), list(range(1000, 1015)))
+        self.assertEqual(sorted({ex.column_major_address(r, c, 3) for r in range(3) for c in range(5)}),
+                         list(range(1000, 1015)))
+        self.assertEqual(set(ex.walk_strides(3, 5)), {1})
+        self.assertEqual(sorted(set(ex.walk_strides(3, 5, by_rows=False))), [-9, 5])
+        self.assertEqual(ex.walk_strides(1, 1), [])
+
 
 if __name__ == "__main__":
     unittest.main()

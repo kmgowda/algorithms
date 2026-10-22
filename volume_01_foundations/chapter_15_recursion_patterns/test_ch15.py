@@ -32,6 +32,29 @@ class TestChapter15(unittest.TestCase):
             self.assertEqual(ex.search(xs, t, 0, len(xs) - 1), xs.index(t) if t in xs else -1)
         self.assertEqual(ex.power(3, 13), 1_594_323)
 
+    def test_combinations(self) -> None:
+        self.assertEqual(["".join(c) for c in ex.combinations(list("ABC"), 2)], ["AB", "AC", "BC"])
+        self.assertEqual(ex.combinations([], 0), [[]])
+        self.assertEqual(ex.combinations([], 1), [])
+        self.assertEqual(ex.combinations(list("AB"), 3), [])
+        self.assertEqual(ex.combinations(list("A"), 1), [["A"]])
+        for n in range(0, 7):
+            items = list("ABCDEFG"[:n])
+            for k in range(0, n + 2):
+                self.assertEqual(sorted(map(tuple, ex.combinations(items, k))),
+                                 sorted(itertools.combinations(items, k)))
+        self.assertEqual(len(ex.combinations(list("ABCDE"), 3)), 10)
+        self.assertEqual(len(ex.combinations(list("ABCDEFGHI"), 3)), 84)
+
+    def test_costs(self) -> None:
+        self.assertEqual([ex.power_multiplications(n) for n in (0, 1, 13, 11, 64)], [0, 2, 7, 7, 8])
+        self.assertEqual(ex.power(5, 11), 48_828_125)
+        self.assertEqual(ex.items_listed(ex.subsets(list("ABC"))), 12)
+        self.assertEqual(ex.items_listed(ex.permutations(list("ABC"))), 18)
+        for n in range(0, 7):
+            items = list("ABCDEFG"[:n])
+            self.assertEqual(ex.items_listed(ex.subsets(items)), n * 2 ** n // 2)
+
 
 if __name__ == "__main__":
     unittest.main()

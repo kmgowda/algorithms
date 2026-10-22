@@ -18,6 +18,15 @@ def tallest(heights: list[int]) -> int:
     return tallest_so_far
 
 
+def tallest_starting_at_zero(values: list[int]) -> int:
+    """A FLAWED version (Practice Problem 1): starts from 0 instead of the first value, so it fails on negatives."""
+    best = 0
+    for v in values:
+        if v > best:
+            best = v
+    return best
+
+
 def looks_one_by_one(shelf: list[int], wanted: int) -> int:
     """Way A (Figure 1.7): how many books are looked at, from the left, until `wanted` is found."""
     for looks, call_number in enumerate(shelf, start=1):

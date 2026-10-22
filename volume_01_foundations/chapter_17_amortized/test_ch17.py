@@ -30,6 +30,37 @@ class TestChapter17(unittest.TestCase):
     def test_fixed_growth(self) -> None:
         self.assertEqual(ex.copying_with_fixed_growth(10_000), 4_995_000)
 
+    def test_copies_bound(self) -> None:
+        for n in range(1, 3000):
+            copies = sum(ex.append_costs(n)) - n
+            self.assertLess(copies, 2 * n)
+            if n & (n - 1) == 0:
+                self.assertEqual(copies, n - 1)
+        self.assertEqual(sum(ex.append_costs(1000)) - 1000, 1023)
+
+    def test_growth_factors(self) -> None:
+        self.assertEqual(ex.copying_with_factor(10_000, 2), (16_383, 6_384))
+        self.assertEqual(ex.copying_with_factor(10_000, 1.5), (24_284, 2_138))
+        self.assertEqual(ex.copying_with_factor(10_000, 1.125), (88_035, 983))
+        self.assertEqual(ex.copying_with_factor(20, 1.5, 2), (56, 8))
+        self.assertEqual(ex.copying_with_factor(20, 2, 2), (30, 12))
+        self.assertEqual(ex.copying_with_factor(0, 2), (0, 1))
+        self.assertEqual(ex.copying_with_factor(1, 2), (0, 0))
+
+    def test_counter(self) -> None:
+        self.assertEqual(ex.counter_flips(0), [])
+        self.assertEqual(ex.counter_flips(1), [1])
+        self.assertEqual(ex.counter_flips(8), [1, 2, 1, 3, 1, 2, 1, 4])
+        self.assertEqual((sum(ex.counter_flips(8)), sum(ex.counter_flips(16)), sum(ex.counter_flips(1000, bits=16))),
+                         (15, 31, 1994))
+        self.assertEqual(sum(ex.counter_flips(1000, bits=16)), 2 * 1000 - bin(1000).count("1"))
+        for n in range(1, 2000):
+            self.assertLess(sum(ex.counter_flips(n, bits=12)), 2 * n)
+        self.assertEqual(ex.counter_flips(16)[-1], 5)
+        self.assertEqual(set(ex.counter_amortized(255)), {2})
+        self.assertEqual(ex.array_amortized(1), [2])
+        self.assertEqual(set(ex.array_amortized(1000)[1:]), {3})
+
 
 if __name__ == "__main__":
     unittest.main()

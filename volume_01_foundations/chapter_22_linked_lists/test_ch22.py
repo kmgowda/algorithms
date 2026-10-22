@@ -54,6 +54,48 @@ class TestChapter22(unittest.TestCase):
                         ref.remove(v)
                 self.assertEqual(ll.values(), ref)
 
+    def test_doubly_every_case(self) -> None:
+        d = ex.DoublyLinkedList()
+        self.assertEqual((d.values(), d.values_backward(), d.size), ([], [], 0))
+        self.assertIs(d.header.next, d.trailer)
+        for pop in (d.pop_front, d.pop_back):
+            with self.assertRaises(IndexError):
+                pop()
+        d.push_back(7)
+        self.assertEqual((d.pop_back(), d.values(), d.size), (7, [], 0))
+        self.assertIs(d.trailer.prev, d.header)
+        d = ex.DoublyLinkedList([25, 47, 63])
+        d.insert_between(58, d.find(47), d.find(63))
+        self.assertEqual((d.values(), d.values_backward()), ([25, 47, 58, 63], [63, 58, 47, 25]))
+        self.assertEqual(d.remove(d.find(47)), 47)
+        self.assertEqual((d.values(), d.values_backward()), ([25, 58, 63], [63, 58, 25]))
+        self.assertEqual((d.pop_front(), d.pop_back(), d.values(), d.size), (25, 63, [58], 1))
+        self.assertIsNone(d.find(99))
+        d.push_front(12)
+        self.assertEqual(d.values(), [12, 58])
+
+    def test_doubly_against_python_list(self) -> None:
+        rng = random.Random(3)
+        for _ in range(200):
+            ref = [rng.randint(0, 9) for _ in range(rng.randint(0, 6))]
+            d = ex.DoublyLinkedList(ref)
+            for _ in range(20):
+                op, v = rng.choice(["front", "back", "popf", "popb", "remove"]), rng.randint(0, 9)
+                if op == "front":
+                    d.push_front(v)
+                    ref.insert(0, v)
+                elif op == "back":
+                    d.push_back(v)
+                    ref.append(v)
+                elif op == "popf" and ref:
+                    self.assertEqual(d.pop_front(), ref.pop(0))
+                elif op == "popb" and ref:
+                    self.assertEqual(d.pop_back(), ref.pop())
+                elif op == "remove" and v in ref:
+                    d.remove(d.find(v))
+                    ref.remove(v)
+                self.assertEqual((d.values(), d.values_backward(), d.size), (ref, ref[::-1], len(ref)))
+
     def test_waiting_list(self) -> None:
         rng = random.Random(2)
         for _ in range(200):

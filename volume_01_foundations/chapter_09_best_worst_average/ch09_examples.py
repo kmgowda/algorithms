@@ -29,7 +29,22 @@ def popularity_first(n: int) -> list[float]:
     return [w / total for w in weights]
 
 
+def harmonic(n: int) -> float:
+    """The n-th harmonic number H(n) = 1 + 1/2 + ... + 1/n (Section 9.8; H(9) is about 2.83)."""
+    return sum(1 / k for k in range(1, n + 1))
+
+
+def average_with_misses(n: int, s: float) -> float:
+    """Average looks of linear search on n books when the book is on the shelf with probability s (each
+    position equally likely) and missing otherwise: s(n + 1)/2 + n(1 - s) (Section 9.5).
+    An empty shelf needs no looks at all, so n = 0 gives 0."""
+    if n == 0:
+        return 0
+    return s * (n + 1) / 2 + n * (1 - s)
+
+
 if __name__ == "__main__":
     print([looks(SHELF, b) for b in SHELF], looks(SHELF, 50))
     print(average_looks([1 / 9] * 9), round(average_looks(popularity_first(9)), 2))
     print(average_looks([0.5] + [0.5 / 8] * 8))
+    print(round(harmonic(9), 2), average_with_misses(9, 0.5), average_with_misses(100, 0.75))

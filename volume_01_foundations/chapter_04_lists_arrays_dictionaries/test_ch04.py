@@ -52,5 +52,11 @@ class TestChapter4(unittest.TestCase):
         self.assertEqual(ex.copies_while_appending(9), 4)
 
 
+    def test_sizes_and_items_copied(self) -> None:
+        self.assertEqual(ex.address_of(2000, 6, 8), 2048)
+        self.assertEqual(ex.address_of(2000, 0, 8), 2000)
+        self.assertEqual(ex.address_of(1000, 7), 1007)
+        self.assertEqual([ex.items_copied_while_appending(n) for n in (0, 1, 2, 9, 16, 17)], [0, 0, 1, 15, 15, 31])
+
 if __name__ == "__main__":
     unittest.main()

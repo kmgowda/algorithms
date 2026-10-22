@@ -62,8 +62,77 @@ class LinkedList:
         return to_list(self.head)
 
 
+class DNode:
+    """A node of a doubly linked list: a value and links to both neighbours."""
+
+    def __init__(self, value, prev=None, next=None):
+        self.value, self.prev, self.next = value, prev, next
+
+
+class DoublyLinkedList:
+    """Section 22.10: header and trailer sentinels make every insert and delete the same four or two link changes."""
+
+    def __init__(self, values=()):
+        self.header, self.trailer = DNode(None), DNode(None)
+        self.header.next, self.trailer.prev = self.trailer, self.header
+        self.size = 0
+        for v in values:
+            self.push_back(v)
+
+    def insert_between(self, value, before: DNode, after: DNode) -> DNode:
+        new = DNode(value, before, after)         # changes 1 and 2: the new node's own links
+        before.next = new                         # change 3
+        after.prev = new                          # change 4
+        self.size += 1
+        return new
+
+    def remove(self, node: DNode):
+        node.prev.next = node.next                # the neighbours link past the node
+        node.next.prev = node.prev
+        self.size -= 1
+        return node.value
+
+    def push_front(self, value) -> DNode:
+        return self.insert_between(value, self.header, self.header.next)
+
+    def push_back(self, value) -> DNode:
+        return self.insert_between(value, self.trailer.prev, self.trailer)
+
+    def pop_front(self):
+        if self.size == 0:
+            raise IndexError("pop from an empty list")
+        return self.remove(self.header.next)
+
+    def pop_back(self):
+        if self.size == 0:
+            raise IndexError("pop from an empty list")
+        return self.remove(self.trailer.prev)     # O(1): the trailer knows the last node
+
+    def find(self, value) -> DNode | None:
+        node = self.header.next
+        while node is not self.trailer:
+            if node.value == value:
+                return node
+            node = node.next
+        return None
+
+    def values(self) -> list:
+        out, node = [], self.header.next
+        while node is not self.trailer:
+            out.append(node.value)
+            node = node.next
+        return out
+
+    def values_backward(self) -> list:
+        out, node = [], self.trailer.prev
+        while node is not self.header:
+            out.append(node.value)
+            node = node.prev
+        return out
+
+
 class WaitingList:
-    """Section 22.10: join at the end, serve from the front, cancel anyone - all O(1)."""
+    """Section 22.11: join at the end, serve from the front, cancel anyone - all O(1)."""
 
     def __init__(self):
         self.sentinel = Node(None)                # a dummy node before the first reader
@@ -107,3 +176,7 @@ if __name__ == "__main__":
     print(w.names(), w.serve(), w.names())
     w.join("Dev")
     print(w.names())
+    d = DoublyLinkedList([25, 47, 63])
+    d.insert_between(58, d.find(47), d.find(63))
+    d.remove(d.find(47))
+    print(d.values(), d.values_backward(), d.pop_back())

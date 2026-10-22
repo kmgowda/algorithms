@@ -31,6 +31,22 @@ class TestChapter16(unittest.TestCase):
         self.assertEqual(ex.master(2, 2, 1), "O(n^1 log n)")
         self.assertEqual(ex.master(4, 2, 1), "O(n^log_2(4))")
 
+    def test_new_shapes(self) -> None:
+        for n in range(1, 40):
+            self.assertEqual(ex.unroll("T(n-1)+n", n), n * (n + 1) // 2)
+        self.assertEqual((ex.unroll("T(n-1)+n", 9), ex.unroll("T(n-1)+n", 100)), (45, 5050))
+        self.assertEqual(ex.unroll("2T(n/2)+n", 8), 32)
+        self.assertEqual(ex.unroll("T(n-1)+n", 0), 1)
+        fib = [0, 1]
+        for _ in range(30):
+            fib.append(fib[-1] + fib[-2])
+        for n in range(0, 22):
+            self.assertEqual(ex.fib_calls(n), 2 * fib[n + 1] - 1)
+        self.assertEqual([ex.fib_calls(n) for n in (0, 1, 5, 20)], [1, 1, 15, 21891])
+        self.assertEqual(ex.deepest_frames("2T(n-1)+1", 10), 10)
+        self.assertEqual(ex.deepest_frames("T(n/2)+1", 1024), 11)
+        self.assertEqual(ex.deepest_frames("T(n-1)+1", 1), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

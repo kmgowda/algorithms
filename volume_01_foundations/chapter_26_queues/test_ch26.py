@@ -36,6 +36,28 @@ class TestChapter26(unittest.TestCase):
         with self.assertRaises(IndexError):
             ex.Queue().dequeue()
 
+    def test_circular_list(self) -> None:
+        r = ex.CircularList()
+        for f in (r.front, r.remove_front):
+            with self.assertRaises(IndexError):
+                f()
+        r.rotate()                                # rotating an empty ring does nothing
+        r.add_back("Ana")
+        self.assertIs(r.tail.next, r.tail)        # one node links to itself
+        r.rotate()
+        self.assertEqual((r.front(), r.remove_front(), r.size, r.tail), ("Ana", "Ana", 0, None))
+        for n in ("Ana", "Ben", "Cai"):
+            r.add_back(n)
+        r.rotate()
+        self.assertEqual(r.values(), ["Ben", "Cai", "Ana"])
+        self.assertEqual(r.remove_front(), "Ben")
+        self.assertEqual(r.values(), ["Cai", "Ana"])
+        self.assertEqual(ex.round_robin_circular({}), [])
+        rng = random.Random(2)
+        for _ in range(200):
+            needs = {f"s{k}": rng.randint(1, 4) for k in range(rng.randint(0, 6))}
+            self.assertEqual(ex.round_robin_circular(needs), ex.round_robin(needs))
+
     def test_round_robin(self) -> None:
         self.assertEqual(ex.round_robin({"Ana": 3, "Ben": 1, "Cai": 2}),
                          [(1, "Ana", False), (2, "Ben", True), (3, "Cai", False), (4, "Ana", False),

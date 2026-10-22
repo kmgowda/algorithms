@@ -32,6 +32,17 @@ def largest_n(rate: str, budget: float = 1e7) -> int:
     return lo
 
 
+def triples(n: int, each_once: bool) -> int:
+    """Steps of three nested loops over n items (Practice Problem 1): all n^3 ordered triples, or each
+    group of three different items once, n(n - 1)(n - 2) / 6."""
+    count = 0
+    for i in range(n):
+        for j in range(i + 1 if each_once else 0, n):
+            for k in range(j + 1 if each_once else 0, n):
+                count += 1
+    return count
+
+
 def halvings(n: int) -> int:
     """How many halvings reduce n items to one (Figure 7.5)."""
     count = 0

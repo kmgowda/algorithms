@@ -5,6 +5,7 @@ Run:  python3 ch06_examples.py
 
 from __future__ import annotations
 
+import math
 import timeit
 
 
@@ -30,6 +31,16 @@ def pair_comparisons(n: int) -> int:
 def doubling_ratios(counts: list[int]) -> list[float]:
     """Each count divided by the previous one: about 2 for linear growth, 4 for quadratic (Figure 6.4)."""
     return [round(b / a, 2) for a, b in zip(counts, counts[1:])]
+
+
+def doubling_exponents(values: list[float]) -> list[float]:
+    """If the work grows like a * n^b, doubling n multiplies it by 2^b, so b = log2(ratio) (Section 6.6)."""
+    return [round(math.log2(b / a), 2) for a, b in zip(values, values[1:])]
+
+
+def predict_after_doubling(value: float, exponent: float) -> float:
+    """The work expected at 2n, given the work at n and the exponent b read from a doubling experiment."""
+    return value * 2 ** exponent
 
 
 def repeated_timings(n: int, repeats: int = 12) -> list[float]:

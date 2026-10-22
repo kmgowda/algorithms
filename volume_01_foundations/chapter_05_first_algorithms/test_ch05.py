@@ -39,5 +39,16 @@ class TestChapter5(unittest.TestCase):
         self.assertEqual(ex.all_above(ex.SHELF, 20), (False, 1))
 
 
+    def test_sentinel(self) -> None:
+        for target in ex.SHELF + [5, 50, 95]:
+            self.assertEqual(ex.linear_search_sentinel(ex.SHELF, target), ex.linear_search(ex.SHELF, target))
+        self.assertEqual(ex.SHELF, [12, 25, 31, 47, 58, 63, 70, 84, 91])
+        self.assertEqual(ex.linear_search_sentinel([], 7), -1)
+        self.assertEqual(ex.linear_search_sentinel([7], 7), 0)
+        self.assertEqual(ex.linear_search_sentinel([47, 12, 47], 47), 0)
+        self.assertEqual((ex.tests_made(ex.SHELF, 50, False), ex.tests_made(ex.SHELF, 50, True)), (19, 11))
+        self.assertEqual((ex.tests_made(ex.SHELF, 63, False), ex.tests_made(ex.SHELF, 63, True)), (12, 7))
+        self.assertEqual((ex.tests_made([], 7, False), ex.tests_made([], 7, True)), (1, 2))
+
 if __name__ == "__main__":
     unittest.main()

@@ -37,6 +37,16 @@ def reverse(head):
     return prev
 
 
+def reverse_recursive(head):
+    """Section 23.4: reverse the rest by trusting the smaller call, then turn one link (O(n) stack depth)."""
+    if head is None or head.next is None:
+        return head
+    new_head = reverse_recursive(head.next)
+    head.next.next = head                         # the old second node now points back at head
+    head.next = None
+    return new_head
+
+
 def middle(head):
     """The middle node, in one pass: the hare moves two nodes for each one the tortoise moves (Figure 23.2)."""
     slow = fast = head
@@ -58,8 +68,30 @@ def has_cycle(head) -> tuple[bool, int]:
     return False, steps
 
 
+def loop_start(head):
+    """Section 23.6: where the loop begins and how long it is, or None if there is no loop.
+    Returns (start node, loop length, steps to meet, steps from the head to the start)."""
+    slow = fast = head
+    meet = 0
+    while fast is not None and fast.next is not None:
+        slow, fast = slow.next, fast.next.next
+        meet += 1
+        if slow is fast:
+            break
+    else:
+        return None
+    a, b, to_start = head, slow, 0                # one pointer back to the head, one at the meeting node
+    while a is not b:
+        a, b = a.next, b.next
+        to_start += 1
+    length, cur = 1, a.next                       # walk once round the loop
+    while cur is not a:
+        cur, length = cur.next, length + 1
+    return a, length, meet, to_start
+
+
 def merge(a, b):
-    """Merge two sorted lists by relinking nodes, using a dummy node (Figure 23.4)."""
+    """Merge two sorted lists by relinking nodes, using a dummy node (Figure 23.5)."""
     dummy = tail = Node(None)
     while a is not None and b is not None:
         if a.value <= b.value:
@@ -88,3 +120,8 @@ if __name__ == "__main__":
     print(has_cycle(with_loop([12, 25, 47, 58, 63, 70, 84, 91], 3)), has_cycle(build(range(8))))
     print(values_of(merge(build([12, 47, 63]), build([25, 58, 84, 91]))))
     print(has_cycle(with_loop(list(range(7)), 3)))
+    node, length, meet, to_start = loop_start(with_loop([12, 25, 47, 58, 63, 70, 84, 91], 3))
+    print(node.value, length, meet, to_start)
+    node, length, meet, to_start = loop_start(with_loop([12, 25, 31, 47, 58], 1))
+    print(node.value, length, meet, to_start)
+    print(values_of(reverse_recursive(build([12, 25, 47, 63]))))

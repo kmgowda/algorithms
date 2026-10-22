@@ -32,5 +32,11 @@ class TestChapter7(unittest.TestCase):
         self.assertEqual(ex.steps("n^2", 4000) // 2 // 1e6, 8)
 
 
+    def test_triples(self) -> None:
+        self.assertEqual([ex.triples(n, False) for n in (10, 20, 40, 80)], [1000, 8000, 64000, 512000])
+        self.assertEqual([ex.triples(n, True) for n in (10, 20, 40, 80)], [120, 1140, 9880, 82160])
+        self.assertEqual([ex.triples(n, True) for n in (0, 1, 2, 3)], [0, 0, 0, 1])
+        self.assertEqual(ex.triples(0, False), 0)
+
 if __name__ == "__main__":
     unittest.main()

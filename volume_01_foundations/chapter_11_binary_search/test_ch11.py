@@ -42,6 +42,22 @@ class TestChapter11(unittest.TestCase):
         self.assertEqual([ex.worst_looks(n) for n in (9, 100, 4000, 10 ** 6, 10 ** 9)], [4, 7, 12, 20, 30])
         self.assertEqual(ex.binary_search([47, 12, 91, 25], 25)[0], -1)
 
+    def test_upper_bound_and_copies(self) -> None:
+        dup = [12, 25, 47, 47, 47, 63, 70, 84, 91]
+        self.assertEqual((ex.lower_bound(dup, 47), ex.upper_bound(dup, 47), ex.count_copies(dup, 47)), (2, 5, 3))
+        self.assertEqual((ex.upper_bound([], 5), ex.count_copies([], 5)), (0, 0))
+        self.assertEqual((ex.upper_bound([47], 47), ex.count_copies([47], 47), ex.count_copies([47], 12)), (1, 1, 0))
+        self.assertEqual((ex.upper_bound([7] * 6, 7), ex.lower_bound([7] * 6, 7), ex.count_copies([7] * 6, 7)),
+                         (6, 0, 6))
+        self.assertEqual((ex.count_copies(dup, 50), ex.lower_bound(dup, 50), ex.upper_bound(dup, 50)), (0, 5, 5))
+        self.assertEqual((ex.upper_bound(dup, 5), ex.upper_bound(dup, 95)), (0, 9))
+        rng = random.Random(2)
+        for _ in range(500):
+            xs = sorted(rng.randint(0, 10) for _ in range(rng.randint(0, 15)))
+            t = rng.randint(-1, 11)
+            self.assertEqual(ex.upper_bound(xs, t), bisect.bisect_right(xs, t))
+            self.assertEqual(ex.count_copies(xs, t), xs.count(t))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -33,6 +33,30 @@ class TestChapter25(unittest.TestCase):
         self.assertEqual(ex.evaluate_postfix("5 1 2 + 4 * + 3 -".split()), 14)
         self.assertEqual(ex.evaluate_postfix("8 2 -".split()), 6)
 
+    def test_to_postfix(self) -> None:
+        P = lambda e: " ".join(ex.to_postfix(e.split()))
+        self.assertEqual(ex.to_postfix([]), [])
+        self.assertEqual(P("7"), "7")
+        self.assertEqual(P("3 + 4 * 2 - 1"), "3 4 2 * + 1 -")
+        self.assertEqual(P("( 3 + 4 ) * 2"), "3 4 + 2 *")
+        self.assertEqual(P("( 3 + 4 ) * ( 5 - 2 )"), "3 4 + 5 2 - *")
+        self.assertEqual(P("8 - 3 - 2"), "8 3 - 2 -")
+        self.assertEqual(P("( ( 7 ) )"), "7")
+        self.assertEqual(P("6 / 2 * 3"), "6 2 / 3 *")
+        for bad in ("( 3 + 4", "3 + 4 )", ")"):
+            with self.assertRaises(ValueError):
+                ex.to_postfix(bad.split())
+        rng = random.Random(5)
+
+        def expr(depth):
+            if depth == 0 or rng.random() < 0.3:
+                return str(rng.randint(1, 9))
+            e = f"{expr(depth - 1)} {rng.choice('+-*')} {expr(depth - 1)}"
+            return f"( {e} )" if rng.random() < 0.4 else e
+        for _ in range(500):
+            e = expr(4)
+            self.assertEqual(ex.evaluate_postfix(ex.to_postfix(e.split())), eval(e))
+
     def test_next_taller_against_brute_force(self) -> None:
         rng = random.Random(1)
         for _ in range(500):

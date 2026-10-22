@@ -51,6 +51,18 @@ def swap(a, b):
     return a, b
 
 
+def close_pairs(shelf: list[int], gap: int) -> tuple[list[tuple[int, int]], int]:
+    """Practice Problem 3: every pair of books whose call numbers differ by less than gap, using a loop
+    inside a loop; also returns how many pairs were checked."""
+    pairs, checks = [], 0
+    for i in range(len(shelf)):
+        for j in range(i + 1, len(shelf)):
+            checks += 1
+            if abs(shelf[j] - shelf[i]) < gap:
+                pairs.append((shelf[i], shelf[j]))
+    return pairs, checks
+
+
 if __name__ == "__main__":
     print([shelf_for(n) for n in (29, 30, 59, 60, 63)])
     print(count_above(SHELF, 50), count_above(SHELF, 60), halving_rounds(9), halving_rounds(100))

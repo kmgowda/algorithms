@@ -60,8 +60,38 @@ def evaluate_postfix(tokens: list[str]) -> float:
     return stack[0]
 
 
+PRECEDENCE = {"+": 1, "-": 1, "*": 2, "/": 2}
+
+
+def to_postfix(tokens: list[str]) -> list[str]:
+    """Section 25.6, Figure 25.4: turn an ordinary (infix) expression into postfix with a stack of waiting operators.
+    Operators of equal precedence are left-associative: 8 - 3 - 2 becomes 8 3 - 2 -."""
+    out: list[str] = []
+    waiting: list[str] = []                     # operators and "(" not yet written out
+    for t in tokens:
+        if t in PRECEDENCE:
+            while waiting and waiting[-1] != "(" and PRECEDENCE[waiting[-1]] >= PRECEDENCE[t]:
+                out.append(waiting.pop())       # an earlier operator that binds at least as tightly goes first
+            waiting.append(t)
+        elif t == "(":
+            waiting.append(t)
+        elif t == ")":
+            while waiting and waiting[-1] != "(":
+                out.append(waiting.pop())
+            if not waiting:
+                raise ValueError("unmatched )")
+            waiting.pop()                       # discard the "("
+        else:
+            out.append(t)                       # a number goes straight to the output
+    while waiting:
+        if waiting[-1] == "(":
+            raise ValueError("unmatched (")
+        out.append(waiting.pop())
+    return out
+
+
 def next_taller(heights: list[int]) -> list[int | None]:
-    """For each book, the index of the first taller book to its right, with a monotonic stack: O(n) (Figure 25.4)."""
+    """For each book, the index of the first taller book to its right, with a monotonic stack: O(n) (Figure 25.5)."""
     answer: list[int | None] = [None] * len(heights)
     waiting: list[int] = []                     # indexes, heights decreasing bottom to top
     for i, h in enumerate(heights):
@@ -79,5 +109,6 @@ if __name__ == "__main__":
     print(e.undo_stack, e.redo_stack)
     print([balanced(s) for s in ("([]{})", "{[()]}", "([)]", "((())", "]")])
     print(evaluate_postfix("3 4 + 2 *".split()), evaluate_postfix("5 1 2 + 4 * + 3 -".split()))
+    print(" ".join(to_postfix("3 + 4 * 2 - 1".split())), " ".join(to_postfix("( 3 + 4 ) * ( 5 - 2 )".split())))
     h = [22, 18, 25, 15, 17, 28, 20]
     print([h[j] if j is not None else None for j in next_taller(h)])

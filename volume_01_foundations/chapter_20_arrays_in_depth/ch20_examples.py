@@ -10,13 +10,26 @@ SEATS = [[0, 1, 0, 0, 1],
          [0, 0, 1, 0, 1]]
 
 
-def address(r: int, c: int, cols: int, start: int = 1000) -> int:
-    """Row-major address of cell (r, c) (Figure 20.2)."""
-    return start + r * cols + c
+def address(r: int, c: int, cols: int, start: int = 1000, size: int = 1) -> int:
+    """Row-major address of cell (r, c) when each value takes `size` memory cells (Figure 20.2)."""
+    return start + (r * cols + c) * size
+
+
+def column_major_address(r: int, c: int, rows: int, start: int = 1000, size: int = 1) -> int:
+    """Column-major address of cell (r, c): whole columns are stored one after another (Section 20.6)."""
+    return start + (c * rows + r) * size
+
+
+def walk_strides(rows: int, cols: int, by_rows: bool = True) -> list[int]:
+    """Distances between consecutive addresses when a row-major grid is walked row by row or column by column."""
+    order = ([(r, c) for r in range(rows) for c in range(cols)] if by_rows
+             else [(r, c) for c in range(cols) for r in range(rows)])
+    addrs = [address(r, c, cols) for r, c in order]
+    return [b - a for a, b in zip(addrs, addrs[1:])]
 
 
 def neighbours(r: int, c: int, rows: int, cols: int) -> list[tuple[int, int]]:
-    """The up, down, left and right neighbours of (r, c) that lie inside a rows x cols grid (Figure 20.4)."""
+    """The up, down, left and right neighbours of (r, c) that lie inside a rows x cols grid (Figure 20.5)."""
     result = []
     for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
         nr, nc = r + dr, c + dc
@@ -26,7 +39,7 @@ def neighbours(r: int, c: int, rows: int, cols: int) -> list[tuple[int, int]]:
 
 
 def totals(grid: list[list[int]]) -> tuple[list[int], list[int]]:
-    """Row and column totals in one walk (Figure 20.5)."""
+    """Row and column totals in one walk (Figure 20.6)."""
     rows, cols = len(grid), len(grid[0])
     row_total, col_total = [0] * rows, [0] * cols
     for r in range(rows):
@@ -50,7 +63,7 @@ def make_grid(rows: int, cols: int) -> list[list[int]]:
 
 if __name__ == "__main__":
     print(address(1, 3, 5), neighbours(1, 3, 3, 5), neighbours(0, 0, 3, 5), totals(SEATS))
-    print(lonely_seats(SEATS))
+    print(lonely_seats(SEATS), address(1, 3, 5, size=8), column_major_address(1, 3, 3), sorted(set(walk_strides(3, 5, False))))
     bad = [[0] * 5] * 3
     bad[0][0] = 1
     print("shared rows:", [row[0] for row in bad], "separate rows:", [row[0] for row in make_grid(3, 5)])

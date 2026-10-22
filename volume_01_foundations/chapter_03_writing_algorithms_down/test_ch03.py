@@ -27,5 +27,11 @@ class TestChapter3(unittest.TestCase):
             self.assertEqual(ex.halving_rounds(n), int(math.log2(n)))
 
 
+    def test_close_pairs(self) -> None:
+        self.assertEqual(ex.close_pairs(ex.SHELF, 10), ([(25, 31), (58, 63), (63, 70), (84, 91)], 36))
+        self.assertEqual(ex.close_pairs([], 10), ([], 0))
+        self.assertEqual(ex.close_pairs([5], 10), ([], 0))
+        self.assertEqual(ex.close_pairs(ex.SHELF, 0), ([], 36))
+
 if __name__ == "__main__":
     unittest.main()

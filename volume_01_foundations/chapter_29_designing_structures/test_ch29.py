@@ -32,6 +32,16 @@ class TestChapter29(unittest.TestCase):
         with self.assertRaises(ValueError):
             ex.MinQueue().min()
 
+    def test_practice_traces(self) -> None:
+        m, mins = ex.MinStack(), []
+        for v in (30, 20, 20, 40):
+            m.push(v)
+            mins.append(m.min())
+        for _ in range(3):
+            m.pop()
+            mins.append(m.min())
+        self.assertEqual(mins, [30, 20, 20, 20, 20, 20, 30])
+
     def test_min_stack_against_reference(self) -> None:
         rng = random.Random(1)
         s, ref = ex.MinStack(), []

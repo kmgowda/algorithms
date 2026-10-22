@@ -22,6 +22,23 @@ class TestChapter9(unittest.TestCase):
         self.assertAlmostEqual(ex.average_looks(ex.popularity_first(9)), 3.18, places=2)
         self.assertAlmostEqual(ex.average_looks([0.5] + [0.5 / 8] * 8), 3.25)
 
+    def test_misses_formula(self) -> None:
+        self.assertEqual(ex.average_with_misses(9, 0.5), 7)
+        self.assertEqual(ex.average_with_misses(9, 1), 5)
+        self.assertEqual(ex.average_with_misses(9, 0), 9)
+        self.assertEqual(ex.average_with_misses(0, 0.5), 0)
+        self.assertEqual(ex.average_with_misses(1, 0.3), 1)
+        self.assertAlmostEqual(ex.average_with_misses(100, 0.75), 62.875)
+        for n in range(1, 30):
+            shares = [0.5 / n] * n
+            self.assertAlmostEqual(ex.average_with_misses(n, 0.5), ex.average_looks(shares) + 0.5 * n)
+
+    def test_harmonic(self) -> None:
+        self.assertEqual(ex.harmonic(0), 0)
+        self.assertEqual(ex.harmonic(1), 1)
+        self.assertAlmostEqual(9 / ex.harmonic(9), ex.average_looks(ex.popularity_first(9)))
+        self.assertEqual(round(ex.harmonic(9), 2), 2.83)
+
 
 if __name__ == "__main__":
     unittest.main()

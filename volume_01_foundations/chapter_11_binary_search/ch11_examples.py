@@ -24,7 +24,7 @@ def binary_search(shelf: list[int], target: int) -> tuple[int, int, list[int]]:
 
 
 def lower_bound(shelf: list[int], target: int) -> int:
-    """First position whose item is >= target (len(shelf) if none): the insertion point (Figure 11.5)."""
+    """First position whose item is >= target (len(shelf) if none): the insertion point (Figure 11.6)."""
     low, high = 0, len(shelf)
     while low < high:
         mid = (low + high) // 2
@@ -35,8 +35,25 @@ def lower_bound(shelf: list[int], target: int) -> int:
     return low
 
 
+def upper_bound(shelf: list[int], target: int) -> int:
+    """First position whose item is > target (len(shelf) if none): one past the last copy (Figure 11.7)."""
+    low, high = 0, len(shelf)
+    while low < high:
+        mid = low + (high - low) // 2
+        if shelf[mid] <= target:
+            low = mid + 1
+        else:
+            high = mid
+    return low
+
+
+def count_copies(shelf: list[int], target: int) -> int:
+    """How many items equal target in a sorted list: upper bound minus lower bound (Figure 11.7)."""
+    return upper_bound(shelf, target) - lower_bound(shelf, target)
+
+
 def worst_looks(n: int) -> int:
-    """floor(log2 n) + 1: the most looks binary search needs on n items (Figure 11.4)."""
+    """floor(log2 n) + 1: the most looks binary search needs on n items (Figure 11.5)."""
     return n.bit_length()
 
 
@@ -45,3 +62,5 @@ if __name__ == "__main__":
     print(lower_bound([12, 25, 47, 47, 47, 63, 70, 84, 91], 47), binary_search(SHELF, 95)[1])
     print([worst_looks(n) for n in (9, 100, 1000, 4000, 10 ** 6, 10 ** 9)])
     print(binary_search([47, 12, 91, 25], 25))
+    dup = [12, 25, 47, 47, 47, 63, 70, 84, 91]
+    print(upper_bound(dup, 47), count_copies(dup, 47), count_copies(dup, 50))

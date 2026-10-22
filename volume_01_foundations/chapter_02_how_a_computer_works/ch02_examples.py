@@ -37,6 +37,18 @@ def trace_sum(shelf: list[int], count: int, start: int = 0) -> list[int]:
     return snapshots
 
 
+def swap_by_arithmetic(a: int, b: int) -> list[tuple[int, int]]:
+    """Practice Problem 2: (a, b) after each of a <- a + b, b <- a - b, a <- a - b, starting from (a, b)."""
+    states = [(a, b)]
+    a = a + b
+    states.append((a, b))
+    b = a - b
+    states.append((a, b))
+    a = a - b
+    states.append((a, b))
+    return states
+
+
 if __name__ == "__main__":
     print(to_binary(77), from_binary("01001101"), from_binary("00101010"), to_binary(13))
     print(trace_sum(SHELF, 3), trace_sum(SHELF, 3, start=7)[-1])

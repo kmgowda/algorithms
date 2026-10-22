@@ -21,6 +21,8 @@ class Stack:
         return self._items.pop()
 
     def peek(self):
+        if not self._items:
+            raise IndexError("peek at an empty stack")
         return self._items[-1]
 
     def is_empty(self) -> bool:
@@ -48,10 +50,36 @@ class LinkedStack:
         return node.value
 
     def peek(self):
+        if self._top is None:
+            raise IndexError("peek at an empty stack")
         return self._top.value
 
     def is_empty(self) -> bool:
         return self._top is None
+
+
+class BoundedStack:
+    """A stack in a fixed array of `capacity` slots (Section 24.5): push on a full stack is an overflow."""
+
+    def __init__(self, capacity: int):
+        self._slots = [None] * capacity
+        self._size = 0                            # slots[0 .. size-1] hold the items; the top is slots[size-1]
+
+    def push(self, item) -> None:
+        if self._size == len(self._slots):
+            raise OverflowError("push onto a full stack")
+        self._slots[self._size] = item
+        self._size += 1
+
+    def pop(self):
+        if self._size == 0:
+            raise IndexError("pop from an empty stack")
+        self._size -= 1
+        item, self._slots[self._size] = self._slots[self._size], None
+        return item
+
+    def is_empty(self) -> bool:
+        return self._size == 0
 
 
 def sort_with_stacks(returns: list[int]) -> list[int]:

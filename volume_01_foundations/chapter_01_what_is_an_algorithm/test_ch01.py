@@ -22,6 +22,12 @@ class TestChapter1(unittest.TestCase):
             xs = [rng.randint(100, 200) for _ in range(rng.randint(1, 20))]
             self.assertEqual(ex.tallest(xs), max(xs))
 
+    def test_flawed_start_at_zero(self) -> None:
+        self.assertEqual(ex.tallest_starting_at_zero(ex.HEIGHTS), 161)
+        self.assertEqual(ex.tallest_starting_at_zero([-3, -7, -1]), 0)
+        self.assertEqual(ex.tallest([-3, -7, -1]), -1)
+        self.assertEqual(ex.tallest_starting_at_zero([]), 0)
+
     def test_two_ways(self) -> None:
         self.assertEqual((ex.looks_one_by_one(ex.SHELF, 63), ex.looks_by_halving(ex.SHELF, 63)), (6, 3))
         self.assertEqual((ex.looks_one_by_one(ex.SHELF, 91), ex.looks_by_halving(ex.SHELF, 91)), (9, 4))

@@ -37,6 +37,35 @@ class TestChapter21(unittest.TestCase):
         self.assertEqual([ord(c) for c in "Ca0"], [67, 97, 48])
         self.assertEqual(ex.letter_counts("Maya"), {"m": 1, "a": 2, "y": 1})
 
+    def test_compare(self) -> None:
+        self.assertEqual(ex.compare("map", "maps"), (-1, 3))
+        self.assertEqual(ex.compare("Maya", "maya"), (-1, 1))
+        self.assertEqual(ex.compare("library", "librarian"), (1, 7))
+        self.assertEqual(ex.compare("", ""), (0, 0))
+        self.assertEqual(ex.compare("", "a"), (-1, 0))
+        self.assertEqual(ex.compare("map", "map"), (0, 3))
+        rng = random.Random(2)
+        for _ in range(300):
+            a = "".join(rng.choice("abC") for _ in range(rng.randint(0, 5)))
+            b = "".join(rng.choice("abC") for _ in range(rng.randint(0, 5)))
+            self.assertEqual(ex.compare(a, b)[0], (a > b) - (a < b))
+            self.assertLessEqual(ex.compare(a, b)[1], min(len(a), len(b)))
+
+    def test_substrings_and_subsequences(self) -> None:
+        self.assertEqual(ex.substrings("MAP"), ["M", "MA", "MAP", "A", "AP", "P"])
+        self.assertEqual(ex.subsequences("MAP"), ["MAP", "MA", "MP", "M", "AP", "A", "P", ""])
+        self.assertEqual((ex.substrings(""), ex.subsequences("")), ([], [""]))
+        for n in range(0, 9):
+            text = "abcdefgh"[:n]
+            self.assertEqual(len(ex.substrings(text)), n * (n + 1) // 2)
+            self.assertEqual(len(ex.subsequences(text)), 2 ** n)
+        self.assertEqual((len(ex.substrings("LIBRARY")), len(ex.subsequences("LIBRARY"))), (28, 128))
+
+    def test_utf8(self) -> None:
+        self.assertEqual(ex.utf8_lengths("café 😀"), [1, 1, 1, 2, 1, 4])
+        self.assertEqual(ex.utf8_lengths(""), [])
+        self.assertEqual((len("café"), len("café".encode("utf-8"))), (4, 5))
+
 
 if __name__ == "__main__":
     unittest.main()

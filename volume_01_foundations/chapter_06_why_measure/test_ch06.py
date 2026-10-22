@@ -1,3 +1,4 @@
+import math
 import unittest
 
 import ch06_examples as ex
@@ -26,6 +27,17 @@ class TestChapter6(unittest.TestCase):
         self.assertEqual(ex.doubling_ratios([1000, 2000, 4000]), [2.0, 2.0])
         self.assertEqual(len(ex.repeated_timings(1000, 3)), 3)
 
+
+    def test_doubling_exponents(self) -> None:
+        sizes = [1000, 2000, 4000, 8000]
+        self.assertEqual(ex.doubling_exponents([n * (n - 1) // 2 for n in sizes]), [2.0, 2.0, 2.0])
+        self.assertEqual(ex.doubling_exponents(sizes), [1.0, 1.0, 1.0])
+        self.assertEqual(ex.doubling_exponents([0.21, 0.59, 1.68]), [1.49, 1.51])
+        self.assertAlmostEqual(ex.predict_after_doubling(1.68, 1.5), 4.75, places=2)
+        self.assertEqual(ex.doubling_exponents([1, 8, 64]), [3.0, 3.0])
+        self.assertEqual(ex.doubling_exponents([5.0]), [])
+        nlogn = [n * math.log2(n) for n in sizes]
+        self.assertEqual(ex.doubling_exponents(nlogn), [1.14, 1.13, 1.12])
 
 if __name__ == "__main__":
     unittest.main()

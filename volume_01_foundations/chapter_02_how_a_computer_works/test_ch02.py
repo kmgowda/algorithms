@@ -29,6 +29,12 @@ class TestChapter2(unittest.TestCase):
         self.assertEqual(ex.trace_sum(ex.SHELF, 3), [0, 12, 37, 68])
         self.assertEqual(ex.trace_sum(ex.SHELF, 3, start=7)[-1], 75)
 
+    def test_swap_by_arithmetic(self) -> None:
+        self.assertEqual(ex.swap_by_arithmetic(12, 47), [(12, 47), (59, 47), (59, 12), (47, 12)])
+        self.assertEqual(ex.swap_by_arithmetic(5, 5)[-1], (5, 5))
+        self.assertEqual(ex.swap_by_arithmetic(0, 0)[-1], (0, 0))
+        self.assertEqual(ex.swap_by_arithmetic(-3, 8)[-1], (8, -3))
+
 
 if __name__ == "__main__":
     unittest.main()

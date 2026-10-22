@@ -33,7 +33,7 @@ def find_all(text: str, word: str) -> list[int]:
 
 
 def is_palindrome(word: str) -> bool:
-    """True if word reads the same both ways, ignoring case: two pointers moving inward (Figure 21.6)."""
+    """True if word reads the same both ways, ignoring case: two pointers moving inward (Figure 21.7)."""
     left, right = 0, len(word) - 1
     while left < right:
         if word[left].lower() != word[right].lower():
@@ -51,7 +51,38 @@ def letter_counts(text: str) -> dict[str, int]:
     return counts
 
 
+def compare(a: str, b: str) -> tuple[int, int]:
+    """Dictionary order by code points: (-1, 0 or 1, character pairs looked at). Stops at the first difference."""
+    looked = 0
+    for x, y in zip(a, b):
+        looked += 1
+        if x != y:
+            return (-1 if x < y else 1), looked
+    return (len(a) > len(b)) - (len(a) < len(b)), looked
+
+
+def substrings(text: str) -> list[str]:
+    """Every non-empty run of neighbouring characters, by start and length: n(n + 1)/2 of them (Figure 21.6)."""
+    return [text[i:j] for i in range(len(text)) for j in range(i + 1, len(text) + 1)]
+
+
+def subsequences(text: str) -> list[str]:
+    """Every way of keeping some characters in their order, gaps allowed: 2^n of them, the empty one included."""
+    if not text:
+        return [""]
+    rest = subsequences(text[1:])
+    return [text[0] + s for s in rest] + rest
+
+
+def utf8_lengths(text: str) -> list[int]:
+    """Bytes that UTF-8 uses for each character of text."""
+    return [len(ch.encode("utf-8")) for ch in text]
+
+
 if __name__ == "__main__":
     print([ord(c) for c in "MAPS & MAYA"], find_all("a map of maps", "map"), find_all("banana", "ana"))
     print(is_palindrome("RACECAR"), is_palindrome("Never odd or even".replace(" ", "")), is_palindrome("BOOKS"))
+    print(compare("map", "maps"), compare("Maya", "maya"), compare("library", "librarian"), compare("", ""))
+    print(substrings("MAP"), subsequences("MAP"), len(substrings("LIBRARY")), len(subsequences("LIBRARY")))
+    print(utf8_lengths("café 😀"), len("café"), len("café".encode("utf-8")))
     print(copies_with_plus(["x" * 10] * 200), len(build_newsletter(["x" * 10] * 200)), letter_counts("Maya maps"))
