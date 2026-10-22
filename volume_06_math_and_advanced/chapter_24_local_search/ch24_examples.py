@@ -63,6 +63,75 @@ def exact(pts: list) -> float:
     return min(best[(full, j)] + d[j][0] for j in range(1, n))
 
 
+def two_opt_delta(tour: list, pts: list, i: int, j: int) -> float:
+    """Change in length when tour[i..j] is reversed: only the two roads at the ends of the stretch change."""
+    n = len(tour)
+    a, b = pts[tour[i - 1]], pts[tour[i]]
+    c, d = pts[tour[j]], pts[tour[(j + 1) % n]]
+    return math.dist(a, c) + math.dist(b, d) - math.dist(a, b) - math.dist(c, d)
+
+
+def restarts(pts: list, runs: int, seed: int) -> tuple[float, int]:
+    """Random-restart 2-opt: run from several random rounds and keep the best. Returns (best length, runs that hit it)."""
+    results = [round(length(two_opt(random.Random(seed + s).sample(range(len(pts)), len(pts)), pts)[0], pts), 1)
+               for s in range(runs)]
+    best = min(results)
+    return best, results.count(best)
+
+
+TOWN = ["Library", "School", "Park", "Market", "Station", "Museum", "Hospital", "Harbour"]
+ROADS = [("Library", "School"), ("Library", "Park"), ("School", "Market"), ("Park", "Market"), ("School", "Station"),
+         ("Market", "Station"), ("Market", "Museum"), ("Park", "Hospital"), ("Hospital", "Museum"), ("Station", "Harbour"),
+         ("Museum", "Harbour"), ("Station", "Museum")]
+
+
+def cut_size(side: dict, edges: list) -> int:
+    return sum(1 for a, b in edges if side[a] != side[b])
+
+
+def max_cut_local(vertices: list, edges: list, start: dict | None = None) -> tuple[dict, int, int]:
+    """Local search for a maximum cut (Figure 24.4): move one place to the other side whenever that increases the
+    number of roads crossing between the sides. Ends with at least half of all roads crossing.
+    Returns (sides, cut size, moves)."""
+    side = dict(start) if start else {v: 0 for v in vertices}
+    moves, improved = 0, True
+    while improved:
+        improved = False
+        for v in vertices:
+            same = sum(1 for a, b in edges if v in (a, b) and side[a] == side[b])
+            other = sum(1 for a, b in edges if v in (a, b) and side[a] != side[b])
+            if same > other:
+                side[v] = 1 - side[v]
+                moves += 1
+                improved = True
+    return side, cut_size(side, edges), moves
+
+
+def max_cut_brute(vertices: list, edges: list) -> int:
+    best = 0
+    for bits in itertools.product([0, 1], repeat=len(vertices) - 1):
+        side = dict(zip(vertices, (0,) + bits))
+        best = max(best, cut_size(side, edges))
+    return best
+
+
+def min_conflicts_colouring(vertices: list, edges: list, k: int, rng, steps: int = 1000) -> tuple[dict | None, int]:
+    """Local search for a timetable (colouring): start anywhere, repeatedly pick a clashing place and give it the
+    colour with fewest clashes. Returns (colouring or None, steps used)."""
+    adj = {v: [] for v in vertices}
+    for a, b in edges:
+        adj[a].append(b)
+        adj[b].append(a)
+    col = {v: rng.randrange(k) for v in vertices}
+    for step in range(steps):
+        clashing = [v for v in vertices if any(col[u] == col[v] for u in adj[v])]
+        if not clashing:
+            return col, step
+        v = rng.choice(clashing)
+        col[v] = min(range(k), key=lambda c: (sum(1 for u in adj[v] if col[u] == c), rng.random()))
+    return None, steps
+
+
 if __name__ == "__main__":
     pts = places(12, 1)
     start = list(range(12))
@@ -72,3 +141,8 @@ if __name__ == "__main__":
     print(round(length(start, pts), 1), round(length(t2, pts), 1), moves, round(length(ta, pts), 1), round(exact(pts), 1))
     stuck = [round(length(two_opt(random.Random(s).sample(range(12), 12), pts)[0], pts), 1) for s in range(10)]
     print(stuck)
+    print(restarts(pts, 20, 100), round(two_opt_delta(start, pts, 2, 7), 3),
+          round(length(start[:2] + start[2:8][::-1] + start[8:], pts) - length(start, pts), 3))
+    side, cut, mv = max_cut_local(TOWN, ROADS)
+    print(sorted(v for v in TOWN if side[v]), cut, mv, max_cut_brute(TOWN, ROADS), len(ROADS) / 2)
+    print(min_conflicts_colouring(TOWN, ROADS, 3, random.Random(5)))

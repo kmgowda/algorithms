@@ -1,3 +1,4 @@
+import math
 import random
 import unittest
 
@@ -23,6 +24,34 @@ class TestChapter8(unittest.TestCase):
             ex.encrypt(3233, public)
         for m in range(3233):
             self.assertEqual(ex.decrypt(ex.encrypt(m, public), private), m)
+
+
+class TestDepth(unittest.TestCase):
+    def test_crt_decryption(self) -> None:
+        m, v = ex.decrypt_crt(2790, 61, 53, 2753)
+        self.assertEqual((m, v), (65, {"dp": 53, "dq": 49, "m1": 4, "m2": 12, "q_inv": 38, "h": 1}))
+        public, _ = ex.make_keys(61, 53)
+        for msg in range(3233):
+            self.assertEqual(ex.decrypt_crt(ex.encrypt(msg, public), 61, 53, 2753)[0], msg)
+
+    def test_chapter_numbers(self) -> None:
+        public, private = ex.make_keys(61, 53)
+        s_ = ex.decrypt(65, private)                      # signing uses the private power
+        self.assertEqual((s_, ex.encrypt(s_, public)), (588, 65))
+        pub, priv = ex.make_keys(5, 11, 3)
+        self.assertEqual((priv, ex.encrypt(7, pub), ex.decrypt(13, priv)), ((55, 27), 13, 7))
+        self.assertEqual((ex.factor_from_phi(77, 60), sum(1 for e in range(1, 3121) if math.gcd(e, 3120) == 1)), ((7, 11), 768))
+
+    def test_attacks_and_phi(self) -> None:
+        public, private = ex.make_keys(61, 53)
+        self.assertEqual(ex.factor_from_phi(3233, 3120), (53, 61))
+        self.assertIsNone(ex.factor_from_phi(3233, 3000))
+        self.assertEqual((ex.encrypt(61, public), ex.decrypt(610, private)), (610, 61))       # p divides the message
+        pub3, _ = ex.make_keys(1019, 1031, 3)
+        self.assertEqual((pub3, ex.encrypt(97, pub3), ex.integer_cube_root(912673)), ((1050589, 3), 912673, 97))
+        self.assertEqual(ex.encrypt(2, public) * ex.encrypt(65, public) % 3233, ex.encrypt(130, public))
+        self.assertEqual((ex.fermat_factor(3233), ex.fermat_factor(1019 * 1031)), ((53, 61, 1), (1019, 1031, 1)))
+        self.assertEqual([ex.integer_cube_root(x) for x in (0, 1, 7, 8, 26, 27, 10 ** 30)], [0, 1, 1, 2, 2, 3, 10 ** 10])
 
 
 if __name__ == "__main__":

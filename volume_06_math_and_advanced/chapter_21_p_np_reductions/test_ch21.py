@@ -25,5 +25,21 @@ class TestChapter21(unittest.TestCase):
             self.assertEqual(ex.has_independent_set(vs, es, k), direct)
 
 
+class TestDepth(unittest.TestCase):
+    def test_optimisation_by_decision(self) -> None:
+        self.assertEqual(ex.largest_independent_set(ex.TOWN, ex.ROADS), (4, 3))
+        self.assertEqual(ex.largest_independent_set([], set()), (0, 0))
+        self.assertEqual(ex.largest_independent_set(["a", "b"], set()), (2, 2))
+
+    def test_cook_levin_translation(self) -> None:
+        cnf = ex.circuit_to_cnf(ex.VOUCHER_CIRCUIT)
+        self.assertEqual((len(cnf), ex.cnf_satisfiable(cnf), ex.circuit_satisfiable(ex.VOUCHER_CIRCUIT)), (7, (True, 30), True))
+        import random
+        r = random.Random(23)
+        for _ in range(300):
+            c = ex.random_circuit(r, r.randint(1, 4), r.randint(1, 6))
+            self.assertEqual(ex.cnf_satisfiable(ex.circuit_to_cnf(c))[0], ex.circuit_satisfiable(c))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -24,5 +24,26 @@ class TestChapter12(unittest.TestCase):
             self.assertEqual({t1, t2} == {"left", "right"} or t1 == t2 == "straight", True)
 
 
+class TestDepth(unittest.TestCase):
+    def test_projection_and_distances(self) -> None:
+        foot, t = ex.projection((3, 5), (0, 2), (10, 4))
+        self.assertAlmostEqual(t, 9 / 26)
+        self.assertEqual(round(ex.distance_to_line((3, 5), (0, 2), (10, 4)), 3), 2.353)
+        self.assertEqual((round(ex.distance_to_segment((12, 3), (0, 2), (10, 4)), 3), ex.distance_to_segment((1, 1), (0, 0), (0, 0))),
+                         (2.236, 2 ** 0.5))
+        self.assertEqual(ex.distance_to_segment((5, 7), (0, 0), (10, 0)), 7.0)
+        with self.assertRaises(ValueError):
+            ex.projection((1, 1), (2, 2), (2, 2))
+
+    def test_robustness(self) -> None:
+        tri = ((0.1, 0.3), (0.2, 0.6), (0.3, 0.9))
+        self.assertEqual((ex.turn_sign(*tri), ex.turn_with_tolerance(*tri)), (1, "straight"))
+        from fractions import Fraction as F
+        self.assertEqual(ex.turn_sign(*[(F(str(x)), F(str(y))) for x, y in tri]), 0)
+        a, b, c = (0.5 + 10 * 2 ** -53, 0.5), (12.0, 12.0), (24.0, 24.0)
+        self.assertEqual([ex.turn_sign(a, b, c), ex.turn_sign(b, c, a), ex.turn_sign(c, a, b)], [-1, 0, -1])
+        self.assertEqual([ex.exact_turn_sign(a, b, c), ex.exact_turn_sign(b, c, a), ex.exact_turn_sign(c, a, b)], [-1, -1, -1])
+
+
 if __name__ == "__main__":
     unittest.main()

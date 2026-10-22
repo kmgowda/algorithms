@@ -27,5 +27,34 @@ class TestChapter18(unittest.TestCase):
             self.assertEqual(ex.quickselect(v, k, r)[0], sorted(v)[k])
 
 
+class TestDepth(unittest.TestCase):
+    def test_toolkit(self) -> None:
+        from fractions import Fraction
+        for n in range(1, 7):
+            self.assertEqual(ex.fixed_points_exact(n)[0], Fraction(1))
+        b = ex.tail_bounds(100, 0.6)
+        self.assertTrue(b["exact"] <= b["chernoff"] <= b["markov"])
+        self.assertTrue(b["exact"] <= b["chebyshev"])
+        self.assertEqual(f"{ex.tail_bounds(1000, 0.6)['exact']:.3g}", "1.36e-10")
+        self.assertAlmostEqual(ex.trials_until_success(0.25, 20000, 4), 4, delta=0.1)
+
+    def test_karger(self) -> None:
+        self.assertEqual((len(ex.CABLES), ex.min_cut_brute(ex.ROOMS, ex.CABLES)), (14, 2))
+        self.assertEqual(ex.karger(ex.ROOMS, ex.CABLES, 1000, 8), (2, 212))
+        self.assertEqual((ex.min_cut_brute(ex.TOWN, ex.ROADS), ex.karger(ex.TOWN, ex.ROADS, 1000, 6)), (2, (2, 515)))
+        import random as rnd
+        r = rnd.Random(19)
+        for _ in range(60):
+            n = r.randint(2, 8)
+            vs = list(range(n))
+            es = [(i, i + 1) for i in range(n - 1)] + [(r.randrange(n), r.randrange(n)) for _ in range(r.randint(0, 10))]
+            es = [(a, b) for a, b in es if a != b]
+            best, hits = ex.karger(vs, es, 300, r.randint(0, 99))
+            self.assertEqual(best, ex.min_cut_brute(vs, es))
+            cut, side = ex.karger_once(vs, es, r)
+            self.assertTrue(0 < len(side) < n)
+            self.assertEqual(cut, sum(1 for a, b in es if (a in side) != (b in side)))
+
+
 if __name__ == "__main__":
     unittest.main()

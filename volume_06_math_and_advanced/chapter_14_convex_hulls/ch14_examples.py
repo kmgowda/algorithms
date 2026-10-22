@@ -34,6 +34,101 @@ def convex_hull(points: list) -> list:
     return lower[:-1] + upper[:-1]
 
 
+def graham_scan(points: list, log: list | None = None) -> list:
+    """Graham's scan (Figure 14.3): start from the lowest point, sort the others by angle around it (by cross-product
+    comparisons, no trigonometry; nearer first when in line), and keep a stack that always turns left."""
+    import functools
+    pts = sorted(set(points), key=lambda p: (p[1], p[0]))
+    if len(pts) <= 2:
+        return pts
+    o = pts[0]
+
+    def by_angle(a, b):
+        c = cross(o, a, b)
+        if c:
+            return -1 if c > 0 else 1
+        da = (a[0] - o[0]) ** 2 + (a[1] - o[1]) ** 2
+        db = (b[0] - o[0]) ** 2 + (b[1] - o[1]) ** 2
+        return -1 if da < db else (1 if da > db else 0)
+
+    rest = sorted(pts[1:], key=functools.cmp_to_key(by_angle))
+    stack = [o]
+    for p in rest:
+        while len(stack) >= 2 and cross(stack[-2], stack[-1], p) <= 0:
+            popped = stack.pop()
+            if log is not None:
+                log.append(("pop", popped, p))
+        stack.append(p)
+        if log is not None:
+            log.append(("push", p))
+    return stack
+
+
+def jarvis_march(points: list) -> tuple[list, int]:
+    """Gift wrapping (Figure 14.3): from the leftmost point, repeatedly take the point with every other point to its left.
+    Returns (hull anticlockwise, cross-product tests); the cost is about n times the number of corners."""
+    pts = sorted(set(points))
+    if len(pts) <= 2:
+        return pts, 0
+    hull, tests = [], 0
+    start = pts[0]
+    p = start
+    while True:
+        hull.append(p)
+        q = pts[0] if pts[0] != p else pts[1]
+        for r in pts:
+            if r == p:
+                continue
+            tests += 1
+            c = cross(p, q, r)
+            far = (r[0] - p[0]) ** 2 + (r[1] - p[1]) ** 2 > (q[0] - p[0]) ** 2 + (q[1] - p[1]) ** 2
+            if c < 0 or (c == 0 and far):
+                q = r                                  # r is to the right of p->q (or further along it): wrap tighter
+        p = q
+        if p == start:
+            return hull, tests
+
+
+def rotate_hull(hull: list) -> list:
+    """The same corners starting from the lowest-left point, anticlockwise (to compare hulls from different methods)."""
+    if not hull:
+        return hull
+    k = hull.index(min(hull))
+    return hull[k:] + hull[:k]
+
+
+def diameter_brute(hull: list) -> tuple[float, tuple, tuple]:
+    best = (0.0, None, None)
+    for i in range(len(hull)):
+        for j in range(i + 1, len(hull)):
+            d = math.dist(hull[i], hull[j])
+            if d > best[0]:
+                best = (d, hull[i], hull[j])
+    return best
+
+
+def rotating_calipers(hull: list) -> tuple[float, tuple, tuple, int]:
+    """Farthest pair of a convex polygon (anticlockwise corners) in O(h): for each edge, advance the opposite pointer
+    while the triangle area grows; the farthest pair is among the "antipodal" pairs met. Returns (d, p, q, steps)."""
+    h = len(hull)
+    if h == 1:
+        return 0.0, hull[0], hull[0], 0
+    if h == 2:
+        return math.dist(hull[0], hull[1]), hull[0], hull[1], 0
+    best, steps, j = (0.0, None, None), 0, 1
+    for i in range(h):
+        a, b = hull[i], hull[(i + 1) % h]
+        while abs(cross(a, b, hull[(j + 1) % h])) > abs(cross(a, b, hull[j])):
+            j = (j + 1) % h
+            steps += 1
+        for p in (a, b):
+            d = math.dist(p, hull[j])
+            steps += 1
+            if d > best[0]:
+                best = (d, p, hull[j])
+    return best[0], best[1], best[2], steps
+
+
 def perimeter(hull: list) -> float:
     return sum(math.dist(hull[i], hull[(i + 1) % len(hull)]) for i in range(len(hull))) if len(hull) > 1 else 0.0
 
@@ -54,3 +149,12 @@ if __name__ == "__main__":
     r = random.Random(14)
     pts = [(r.randint(0, 1000), r.randint(0, 1000)) for _ in range(10000)]
     print(len(convex_hull(pts)))
+    log = []
+    g = graham_scan(BOXES, log)
+    print(g, log)
+    jh, tests = jarvis_march(BOXES)
+    print(jh, tests, rotate_hull(jh) == rotate_hull(h), rotate_hull(g) == rotate_hull(h))
+    print(diameter_brute(h), rotating_calipers(h))
+    r2 = random.Random(140)
+    cont = [(r2.random(), r2.random()) for _ in range(10000)]
+    print(len(convex_hull(cont)), round(8 / 3 * math.log(10000), 1), jarvis_march(pts)[1], len(convex_hull(pts)) * 10000)

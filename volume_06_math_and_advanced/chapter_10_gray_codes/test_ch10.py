@@ -19,5 +19,23 @@ class TestChapter10(unittest.TestCase):
             self.assertEqual(ex.is_power_of_two(n), n > 0 and bin(n).count("1") == 1)
 
 
+class TestDepth(unittest.TestCase):
+    def test_construction_and_flips(self) -> None:
+        for b in range(0, 11):
+            self.assertEqual(ex.reflected(b), [ex.gray(i) for i in range(1 << b)])
+            self.assertEqual(ex.gray_walk(b), [ex.gray(i) for i in range(1 << b)])
+        self.assertEqual((ex.binary_flips_counting_to(255), ex.binary_flips_counting_to(1023)), (502, 2036))
+        self.assertEqual(sum(ex.flips(list(range(1024)))), 2036)
+        self.assertEqual(sum(ex.flips([ex.gray(i) for i in range(1024)])), 1023)
+        for k in range(1, 5000):
+            diff = ex.gray(k - 1) ^ ex.gray(k)
+            self.assertEqual(diff, 1 << ex.changed_bit(k))
+        self.assertEqual((ex.binary_flips_counting_to(0), ex.reflected(0)), (0, [0]))
+
+    def test_hanoi(self) -> None:
+        self.assertEqual(ex.hanoi_by_gray(3), [1, 2, 1, 3, 1, 2, 1])
+        self.assertEqual(len(ex.hanoi_by_gray(10)), 1023)
+
+
 if __name__ == "__main__":
     unittest.main()

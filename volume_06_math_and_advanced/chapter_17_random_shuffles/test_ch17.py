@@ -38,5 +38,30 @@ class TestChapter17(unittest.TestCase):
         self.assertEqual(sorted(nv.values()), [4, 4, 4, 5, 5, 5])
 
 
+class TestDepth(unittest.TestCase):
+    def test_exact_runs(self) -> None:
+        for n in range(0, 6):
+            runs = ex.all_fisher_yates_runs(n)
+            self.assertEqual(sorted(runs.values()), [1] * len(list(itertools.permutations(range(n)))))
+        self.assertEqual(sorted(set(ex.all_naive_runs(4).values())), [8, 9, 10, 11, 14, 15])
+        import math
+        self.assertEqual([n for n in range(2, 12) if n ** n % math.factorial(n) == 0], [2])
+
+    def test_generators_and_bias(self) -> None:
+        self.assertEqual((ex.full_period(5, 3, 8), ex.period(5, 3, 8, 5)), (True, 8))
+        self.assertEqual((ex.full_period(4, 3, 8), ex.period(4, 3, 8, 5)), (False, 1))
+        self.assertFalse(ex.full_period(5, 2, 8))
+        for m in (8, 9, 10, 12, 16, 27):
+            for a in range(m):
+                for c in range(m):
+                    self.assertEqual(ex.full_period(a, c, m), all(ex.period(a, c, m, s0) == m for s0 in range(m)))
+        self.assertEqual((ex.modulo_bias(256, 10), ex.modulo_bias(256, 3)), ([26] * 6 + [25] * 4, [86, 85, 85]))
+        r = random.Random(7)
+        counts = Counter(ex.below_by_rejection(lambda: r.randrange(256), 10)[0] for _ in range(20000))
+        self.assertTrue(all(1850 < counts[d] < 2150 for d in range(10)))
+        self.assertEqual(ex.partial_shuffle(list(range(10)), 0, random.Random(1)), [])
+        self.assertEqual(sorted(ex.partial_shuffle([5], 1, random.Random(1))), [5])
+
+
 if __name__ == "__main__":
     unittest.main()

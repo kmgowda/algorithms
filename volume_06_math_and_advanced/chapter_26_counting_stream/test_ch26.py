@@ -30,5 +30,36 @@ class TestChapter26(unittest.TestCase):
             self.assertEqual(ex.majority(s), want)
 
 
+class TestDepth(unittest.TestCase):
+    def test_majority_trace(self) -> None:
+        self.assertEqual([c for _, _, c in ex.majority_trace("ABAACAADA")], [1, 0, 1, 2, 1, 2, 3, 2, 3])
+        self.assertEqual(ex.majority_trace(""), [])
+
+    def test_space_saving(self) -> None:
+        r = random.Random(34)
+        for _ in range(100):
+            n, k = r.randint(0, 300), r.randint(1, 8)
+            stream = [r.choice("aaaaabbbcde") + str(r.randrange(3)) for _ in range(n)]
+            true = Counter(stream)
+            ss = ex.space_saving(stream, k)
+            self.assertLessEqual(len(ss), k)
+            for x, c in ss.items():
+                self.assertGreaterEqual(c, true[x])
+                self.assertLessEqual(c - true[x], n / k + 1e-9)
+            for x, c in true.items():
+                if c > n / k:
+                    self.assertIn(x, ss)
+
+    def test_distinct_sketches(self) -> None:
+        r = random.Random(35)
+        visitors = [f"card{r.randrange(3000)}" for _ in range(10000)]
+        exact = len(set(visitors))
+        self.assertLess(abs(ex.hyperloglog(visitors, 10) - exact) / exact, 0.1)
+        self.assertLess(abs(ex.flajolet_martin(visitors, 64) - exact) / exact, 0.25)
+        self.assertEqual(round(ex.hyperloglog([], 4)), 0)
+        self.assertAlmostEqual(ex.hyperloglog(["one"], 6), 1, delta=0.1)
+        self.assertEqual((ex.trailing_zeros(8), ex.trailing_zeros(1), ex.trailing_zeros(0)), (3, 0, 64))
+
+
 if __name__ == "__main__":
     unittest.main()

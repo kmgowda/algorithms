@@ -23,5 +23,51 @@ class TestChapter9(unittest.TestCase):
             self.assertEqual(len(ex.subsets(m)), 2 ** bin(m).count("1"))
 
 
+class TestDepth(unittest.TestCase):
+    def test_subsets_order_and_tables(self) -> None:
+        self.assertEqual(ex.subsets(19), [19, 18, 17, 16, 3, 2, 1, 0])
+        import random
+        r = random.Random(9)
+        for _ in range(200):
+            m = r.randint(0, 2 ** 12)
+            subs = ex.subsets(m)
+            self.assertEqual(subs, sorted(subs, reverse=True))
+            self.assertEqual(len(subs), 2 ** bin(m).count("1"))
+            self.assertTrue(all(x & ~m == 0 for x in subs))
+            self.assertEqual(ex.popcount_by_table(m)[0], bin(m).count("1"))
+        self.assertEqual((ex.popcount_by_table(2 ** 40 - 1), ex.popcount_by_table(0)), ((40, 5), (0, 0)))
+
+    def test_chapter_numbers(self) -> None:
+        self.assertEqual((ex.subsets(10), ex.popcount(200), divmod(200, 64)), ([10, 8, 2, 0], (3, 3), (3, 8)))
+        seq, x = [], 3
+        for _ in range(5):
+            seq.append(x)
+            x = ex.next_same_popcount(x)
+        self.assertEqual(seq, [3, 5, 6, 9, 10])
+        import itertools
+        for k in range(1, 6):
+            walk, x = [], (1 << k) - 1
+            while x < 1 << 8:
+                walk.append(x)
+                x = ex.next_same_popcount(x)
+            self.assertEqual(len(walk), len(list(itertools.combinations(range(8), k))))
+
+    def test_bitset(self) -> None:
+        a, b = ex.Bitset(1000), ex.Bitset(1000)
+        for x in range(0, 1000, 7):
+            a.add(x)
+        for x in range(0, 1000, 11):
+            b.add(x)
+        self.assertEqual((a.count(), b.count(), a.intersection(b).count(), a.union(b).count(), len(a.words)), (143, 91, 13, 221, 16))
+        self.assertTrue(77 in a.intersection(b))
+        self.assertFalse(1000 in a)
+        self.assertEqual((ex.Bitset(0).count(), ex.Bitset(0).words), (0, []))
+
+    def test_fewest_branches(self) -> None:
+        self.assertEqual(ex.fewest_branches_covering(0b111111), (["East", "South"], 32))
+        self.assertEqual(ex.fewest_branches_covering(0), ([], 32))
+        self.assertEqual(ex.fewest_branches_covering(0b1000000), ([], 32))
+
+
 if __name__ == "__main__":
     unittest.main()

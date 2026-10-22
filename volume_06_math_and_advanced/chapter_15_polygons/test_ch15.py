@@ -24,5 +24,35 @@ class TestChapter15(unittest.TestCase):
             self.assertEqual(ex.inside(p, square), want)
 
 
+class TestDepth(unittest.TestCase):
+    def test_exact_and_winding(self) -> None:
+        for p in ((2, 2), (4, 5), (8, 3), (4, 3), (6, 1), (9, 1), (2, 6), (6, 4)):
+            self.assertEqual(ex.inside_exact(p, ex.GARDEN), ex.inside(p, ex.GARDEN))
+        self.assertEqual([ex.winding_number(p, ex.GARDEN) for p in ((2, 2), (4, 5), (9, 1))], [1, 0, 0])
+        self.assertEqual([ex.winding_number(p, ex.GARDEN[::-1]) for p in ((2, 2), (6, 4))], [-1, -1])
+        self.assertEqual((ex.area(ex.STAR), ex.winding_number((7, 4), ex.STAR), ex.inside_exact((7, 4), ex.STAR)), (100.0, 2, "outside"))
+        self.assertEqual((ex.winding_number((7, 9), ex.STAR), ex.inside_exact((7, 9), ex.STAR)), (1, "inside"))
+        import random
+        r = random.Random(17)
+        for _ in range(300):
+            p = (r.randint(-1, 9), r.randint(-1, 7))
+            v = ex.inside_exact(p, ex.GARDEN)
+            if v != "edge":
+                self.assertEqual(v == "inside", ex.winding_number(p, ex.GARDEN) != 0)
+
+    def test_chapter_numbers(self) -> None:
+        tri = [(0, 0), (4, 2), (0, 4)]
+        self.assertEqual((ex.inside_exact((1, 2), tri), ex.interior_points_by_pick([(0, 0), (4, 0), (0, 4)])), ("inside", 3))
+        self.assertEqual((ex.inside_exact((2, 6), ex.GARDEN), ex.area([(0, 0), (4, 4), (4, 0), (0, 4)])), ("outside", 0.0))
+
+    def test_convex_and_pick(self) -> None:
+        hexagon = [(4, 0), (8, 2), (8, 6), (4, 8), (0, 6), (0, 2)]
+        self.assertEqual([ex.inside_convex(p, hexagon)[0] for p in ((4, 4), (9, 4), (8, 4), (1, 1))], ["inside", "outside", "edge", "outside"])
+        for x in range(-1, 10):
+            for y in range(-1, 10):
+                self.assertEqual(ex.inside_convex((x, y), hexagon)[0], ex.inside_exact((x, y), hexagon))
+        self.assertEqual((ex.boundary_points(ex.GARDEN), ex.interior_points_by_pick(ex.GARDEN), ex.interior_points_by_testing(ex.GARDEN)), (22, 26, 26))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -43,6 +43,59 @@ def factor_by_trial(n: int) -> tuple[int, int] | None:
     return None
 
 
+def decrypt_crt(c: int, p: int, q: int, d: int) -> tuple[int, dict]:
+    """Decrypt with the remainder theorem (Figure 8.4): two half-size powers mod p and mod q, then combine.
+    Returns (message, the intermediate values)."""
+    dp, dq = d % (p - 1), d % (q - 1)             # Fermat shortens the exponents
+    m1, m2 = pow(c, dp, p), pow(c, dq, q)
+    q_inv = pow(q, -1, p)
+    h = q_inv * (m1 - m2) % p
+    m = m2 + h * q
+    return m, {"dp": dp, "dq": dq, "m1": m1, "m2": m2, "q_inv": q_inv, "h": h}
+
+
+def factor_from_phi(n: int, phi: int) -> tuple[int, int] | None:
+    """Knowing phi = (p - 1)(q - 1) gives p + q = n - phi + 1, so p and q are the roots of x^2 - (p + q) x + n."""
+    s = n - phi + 1
+    disc = s * s - 4 * n
+    if disc < 0:
+        return None
+    r = math.isqrt(disc)
+    if r * r != disc:
+        return None
+    p, q = (s - r) // 2, (s + r) // 2
+    return (p, q) if p * q == n else None
+
+
+def integer_cube_root(x: int) -> int:
+    lo, hi = 0, 1 << ((x.bit_length() + 2) // 3 + 1)
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if mid ** 3 <= x:
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo
+
+
+def fermat_factor(n: int, max_steps: int = 10 ** 6) -> tuple[int, int, int] | None:
+    """Fermat's method: search a >= sqrt(n) with a^2 - n a perfect square b^2, so n = (a - b)(a + b). Returns (p, q, steps)."""
+    a = math.isqrt(n)
+    if a * a < n:
+        a += 1
+    for step in range(1, max_steps + 1):
+        b2 = a * a - n
+        b = math.isqrt(b2)
+        if b * b == b2:
+            return a - b, a + b, step
+        a += 1
+    return None
+
+
+def bits_of_work(exponent: int) -> int:
+    return exponent.bit_length()
+
+
 if __name__ == "__main__":
     public, private = make_keys(61, 53)
     print(public, private)
@@ -52,3 +105,10 @@ if __name__ == "__main__":
     code = [encrypt(m, public) for m in msg]
     print(code, "".join(chr(decrypt(x, private)) for x in code))
     print(factor_by_trial(3233), encrypt(0, public), encrypt(1, public))
+    print(decrypt_crt(2790, 61, 53, 2753), all(decrypt_crt(encrypt(m, public), 61, 53, 2753)[0] == m for m in range(3233)))
+    print(factor_from_phi(3233, 3120), encrypt(61, public), decrypt(encrypt(61, public), private), encrypt(106, public))
+    pub3, priv3 = make_keys(1019, 1031, 3)
+    c3 = encrypt(97, pub3)
+    print(pub3, c3, 97 ** 3, integer_cube_root(c3))
+    print(encrypt(2, public) * encrypt(65, public) % 3233, encrypt(130, public))
+    print(fermat_factor(3233), fermat_factor(1019 * 1031), bits_of_work(2753), bits_of_work(53), bits_of_work(49))
