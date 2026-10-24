@@ -158,8 +158,31 @@ def search(pattern: str, titles: list) -> list:
     return [t for t in titles if wildcard(pattern, t)[0]]
 
 
+def bitap(text: str, pattern: str, k: int = 0) -> list:
+    """Shift-and (Baeza-Yates and Gonnet, 1992; Wu and Manber's agrep): one machine word per number of mismatches
+    allowed. Bit i of R[d] says "the pattern's first i + 1 letters end here with at most d mismatches".
+    Returns the end positions of every match with at most k substituted letters."""
+    m = len(pattern)
+    if m == 0:
+        return []
+    mask = {}
+    for i, ch in enumerate(pattern):
+        mask[ch] = mask.get(ch, 0) | (1 << i)
+    R = [0] * (k + 1)
+    found = []
+    for pos, ch in enumerate(text):
+        old = R[:]
+        R[0] = ((old[0] << 1) | 1) & mask.get(ch, 0)
+        for d in range(1, k + 1):
+            R[d] = (((old[d] << 1) | 1) & mask.get(ch, 0)) | ((old[d - 1] << 1) | 1)
+        if R[k] & (1 << (m - 1)):
+            found.append(pos)
+    return found
+
+
 if __name__ == "__main__":
     print(search("tre?s*", TITLES), search("*island", TITLES), search("*of*", TITLES), search("t?e *", TITLES))
     print(wildcard("t*s", "tress")[0], wildcard("t*s", "trees")[0], wildcard("t*s", "tree")[0])
     c = [0]
     print(plain_recursion("*a*a*a*b", "a" * 20, c), c[0], wildcard("*a*a*a*b", "a" * 20)[0], 9 * 21)
+    print(bitap("the club met at the clib", "club"), bitap("the club met at the clib", "club", 1))

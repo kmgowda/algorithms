@@ -44,5 +44,20 @@ class TestChapter28(unittest.TestCase):
             self.assertEqual(ex.backtrack_match(rx, t)[0], want, (rx, t))
 
 
+    def test_bitap(self) -> None:
+        import random
+        self.assertEqual(ex.bitap("the club met at the clib", "club"), [7])
+        self.assertEqual(ex.bitap("the club met at the clib", "club", 1), [7, 23])
+        self.assertEqual(ex.bitap("abc", ""), [])
+        r = random.Random(36)
+        for _ in range(300):
+            text = "".join(r.choice("ab") for _ in range(r.randint(0, 20)))
+            pat = "".join(r.choice("ab") for _ in range(r.randint(1, 5)))
+            k = r.randint(0, 2)
+            brute = [e for e in range(len(pat) - 1, len(text))
+                     if sum(a != b for a, b in zip(text[e - len(pat) + 1:e + 1], pat)) <= k]
+            self.assertEqual(ex.bitap(text, pat, k), brute)
+
+
 if __name__ == "__main__":
     unittest.main()
