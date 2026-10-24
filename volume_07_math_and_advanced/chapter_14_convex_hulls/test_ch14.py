@@ -56,5 +56,24 @@ class TestDepth(unittest.TestCase):
             self.assertAlmostEqual(ex.rotating_calipers(hull)[0], ex.diameter_brute(hull)[0] if len(hull) > 1 else 0.0)
 
 
+    def test_delaunay(self) -> None:
+        import random
+        tris = ex.delaunay_brute(ex.BRANCHES)
+        self.assertEqual(len(tris), 5)
+        self.assertEqual(ex.nearest_branch(ex.BRANCHES, (5, 5)), (4, 4))
+        r = random.Random(14)
+        for _ in range(30):
+            pts = list({(r.randint(0, 40), r.randint(0, 40)) for _ in range(r.randint(3, 9))})
+            hull = ex.convex_hull(pts)
+            if len(hull) < 3 or len(pts) < 3:
+                continue
+            tris = ex.delaunay_brute(pts)
+            if len(tris) == 2 * len(pts) - 2 - len(hull):    # general position: Euler's formula holds exactly
+                for a, b, c in tris:
+                    if ex.cross(a, b, c) < 0:
+                        b, c = c, b
+                    self.assertTrue(all(ex.in_circle(a, b, c, d) <= 0 for d in pts if d not in (a, b, c)))
+
+
 if __name__ == "__main__":
     unittest.main()

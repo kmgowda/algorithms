@@ -142,6 +142,39 @@ def encloses(hull: list, points: list) -> bool:
     return left and all(cross(hull[i], hull[(i + 1) % n], p) >= 0 for p in points for i in range(n))
 
 
+BRANCHES = [(1, 1), (6, 1), (4, 4), (1, 6), (7, 6), (3, 8)]   # library branches on the town grid (Section 14.7)
+
+
+def in_circle(a, b, c, d) -> int:
+    """Positive when d lies strictly inside the circle through a, b, c (taken anticlockwise): a 3 x 3 determinant
+    of the points lifted onto the bowl z = x^2 + y^2."""
+    rows = [(p[0] - d[0], p[1] - d[1], (p[0] - d[0]) ** 2 + (p[1] - d[1]) ** 2) for p in (a, b, c)]
+    (a1, a2, a3), (b1, b2, b3), (c1, c2, c3) = rows
+    return a1 * (b2 * c3 - b3 * c2) - a2 * (b1 * c3 - b3 * c1) + a3 * (b1 * c2 - b2 * c1)
+
+
+def delaunay_brute(points: list) -> list:
+    """Every triangle whose circumcircle has no other point strictly inside: the Delaunay triangulation (for points
+    with no four on a circle). O(n^4), for checking; Fortune's sweep or flips build it in O(n log n)."""
+    import itertools
+    tris = []
+    for a, b, c in itertools.combinations(points, 3):
+        o = cross(a, b, c)
+        if o == 0:
+            continue
+        if o < 0:
+            b, c = c, b
+        if all(in_circle(a, b, c, d) <= 0 for d in points if d not in (a, b, c)):
+            tris.append(tuple(sorted((a, b, c))))
+    return sorted(tris)
+
+
+def nearest_branch(points: list, q) -> tuple:
+    """The Voronoi question: which branch is nearest to q? (Brute force; the Voronoi diagram answers it by
+    looking up the region q falls in.)"""
+    return min(points, key=lambda p: (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2)
+
+
 if __name__ == "__main__":
     h = convex_hull(BOXES)
     print(h, round(perimeter(h), 2))
@@ -158,3 +191,4 @@ if __name__ == "__main__":
     r2 = random.Random(140)
     cont = [(r2.random(), r2.random()) for _ in range(10000)]
     print(len(convex_hull(cont)), round(8 / 3 * math.log(10000), 1), jarvis_march(pts)[1], len(convex_hull(pts)) * 10000)
+    print(delaunay_brute(BRANCHES), len(convex_hull(BRANCHES)))
