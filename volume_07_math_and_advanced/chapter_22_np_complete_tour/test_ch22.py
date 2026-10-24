@@ -60,5 +60,15 @@ class TestReductions(unittest.TestCase):
         self.assertEqual(ex.cover_from_independent(ex.TOWN, ["Library", "Market", "Hospital", "Harbour"]), ["School", "Park", "Station", "Museum"])
 
 
+    def test_vertex_cover_to_ham(self) -> None:
+        cases = [(2, [(0, 1)]), (3, [(0, 1), (1, 2)]), (3, [(0, 1), (1, 2), (0, 2)]),
+                 (4, [(0, 1), (1, 2), (2, 3)]), (4, [(0, 1), (0, 2), (0, 3)])]
+        for n, edges in cases:
+            for k in range(1, n + 1):
+                g = ex.vertex_cover_to_ham(n, edges, k)
+                self.assertEqual(len(g), 12 * len(edges) + k)
+                self.assertEqual(ex.has_ham_cycle(g), ex.has_cover(n, edges, k), (n, edges, k))
+
+
 if __name__ == "__main__":
     unittest.main()

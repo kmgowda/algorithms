@@ -193,6 +193,58 @@ def subset_sum_table(prices: list, target: int) -> tuple[bool, int]:
 EXAMPLE = [[1, 2, 3], [-1, -2, 3], [1, -2, -3]]          # (x1 or x2 or x3) and (not x1 or not x2 or x3) and (x1 or not x2 or not x3)
 
 
+def vertex_cover_to_ham(n: int, edges: list, k: int) -> dict:
+    """Section 22.7: the 12-vertex road gadgets, place chains and k selectors of G' (adjacency sets)."""
+    adj = {}
+
+    def link(a, b):
+        adj.setdefault(a, set()).add(b)
+        adj.setdefault(b, set()).add(a)
+    roads_at = {u: [] for u in range(n)}
+    for u, v in edges:
+        for a, b in ((u, v), (v, u)):
+            for i in range(1, 6):
+                link((a, b, i), (a, b, i + 1))
+        link((u, v, 1), (v, u, 3)); link((u, v, 3), (v, u, 1))
+        link((u, v, 4), (v, u, 6)); link((u, v, 6), (v, u, 4))
+        roads_at[u].append(v); roads_at[v].append(u)
+    for u in range(n):
+        for a, b in zip(roads_at[u], roads_at[u][1:]):
+            link((u, a, 6), (u, b, 1))
+    for s in range(k):
+        for u in range(n):
+            if roads_at[u]:
+                link(("selector", s), (u, roads_at[u][0], 1))
+                link(("selector", s), (u, roads_at[u][-1], 6))
+    return adj
+
+
+def has_ham_cycle(adj: dict) -> bool:
+    """Backtracking search for a cycle through every vertex (small graphs only)."""
+    vertices = list(adj)
+    if not vertices:
+        return False
+    start, seen = vertices[0], {vertices[0]}
+
+    def extend(x, count):
+        if count == len(vertices):
+            return start in adj[x]
+        for y in adj[x]:
+            if y not in seen:
+                seen.add(y)
+                if extend(y, count + 1):
+                    return True
+                seen.discard(y)
+        return False
+    return extend(start, 1)
+
+
+def has_cover(n: int, edges: list, k: int) -> bool:
+    """Brute force: is there a vertex cover of at most k places?"""
+    return any(all(u in s or v in s for u, v in edges)
+               for r in range(k + 1) for s in map(set, itertools.combinations(range(n), r)))
+
+
 if __name__ == "__main__":
     clauses = [[1, 2], [-1, 3], [-2, -3], [2, 3]]
     print(satisfiable(clauses, 3), satisfiable([[1], [-1]], 1))
