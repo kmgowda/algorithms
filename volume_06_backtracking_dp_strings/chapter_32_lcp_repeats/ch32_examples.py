@@ -158,8 +158,61 @@ def automaton_longest_common(a: str, b: str) -> str:
     return b[end - best:end]
 
 
+def suffix_tree(text: str) -> dict:
+    """A compressed trie of every suffix of text + "$" (built naively, O(n^2)). A node is a dict from the first
+    letter of each edge to (edge label, child node); a leaf is an empty dict."""
+    root = {}
+    t = text + "$"
+    for i in range(len(t)):
+        node, rest = root, t[i:]
+        while True:
+            if rest[0] not in node:
+                node[rest[0]] = (rest, {})
+                break
+            label, child = node[rest[0]]
+            k = 0
+            while k < len(label) and k < len(rest) and label[k] == rest[k]:
+                k += 1
+            if k == len(label):
+                node, rest = child, rest[k:]
+                continue
+            middle = {label[k]: (label[k:], child)}       # split the edge where the suffix leaves it
+            node[rest[0]] = (label[:k], middle)
+            middle[rest[k]] = (rest[k:], {})
+            break
+    return root
+
+
+def tree_stats(node: dict) -> tuple[int, int, int]:
+    """(leaves, inner nodes below the root, total letters on edges not counting the final $)."""
+    leaves = inner = letters = 0
+    for label, child in node.values():
+        letters += len(label.rstrip("$"))
+        if child:
+            inner += 1
+            a, b, c = tree_stats(child)
+            leaves, inner, letters = leaves + a, inner + b, letters + c
+        else:
+            leaves += 1
+    return leaves, inner, letters
+
+
+def tree_contains(node: dict, pattern: str) -> bool:
+    """Is pattern a substring? Walk down from the root along matching edges: O(len(pattern))."""
+    while pattern:
+        if pattern[0] not in node:
+            return False
+        label, child = node[pattern[0]]
+        k = min(len(label), len(pattern))
+        if label[:k] != pattern[:k]:
+            return False
+        node, pattern = child, pattern[k:]
+    return True
+
+
 if __name__ == "__main__":
     sa = suffix_array("banana")
     print(sa, lcp_kasai("banana", sa), longest_repeat("banana"), distinct_substrings("banana"))
     print(longest_repeat("the club reads; the club meets"), longest_common("reading club", "the club meets"))
     print(longest_repeat("abcdefg"), longest_repeat("aaaa"), distinct_substrings("aaaa"), longest_repeat(""), longest_common("abc", "xyz"))
+    print(tree_stats(suffix_tree("banana")), tree_contains(suffix_tree("banana"), "nan"))

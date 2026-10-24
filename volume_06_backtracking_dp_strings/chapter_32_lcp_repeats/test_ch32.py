@@ -68,5 +68,23 @@ class TestChapter24(unittest.TestCase):
             self.assertEqual(len(ex.automaton_longest_common(t, u)), best)
 
 
+    def test_suffix_tree(self) -> None:
+        import random
+        st = ex.suffix_tree("banana")
+        self.assertEqual(ex.tree_stats(st), (7, 3, 15))
+        self.assertTrue(ex.tree_contains(st, "nan"))
+        self.assertFalse(ex.tree_contains(st, "nab"))
+        r = random.Random(32)
+        for _ in range(100):
+            s = "".join(r.choice("ab") for _ in range(r.randint(1, 12)))
+            st = ex.suffix_tree(s)
+            leaves, _, letters = ex.tree_stats(st)
+            self.assertEqual(leaves, len(s) + 1)
+            self.assertEqual(letters, ex.distinct_substrings(s))
+            for _ in range(5):
+                p = "".join(r.choice("ab") for _ in range(r.randint(1, 4)))
+                self.assertEqual(ex.tree_contains(st, p), p in s)
+
+
 if __name__ == "__main__":
     unittest.main()
