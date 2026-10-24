@@ -86,8 +86,30 @@ def count_digit_sum(limit: int, s: int) -> tuple[int, list]:
     return count, steps
 
 
+def mat_mult(a: list, b: list) -> list:
+    return [[sum(a[i][k] * b[k][j] for k in range(len(b))) for j in range(len(b[0]))] for i in range(len(a))]
+
+
+def orders_by_matrix(amount: int, coins: list) -> tuple[int, int]:
+    """count_orders by repeated squaring. With c the largest coin, ways[n] = sum of ways[n - coin], so the vector
+    (ways[n], ..., ways[n - c + 1]) is the previous one times a fixed c x c matrix; raise it to the power amount
+    in about log2(amount) squarings. Returns (ways, matrix multiplications)."""
+    c = max(coins)
+    m = [[1 if j + 1 in coins else 0 for j in range(c)]] + [[1 if j == i else 0 for j in range(c)] for i in range(c - 1)]
+    result = [[1 if i == j else 0 for j in range(c)] for i in range(c)]
+    mults, e = 0, amount
+    while e:
+        if e & 1:
+            result, mults = mat_mult(result, m), mults + 1
+        e >>= 1
+        if e:
+            m, mults = mat_mult(m, m), mults + 1
+    return result[0][0], mults                     # start vector (ways[0], ways[-1], ...) = (1, 0, ..., 0)
+
+
 if __name__ == "__main__":
     print(count_sets(10, COINS), count_orders(10, COINS)[0], brute_sets(10, COINS))
     print(count_sets(100, [1, 2, 5, 10, 20, 50, 100])[0], count_sets(200, [1, 2, 5, 10, 20, 50, 100, 200])[0])
     print(count_sets(4, [1, 2])[0], count_orders(4, [1, 2])[0])
     print([decodings(m) for m in ("12", "226", "2101", "10", "0", "", "1111111111", "301")])
+    print(orders_by_matrix(10, [1, 2]), orders_by_matrix(10, COINS), count_orders(10, COINS)[0])

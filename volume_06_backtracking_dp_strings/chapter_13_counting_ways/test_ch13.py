@@ -31,5 +31,15 @@ class TestChapter5(unittest.TestCase):
                 self.assertEqual(ex.count_digit_sum(n, t)[0], sum(1 for x in range(n + 1) if sum(map(int, str(x))) == t))
 
 
+    def test_orders_by_matrix(self) -> None:
+        self.assertEqual(ex.orders_by_matrix(10, [1, 2]), (89, 5))
+        for coins in ([1, 2], [1, 2, 5], [2, 3], [1, 3, 4]):
+            for n in range(0, 40):
+                self.assertEqual(ex.orders_by_matrix(n, coins)[0], ex.count_orders(n, coins)[0])
+        ways, mults = ex.orders_by_matrix(1000, [1, 2])
+        self.assertEqual(len(str(ways)), 209)
+        self.assertLessEqual(mults, 20)
+
+
 if __name__ == "__main__":
     unittest.main()
