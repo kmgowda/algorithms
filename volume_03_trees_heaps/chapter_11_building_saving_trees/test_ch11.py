@@ -78,5 +78,22 @@ class TestChapter51(unittest.TestCase):
             self.assertEqual(ex.optimal_bst(list(range(n)), f)[0], brute(f, 0, n, 1))
 
 
+    def test_persistent(self) -> None:
+        import random
+        v1 = ex.balanced_from_sorted([12, 25, 31, 47, 58, 63, 70])
+        made = [0]
+        v2 = ex.persistent_insert(v1, 40, made)
+        self.assertEqual(ex.inorder(v1), [12, 25, 31, 47, 58, 63, 70])
+        self.assertEqual(ex.inorder(v2), [12, 25, 31, 40, 47, 58, 63, 70])
+        self.assertEqual(made[0], 4)
+        self.assertIs(v2.right, v1.right)
+        r = random.Random(11)
+        versions = [None]
+        for k in r.sample(range(500), 200):
+            versions.append(ex.persistent_insert(versions[-1], k))
+        for i, v in enumerate(versions):
+            self.assertEqual(len(ex.inorder(v)), i)
+
+
 if __name__ == "__main__":
     unittest.main()

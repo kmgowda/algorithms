@@ -125,6 +125,20 @@ def looks(node, freq_of: dict, depth: int = 1) -> int:
     return freq_of[node.value] * depth + looks(node.left, freq_of, depth + 1) + looks(node.right, freq_of, depth + 1)
 
 
+def persistent_insert(node, key, made: list | None = None):
+    """Insert into a search tree without changing it: copy only the nodes on the path to the new key and share
+    every other subtree with the old version (path copying). Returns the new version's root."""
+    if made is not None:
+        made[0] += 1
+    if node is None:
+        return Node(key)
+    if key < node.value:
+        return Node(node.value, persistent_insert(node.left, key, made), node.right)
+    if key > node.value:
+        return Node(node.value, node.left, persistent_insert(node.right, key, made))
+    return node
+
+
 if __name__ == "__main__":
     t = Node(58, Node(25, Node(12), Node(47)), Node(84, None, Node(91)))
     s = save(t)
