@@ -5,8 +5,12 @@ Run:  python3 ch12_examples.py
 
 from __future__ import annotations
 
+from collections import deque
+
 ODD = [4, 3, 1]                                       # Volume 5's coin set where greedy failed
 TALKS = [6, 2, 9, 7, 3, 8, 4]                         # members expected at the talk on each evening
+WIDTHS = [3, 1, 4, 1, 5, 9, 2]                        # widths of the books to split into shelf sections (Section 12.7)
+BRACKET = 20                                          # fixed cost of one section; a section of width w costs w**2 + 20
 
 
 def fewest_coins(amount: int, coins: list) -> tuple[int | None, list, list]:
@@ -79,7 +83,57 @@ def greedy_intervals(bookings: list, key) -> tuple[int, list]:
     return sum(t[3] for t in taken), [t[0] for t in sorted(taken, key=lambda t: t[1])]
 
 
+def shelf_plain(widths: list, bracket: int) -> tuple[list, list, int]:
+    """Cheapest split of a row into sections costing (width)**2 + bracket: try every last section, O(n**2)."""
+    n = len(widths)
+    S = [0]
+    for w in widths:
+        S.append(S[-1] + w)
+    best, cut, looks = [0] + [None] * n, [0] * (n + 1), 0
+    for i in range(1, n + 1):
+        for j in range(i):
+            looks += 1
+            c = best[j] + (S[i] - S[j]) ** 2 + bracket
+            if best[i] is None or c < best[i]:
+                best[i], cut[i] = c, j
+    return best, cut, looks
+
+
+def shelf_hull(widths: list, bracket: int) -> tuple[list, list]:
+    """Same answers as shelf_plain, with the convex-hull trick: O(n). Widths must be positive."""
+    n = len(widths)
+    S = [0]
+    for w in widths:
+        S.append(S[-1] + w)
+    best, cut = [0] * (n + 1), [0] * (n + 1)
+    hull = deque([0])                      # section starts j, as lines y = -2 S[j] x + best[j] + S[j]**2
+    def y(j, x):
+        return -2 * S[j] * x + best[j] + S[j] ** 2
+    def useless(a, b, c):                  # line b is never lowest once lines a and c are on the hull
+        return (y(c, 0) - y(a, 0)) * (S[b] - S[a]) <= (y(b, 0) - y(a, 0)) * (S[c] - S[a])
+    for i in range(1, n + 1):
+        while len(hull) > 1 and y(hull[1], S[i]) <= y(hull[0], S[i]):
+            hull.popleft()
+        j = hull[0]
+        best[i], cut[i] = y(j, S[i]) + S[i] ** 2 + bracket, j
+        while len(hull) > 1 and useless(hull[-2], hull[-1], i):
+            hull.pop()
+        hull.append(i)
+    return best, cut
+
+
+def sections(widths: list, cut: list) -> list:
+    """Rebuild the sections from the cut table: each section is the list of its book widths."""
+    out, i = [], len(widths)
+    while i > 0:
+        out.append(widths[cut[i]:i])
+        i = cut[i]
+    return out[::-1]
+
+
 if __name__ == "__main__":
     print(fewest_coins(6, ODD))
     print(fewest_coins(87, [200, 100, 50, 20, 10, 5, 2, 1])[:2], fewest_coins(30, [25, 10, 1])[:2])
     print(best_evenings(TALKS))
+    best, cut = shelf_hull(WIDTHS, BRACKET)
+    print(best[-1], sections(WIDTHS, cut), shelf_plain(WIDTHS, BRACKET)[2])

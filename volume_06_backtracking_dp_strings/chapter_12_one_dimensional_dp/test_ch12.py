@@ -1,4 +1,5 @@
 import itertools
+import random
 import unittest
 
 import ch12_examples as ex
@@ -50,6 +51,27 @@ class TestChapter4(unittest.TestCase):
             got, names, _, _ = ex.weighted_intervals(bs)
             self.assertEqual(got, brute)
             self.assertEqual(sum(b[3] for b in bs if b[0] in names), got)
+
+
+    def test_shelf_hull(self) -> None:
+        best, cut = ex.shelf_hull(ex.WIDTHS, ex.BRACKET)
+        self.assertEqual(best, [0, 29, 36, 72, 81, 126, 227, 251])
+        self.assertEqual(ex.sections(ex.WIDTHS, cut), [[3, 1], [4, 1], [5], [9], [2]])
+        self.assertEqual(ex.shelf_plain(ex.WIDTHS, ex.BRACKET)[2], 28)
+        self.assertEqual(ex.shelf_hull([], 5), ([0], [0]))
+        self.assertEqual(ex.shelf_hull([4], 5)[0], [0, 21])
+        self.assertEqual(ex.shelf_hull([4], 20)[0][-1], 36)
+        self.assertEqual(ex.shelf_hull([1, 1], 20)[0][-1], 24)
+        self.assertEqual(ex.shelf_hull([1] * 6, 0)[0][-1], 6)       # free brackets: one book per section
+        self.assertEqual(ex.sections([1] * 4, ex.shelf_hull([1] * 4, 100)[1]), [[1, 1, 1, 1]])
+        r = random.Random(12)
+        for _ in range(500):
+            ws = [r.randint(1, 9) for _ in range(r.randint(0, 14))]
+            c = r.randint(0, 80)
+            best, cut = ex.shelf_hull(ws, c)
+            self.assertEqual(best, ex.shelf_plain(ws, c)[0])
+            parts = ex.sections(ws, cut)
+            self.assertEqual(sum(sum(p) ** 2 + c for p in parts), best[-1])
 
 
 if __name__ == "__main__":
