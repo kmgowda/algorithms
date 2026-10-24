@@ -43,7 +43,7 @@ class Fenwick:
         return total, hops
 
     def range_sum(self, a: int, b: int) -> int:
-        """Total of days a..b (1-based, inclusive), as two prefixes (Volume 2, Chapter 19)."""
+        """Total of days a..b (1-based, inclusive), as two prefixes (Volume 2, Chapter 21)."""
         return self.prefix(b)[0] - self.prefix(a - 1)[0]
 
 

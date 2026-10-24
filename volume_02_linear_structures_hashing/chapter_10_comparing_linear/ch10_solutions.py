@@ -1,7 +1,7 @@
 """Volume 2, Chapter 10 - Thinking Problems.
 
 Problem 1: the fewest moves to insert at position k of a ring-buffer deque, min(k, n - k).
-Problem 2: a gap buffer for the text editor: typing and deleting at the cursor in O(1) amortised,
+Problem 2: a gap buffer for the text editor: typing and deleting at the cursor in O(1) amortized,
 moving the cursor d places in O(d).
 """
 

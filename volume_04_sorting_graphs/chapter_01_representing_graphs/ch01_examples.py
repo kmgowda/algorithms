@@ -61,7 +61,7 @@ def degrees(adj: dict) -> dict:
 
 
 def grid_neighbours(grid: list[str], r: int, c: int) -> list[tuple[int, int]]:
-    """An implicit graph: open squares of a grid, joined to open squares beside them (Volume 2, Chapter 20)."""
+    """An implicit graph: open squares of a grid, joined to open squares beside them (Volume 2, Chapter 22)."""
     out = []
     for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
         rr, cc = r + dr, c + dc
