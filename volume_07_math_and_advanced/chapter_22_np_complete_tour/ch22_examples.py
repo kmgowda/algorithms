@@ -190,6 +190,55 @@ def subset_sum_table(prices: list, target: int) -> tuple[bool, int]:
     return reach[target], cells
 
 
+def sat_to_subset_sum(clauses: list, n_vars: int) -> tuple[list, int]:
+    """Two numbers per variable (x true, x false) and two slack numbers per clause, written digit by digit:
+    one column per variable, then one per clause. The formula is satisfiable exactly when some of the numbers
+    add up to the target 1...1 4...4. Returns ([(label, number)], target)."""
+    m = len(clauses)
+    def number(var_col, clause_cols):
+        digits = [0] * (n_vars + m)
+        if var_col is not None:
+            digits[var_col] = 1
+        for j in clause_cols:
+            digits[n_vars + j] += 1
+        return int("".join(map(str, digits)))
+    numbers = []
+    for v in range(1, n_vars + 1):
+        numbers.append((f"x{v}", number(v - 1, [j for j, c in enumerate(clauses) for lit in c if lit == v])))
+        numbers.append((f"not x{v}", number(v - 1, [j for j, c in enumerate(clauses) for lit in c if lit == -v])))
+    for j in range(m):
+        numbers += [(f"slack {j + 1}a", number(None, [j])), (f"slack {j + 1}b", number(None, [j, j]))]
+    return numbers, int("1" * n_vars + "4" * m)
+
+
+def subset_with_sum(numbers: list, target: int) -> list | None:
+    """Brute-force set of reachable sums, keeping one way to reach each. Returns the chosen labels or None."""
+    way = {0: []}
+    for label, x in numbers:
+        for s, chosen in list(way.items()):
+            if s + x <= target and s + x not in way:
+                way[s + x] = chosen + [label]
+    return way.get(target)
+
+
+def subset_sum_to_partition(values: list, target: int) -> list:
+    """Add 2*total - target and total + target: the values split into two equal halves exactly when
+    some of the original values add up to target (for 0 <= target <= total)."""
+    total = sum(values)
+    return values + [2 * total - target, total + target]
+
+
+def can_partition(values: list) -> bool:
+    """Is there a subset with exactly half the total? (Set of reachable sums.)"""
+    total = sum(values)
+    if total % 2:
+        return False
+    reach = {0}
+    for x in values:
+        reach |= {s + x for s in reach if s + x <= total // 2}
+    return total // 2 in reach
+
+
 EXAMPLE = [[1, 2, 3], [-1, -2, 3], [1, -2, -3]]          # (x1 or x2 or x3) and (not x1 or not x2 or x3) and (x1 or not x2 or not x3)
 
 
@@ -260,4 +309,6 @@ if __name__ == "__main__":
     print(three_colourable(*sat_to_colouring(unsat, 1)), independent_set(*sat_to_independent_set(unsat)[:2], 2))
     dist, n = ham_to_tsp(TOWN, ROADS)
     print(hamiltonian_cycle(TOWN, ROADS), shortest_round(TOWN, dist))
+    nums, target = sat_to_subset_sum(EXAMPLE, 3)
+    print(target, subset_with_sum(nums, target), can_partition(subset_sum_to_partition([3, 5, 9], 8)))
     print(subset_sum_table([12, 7, 15, 9, 4, 11, 6, 13, 8, 5], 31), subset_sum_table([12, 7, 15, 9, 4, 11, 6, 13, 8, 5], 200))

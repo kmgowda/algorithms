@@ -70,5 +70,37 @@ class TestReductions(unittest.TestCase):
                 self.assertEqual(ex.has_ham_cycle(g), ex.has_cover(n, edges, k), (n, edges, k))
 
 
+    def test_sat_to_subset_sum(self) -> None:
+        nums, target = ex.sat_to_subset_sum(ex.EXAMPLE, 3)
+        self.assertEqual(target, 111444)
+        self.assertEqual(len(nums), 2 * 3 + 2 * 3)
+        self.assertEqual(dict(nums)["x1"], 100101)
+        self.assertEqual(dict(nums)["not x2"], 10011)
+        chosen = ex.subset_with_sum(nums, target)
+        self.assertEqual(sum(dict(nums)[c] for c in chosen), target)
+        setting = {v: f"x{v}" in chosen for v in range(1, 4)}
+        self.assertTrue(all(any(setting[abs(l)] == (l > 0) for l in c) for c in ex.EXAMPLE))
+        self.assertIsNone(ex.subset_with_sum(*ex.sat_to_subset_sum([[1, 1, 1], [-1, -1, -1]], 1)))
+        import random
+        r = random.Random(22)
+        for _ in range(150):
+            n = r.randint(1, 4)
+            clauses = [[r.choice([1, -1]) * r.randint(1, n) for _ in range(3)] for _ in range(r.randint(1, 5))]
+            nums, target = ex.sat_to_subset_sum(clauses, n)
+            self.assertEqual(ex.subset_with_sum(nums, target) is not None, ex.satisfiable(clauses, n)[0] is not None)
+
+    def test_subset_sum_to_partition(self) -> None:
+        import random
+        r = random.Random(7)
+        for _ in range(300):
+            vals = [r.randint(1, 12) for _ in range(r.randint(0, 7))]
+            t = r.randint(0, sum(vals))
+            direct = ex.subset_with_sum([(str(i), v) for i, v in enumerate(vals)], t) is not None
+            self.assertEqual(ex.can_partition(ex.subset_sum_to_partition(vals, t)), direct, (vals, t))
+        self.assertEqual(ex.subset_sum_to_partition([3, 5, 9], 8), [3, 5, 9, 26, 25])
+        self.assertTrue(ex.can_partition([3, 5, 9, 26, 25]))
+        self.assertFalse(ex.can_partition(ex.subset_sum_to_partition([3, 5, 9], 7)))
+
+
 if __name__ == "__main__":
     unittest.main()
