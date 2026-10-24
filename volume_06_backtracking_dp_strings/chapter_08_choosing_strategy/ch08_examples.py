@@ -120,6 +120,26 @@ def change_comparison(amount: int, coins: list) -> dict:
             "backtracking with a bound": change_backtracking(amount, coins), "table": change_table(amount, coins)}
 
 
+def meet_in_middle(prices: list, target: int) -> tuple[list | None, int]:
+    """Is there a choice of prices summing to target? List every sum of each half (2^(n/2) each),
+    sort one half, and binary-search it for target minus each sum of the other. Returns (choice, sums listed)."""
+    import bisect
+    half = len(prices) // 2
+
+    def sums(part, offset):
+        out = [(0, [])]
+        for k, p in enumerate(part):
+            out += [(s + p, c + [offset + k]) for s, c in out]
+        return out
+    left, right = sums(prices[:half], 0), sorted(sums(prices[half:], half))
+    keys = [s for s, _ in right]
+    for s, c in left:
+        i = bisect.bisect_left(keys, target - s)
+        if i < len(keys) and keys[i] == target - s:
+            return sorted(c + right[i][1]), len(left) + len(right)
+    return None, len(left) + len(right)
+
+
 if __name__ == "__main__":
     print(budget_table())
     for n in (10, 20, 25):

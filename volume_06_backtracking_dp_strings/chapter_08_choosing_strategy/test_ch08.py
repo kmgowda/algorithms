@@ -34,5 +34,25 @@ class TestChapter32(unittest.TestCase):
             self.assertEqual(ex.change_backtracking(a, [7, 5, 1])[0], ex.change_table(a, [7, 5, 1])[0])
 
 
+    def test_meet_in_middle(self) -> None:
+        import itertools
+        import random
+        v = [3, 34, 4, 12, 5, 2, 17, 9, 21, 8]
+        choice, listed = ex.meet_in_middle(v, 50)
+        self.assertEqual(sum(v[i] for i in choice), 50)
+        self.assertEqual(listed, 64)
+        self.assertEqual(ex.meet_in_middle(v, 200)[0], None)
+        self.assertEqual(ex.meet_in_middle([], 0)[0], [])
+        r = random.Random(8)
+        for _ in range(200):
+            ps = [r.randint(1, 20) for _ in range(r.randint(0, 9))]
+            t = r.randint(0, 60)
+            brute = any(sum(c) == t for k in range(len(ps) + 1) for c in itertools.combinations(ps, k))
+            got, _ = ex.meet_in_middle(ps, t)
+            self.assertEqual(got is not None, brute)
+            if got is not None:
+                self.assertEqual(sum(ps[i] for i in got), t)
+
+
 if __name__ == "__main__":
     unittest.main()
