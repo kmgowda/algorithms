@@ -95,5 +95,21 @@ class TestDepth(unittest.TestCase):
                 self.assertGreaterEqual(v, (1 - eps) * best - 1e-9)
 
 
+    def test_max3sat(self) -> None:
+        import itertools
+        import random
+        r = random.Random(26)
+        for _ in range(60):
+            n = r.randint(3, 7)
+            clauses = [[v * r.choice([1, -1]) for v in r.sample(range(1, n + 1), 3)] for _ in range(r.randint(1, 16))]
+            best = max(sum(any(dict(zip(range(1, n + 1), bits))[abs(l)] == (l > 0) for l in c) for c in clauses)
+                       for bits in itertools.product([True, False], repeat=n))
+            d, _ = ex.max3sat_derandomized(clauses, n)
+            self.assertGreaterEqual(d, 7 * len(clauses) / 8)
+            self.assertLessEqual(d, best)
+            got, s = ex.max3sat_random(clauses, n, tries=20)
+            self.assertLessEqual(got, best)
+
+
 if __name__ == "__main__":
     unittest.main()

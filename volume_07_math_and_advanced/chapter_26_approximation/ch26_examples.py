@@ -300,6 +300,45 @@ SHELF_VALUES = [602, 1012, 845, 377, 1430, 950, 288, 1199, 733, 516]
 SHELF_WEIGHTS = [3, 6, 5, 2, 8, 6, 2, 7, 4, 3]
 
 
+def max3sat_random(clauses: list, n_vars: int, tries: int = 1, seed: int = 26) -> tuple[int, dict]:
+    """Randomized MAX-3SAT: set every variable true or false by a fair coin. A clause with three different
+    variables fails only when all three literals are false, chance 1/8, so on average 7/8 of the clauses hold.
+    Returns (most clauses satisfied over the tries, that setting)."""
+    import random
+    r = random.Random(seed)
+    best, best_set = -1, {}
+    for _ in range(tries):
+        s = {v: r.random() < 0.5 for v in range(1, n_vars + 1)}
+        sat = sum(any(s[abs(l)] == (l > 0) for l in c) for c in clauses)
+        if sat > best:
+            best, best_set = sat, s
+    return best, best_set
+
+
+def max3sat_derandomized(clauses: list, n_vars: int) -> tuple[int, dict]:
+    """Method of conditional expectations: fix variables one at a time, each to the value that keeps the expected
+    number of satisfied clauses (the others still random) as large as possible. Never below 7/8 of the clauses."""
+    s = {}
+
+    def expected():
+        total = 0.0
+        for c in clauses:
+            if any(abs(l) in s and s[abs(l)] == (l > 0) for l in c):
+                total += 1
+                continue
+            free = {abs(l) for l in c if abs(l) not in s}
+            total += 1 - 0.5 ** len(free) if free else 0
+        return total
+    for v in range(1, n_vars + 1):
+        s[v] = True
+        t = expected()
+        s[v] = False
+        if t >= expected():
+            s[v] = True
+    sat = sum(any(s[abs(l)] == (l > 0) for l in c) for c in clauses)
+    return sat, s
+
+
 if __name__ == "__main__":
     c = cover_by_matching(ROADS)
     print(c, len(c), smallest_cover(TOWN, ROADS))
