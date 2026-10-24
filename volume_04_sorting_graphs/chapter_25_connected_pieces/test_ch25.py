@@ -63,5 +63,26 @@ class TestChapter28(unittest.TestCase):
             self.assertEqual(ex.tarjan_traced(g), ex.tarjan_scc(g))
 
 
+    def test_two_sat(self) -> None:
+        import itertools
+        import random
+        self.assertEqual(ex.two_sat(ex.SHIFT_RULES), {"Ana": True, "Ben": False, "Cai": False, "Dev": False})
+        self.assertIsNone(ex.two_sat([("Ana", True, "Ana", True), ("Ana", False, "Ana", False)]))
+        r = random.Random(25)
+        names = ["a", "b", "c", "d"]
+        for _ in range(300):
+            rules = [(r.choice(names), r.random() < 0.5, r.choice(names), r.random() < 0.5)
+                     for _ in range(r.randint(1, 8))]
+            used = sorted({x for x, _, _, _ in rules} | {y for _, _, y, _ in rules})
+            ok = [dict(zip(used, v)) for v in itertools.product([True, False], repeat=len(used))
+                  if all(dict(zip(used, v))[x] == a or dict(zip(used, v))[y] == b for x, a, y, b in rules)]
+            got = ex.two_sat(rules)
+            if ok:
+                self.assertIsNotNone(got)
+                self.assertTrue(all(got[x] == a or got[y] == b for x, a, y, b in rules))
+            else:
+                self.assertIsNone(got)
+
+
 if __name__ == "__main__":
     unittest.main()

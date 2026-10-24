@@ -175,6 +175,29 @@ def condensation(g: dict, groups: list[list]) -> set:
     return {(where[a], where[b]) for a in g for b in g[a] if where[a] != where[b]}
 
 
+# 2-SAT: each volunteer takes the morning (True) or the afternoon (False) shift (Section 25.7)
+SHIFT_RULES = [("Ana", True, "Ben", True),      # Ana or Ben works the morning
+               ("Ana", False, "Cai", False),    # not both Ana and Cai in the morning
+               ("Ben", False, "Dev", True),     # if Ben works the morning, so does Dev
+               ("Cai", True, "Dev", False),     # Cai in the morning, or Dev in the afternoon
+               ("Dev", False, "Ana", False)]    # not both Dev and Ana in the morning
+
+
+def two_sat(rules: list) -> dict | None:
+    """Each rule (x, a, y, b) means "x is a or y is b". Build the implication graph (not (x is a) -> y is b, and
+    not (y is b) -> x is a), find its strongly connected groups, and refuse if some x and not-x share a group.
+    Otherwise set each variable from the group order: Tarjan finishes groups sinks first."""
+    names = sorted({r[0] for r in rules} | {r[2] for r in rules})
+    g = {(v, val): [] for v in names for val in (True, False)}
+    for x, a, y, b in rules:
+        g[(x, not a)].append((y, b))
+        g[(y, not b)].append((x, a))
+    order = {lit: k for k, group in enumerate(tarjan_scc(g)) for lit in group}
+    if any(order[(v, True)] == order[(v, False)] for v in names):
+        return None
+    return {v: order[(v, True)] < order[(v, False)] for v in names}     # the literal closer to the sinks is true
+
+
 if __name__ == "__main__":
     after = [r for r in ROADS if r not in CLOSED]
     print(components(adjacency(roads=after)))
@@ -184,3 +207,4 @@ if __name__ == "__main__":
     log = []
     print(tarjan_traced(directed(), log), log)
     print(tarjan_scc(directed()))
+    print(two_sat(SHIFT_RULES))
