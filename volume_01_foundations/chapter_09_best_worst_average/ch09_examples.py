@@ -43,8 +43,28 @@ def average_with_misses(n: int, s: float) -> float:
     return s * (n + 1) / 2 + n * (1 - s)
 
 
+TALLEST = [142, 155, 138, 161, 150, 158]               # the line of children from Chapter 1
+
+
+def updates(heights: list) -> int:
+    """How many times the tallest-so-far changes after the first child (Chapter 1's algorithm)."""
+    best, count = heights[0], 0
+    for h in heights[1:]:
+        if h > best:
+            best, count = h, count + 1
+    return count
+
+
+def average_updates(n: int) -> float:
+    """Average of updates over all n! orders of n different heights, by trying them all."""
+    import itertools
+    orders = list(itertools.permutations(range(n)))
+    return sum(updates(list(p)) for p in orders) / len(orders)
+
+
 if __name__ == "__main__":
     print([looks(SHELF, b) for b in SHELF], looks(SHELF, 50))
     print(average_looks([1 / 9] * 9), round(average_looks(popularity_first(9)), 2))
     print(average_looks([0.5] + [0.5 / 8] * 8))
     print(round(harmonic(9), 2), average_with_misses(9, 0.5), average_with_misses(100, 0.75))
+    print(updates(TALLEST), average_updates(6), harmonic(6) - 1)

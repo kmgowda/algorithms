@@ -40,5 +40,12 @@ class TestChapter9(unittest.TestCase):
         self.assertEqual(round(ex.harmonic(9), 2), 2.83)
 
 
+    def test_indicators(self) -> None:
+        self.assertEqual(ex.updates(ex.TALLEST), 2)
+        for n in range(1, 8):
+            self.assertAlmostEqual(ex.average_updates(n), ex.harmonic(n) - 1)
+        self.assertAlmostEqual(ex.harmonic(6) - 1, 1.45, places=2)
+
+
 if __name__ == "__main__":
     unittest.main()
