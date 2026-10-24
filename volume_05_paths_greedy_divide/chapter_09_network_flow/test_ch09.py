@@ -69,5 +69,39 @@ class TestChapter9(unittest.TestCase):
             self.assertEqual(ex.project_selection(pr, eq, nd)[0], ex.best_projects_brute(pr, eq, nd))
 
 
+    def test_min_cost_flow(self) -> None:
+        import itertools
+        import random
+        flow, cost, rounds = ex.min_cost_flow(ex.NODES, ex.COSTED, "Warehouse", "Library", 13)
+        self.assertEqual((flow, cost), (13, 89))
+        self.assertEqual([r[2] for r in rounds], [6, 7, 7, 8])
+        self.assertIn(["Warehouse", "Docks", "Bridge", "Square", "Library"], [r[0] for r in rounds])
+        self.assertEqual(ex.min_cost_flow(ex.NODES, ex.COSTED, "Warehouse", "Library", 10)[:2], (10, 67))
+        self.assertEqual(ex.min_cost_flow(["s", "t"], [], "s", "t", 3)[:2], (0, 0))
+
+        def brute(nodes, edges, s, t, need):
+            best = None
+            for f in itertools.product(*[range(c + 1) for _, _, c, _ in edges]):
+                bal = {v: 0 for v in nodes}
+                for (a, b, _, _), x in zip(edges, f):
+                    bal[a] -= x
+                    bal[b] += x
+                if bal[t] == need and all(bal[v] == 0 for v in nodes if v not in (s, t)):
+                    c = sum(x * w for (_, _, _, w), x in zip(edges, f))
+                    best = c if best is None else min(best, c)
+            return best
+        r = random.Random(9)
+        nodes = ["s", "a", "b", "t"]
+        for _ in range(150):
+            edges = [(a, b, r.randint(0, 2), r.randint(0, 5)) for a, b in itertools.permutations(nodes, 2)
+                     if a != "t" and b != "s" and r.random() < 0.6]
+            need = r.randint(1, 3)
+            flow, cost, _ = ex.min_cost_flow(nodes, edges, "s", "t", need)
+            if flow == need:
+                self.assertEqual(cost, brute(nodes, edges, "s", "t", need))
+            else:
+                self.assertIsNone(brute(nodes, edges, "s", "t", need))
+
+
 if __name__ == "__main__":
     unittest.main()

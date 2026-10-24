@@ -184,6 +184,39 @@ def edge_disjoint_paths(nodes: list, edges: list, s, t) -> list:
     return [p for p, _ in decompose(unit, flow, s, t)]
 
 
+COST = {("Warehouse", "Docks"): 2, ("Warehouse", "Mill"): 1, ("Docks", "Mill"): 1, ("Docks", "Bridge"): 3,
+        ("Mill", "Square"): 2, ("Bridge", "Library"): 2, ("Square", "Bridge"): 1, ("Square", "Library"): 4}
+COSTED = [(a, b, c, COST[(a, b)]) for a, b, c in PIPES]      # (from, to, capacity, pounds per box)
+
+
+def min_cost_flow(nodes: list, edges: list, s, t, need: int) -> tuple[int, int, list]:
+    """Send up to `need` units from s to t as cheaply as possible: always push along the cheapest path of the
+    residual graph (Bellman-Ford, since undo arcs cost minus the price). Returns (flow, cost, rounds)."""
+    arcs = []                                     # arc 2k is a road, arc 2k + 1 its undo
+    for a, b, cap, price in edges:
+        arcs += [[a, b, cap, price], [b, a, 0, -price]]
+    flow, cost, rounds = 0, 0, []
+    while flow < need:
+        dist, prev = {v: float("inf") for v in nodes}, {}
+        dist[s] = 0
+        for _ in range(len(nodes) - 1):
+            for i, (a, b, room, price) in enumerate(arcs):
+                if room > 0 and dist[a] + price < dist[b]:
+                    dist[b], prev[b] = dist[a] + price, i
+        if dist[t] == float("inf"):
+            break                                 # no more room from s to t
+        push, v, path = need - flow, t, [t]
+        while v != s:
+            push, v = min(push, arcs[prev[v]][2]), arcs[prev[v]][0]
+            path.append(v)
+        for v in path[:-1]:
+            arcs[prev[v]][2] -= push
+            arcs[prev[v] ^ 1][2] += push
+        flow, cost = flow + push, cost + push * dist[t]
+        rounds.append((path[::-1], push, dist[t]))
+    return flow, cost, rounds
+
+
 # Project selection: each project earns money but needs some equipment, and each piece of equipment costs money.
 PROJECTS = {"Reading app": 8, "Coding club": 6, "Film night": 2}
 EQUIPMENT = {"Wi-Fi": 5, "Tablets": 6, "Projector": 3}
@@ -222,3 +255,4 @@ if __name__ == "__main__":
         print(row)
     print(flow)
     print(min_cut(NODES, PIPES, "Warehouse", "Library"))
+    print(min_cost_flow(NODES, COSTED, "Warehouse", "Library", 13))
