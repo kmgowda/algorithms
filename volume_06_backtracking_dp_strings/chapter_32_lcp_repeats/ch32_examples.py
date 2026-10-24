@@ -108,6 +108,56 @@ def longest_common(a: str, b: str, sep: str = "\x01") -> str:
     return t[at:at + best]
 
 
+def suffix_automaton(text: str) -> tuple:
+    """Section 32.6: the smallest machine accepting every substring of text (Blumer et al., 1985).
+
+    Returns (next, link, length): per state, its letter moves, its suffix link, and its longest string's length.
+    """
+    nxt, link, length = [{}], [-1], [0]
+    last = 0
+    for ch in text:
+        cur = len(nxt)
+        nxt.append({}); link.append(0); length.append(length[last] + 1)
+        p = last
+        while p != -1 and ch not in nxt[p]:
+            nxt[p][ch] = cur
+            p = link[p]
+        if p != -1:
+            q = nxt[p][ch]
+            if length[p] + 1 == length[q]:
+                link[cur] = q
+            else:
+                clone = len(nxt)
+                nxt.append(dict(nxt[q])); link.append(link[q]); length.append(length[p] + 1)
+                while p != -1 and nxt[p].get(ch) == q:
+                    nxt[p][ch] = clone
+                    p = link[p]
+                link[q] = link[cur] = clone
+        last = cur
+    return nxt, link, length
+
+
+def automaton_distinct(text: str) -> int:
+    """Different non-empty substrings: each state adds length - length of its suffix link."""
+    _, link, length = suffix_automaton(text)
+    return sum(length[s] - length[link[s]] for s in range(1, len(length)))
+
+
+def automaton_longest_common(a: str, b: str) -> str:
+    """Longest passage of b that occurs in a: walk b through a's automaton, falling back by suffix links."""
+    nxt, link, length = suffix_automaton(a)
+    state = run = best = end = 0
+    for i, ch in enumerate(b):
+        while state and ch not in nxt[state]:
+            state = link[state]
+            run = length[state]
+        if ch in nxt[state]:
+            state, run = nxt[state][ch], run + 1
+        if run > best:
+            best, end = run, i + 1
+    return b[end - best:end]
+
+
 if __name__ == "__main__":
     sa = suffix_array("banana")
     print(sa, lcp_kasai("banana", sa), longest_repeat("banana"), distinct_substrings("banana"))

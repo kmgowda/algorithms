@@ -51,5 +51,22 @@ class TestChapter24(unittest.TestCase):
                 self.assertLessEqual(start, h)
 
 
+    def test_suffix_automaton(self) -> None:
+        import random
+        rng = random.Random(32)
+        self.assertEqual(len(ex.suffix_automaton("banana")[2]), 10)
+        self.assertEqual(ex.automaton_distinct("banana"), 15)
+        self.assertEqual(ex.automaton_longest_common("mississippi", "missouri"), "miss")
+        self.assertEqual((ex.automaton_distinct(""), ex.automaton_longest_common("", "abc")), (0, ""))
+        for _ in range(200):
+            t = "".join(rng.choice("ab") for _ in range(rng.randint(0, 12)))
+            u = "".join(rng.choice("ab") for _ in range(rng.randint(0, 8)))
+            self.assertEqual(ex.automaton_distinct(t), len({t[i:j] for i in range(len(t)) for j in range(i + 1, len(t) + 1)}))
+            nxt, _, length = ex.suffix_automaton(t)
+            self.assertLessEqual(len(length), max(len(t) + 1, 2 * len(t) - 1))
+            best = max([j - i for i in range(len(u)) for j in range(i + 1, len(u) + 1) if u[i:j] in t] or [0])
+            self.assertEqual(len(ex.automaton_longest_common(t, u)), best)
+
+
 if __name__ == "__main__":
     unittest.main()
