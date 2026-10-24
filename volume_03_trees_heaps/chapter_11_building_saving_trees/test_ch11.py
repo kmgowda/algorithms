@@ -56,5 +56,27 @@ class TestChapter51(unittest.TestCase):
         self.assertEqual((ex.height(b), ex.inorder(b)), (9, list(range(1000))))
 
 
+    def test_optimal_bst(self) -> None:
+        import random
+        ks, fs = list(ex.REQUESTS), list(ex.REQUESTS.values())
+        total, root = ex.optimal_bst(ks, fs)
+        self.assertEqual(total, 39)
+        opt = ex.build_optimal(ks, root)
+        self.assertEqual(ex.looks(opt, ex.REQUESTS), 39)
+        self.assertEqual(ex.looks(ex.balanced_from_sorted(ks), ex.REQUESTS), 47)
+        self.assertEqual(ex.inorder(opt), ks)
+        self.assertEqual(ex.optimal_bst([], []), (0, [[None]]))
+
+        def brute(f, i, j, d):
+            if i >= j:
+                return 0
+            return min(f[r] * d + brute(f, i, r, d + 1) + brute(f, r + 1, j, d + 1) for r in range(i, j))
+        r = random.Random(11)
+        for _ in range(200):
+            n = r.randint(0, 7)
+            f = [r.randint(0, 9) for _ in range(n)]
+            self.assertEqual(ex.optimal_bst(list(range(n)), f)[0], brute(f, 0, n, 1))
+
+
 if __name__ == "__main__":
     unittest.main()
