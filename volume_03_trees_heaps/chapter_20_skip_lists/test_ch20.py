@@ -97,5 +97,29 @@ class TestChapter60(unittest.TestCase):
         self.assertEqual(board.range_keys((10 ** 6, 0), (10 ** 7, 0)), [])
 
 
+    def test_veb(self) -> None:
+        import bisect
+        import random
+        v = ex.VEB(16)
+        for k in [2, 3, 4, 5, 7, 14, 15]:
+            v.insert(k)
+        self.assertTrue(v.member(7))
+        self.assertFalse(v.member(6))
+        self.assertEqual([v.successor(x) for x in (0, 5, 7, 13, 15)], [2, 7, 14, 14, None])
+        r = random.Random(20)
+        for u in (2, 4, 16, 256, 4096):
+            for _ in range(20):
+                keys = r.sample(range(u), r.randint(0, min(u, 60)))
+                v = ex.VEB(u)
+                for k in keys:
+                    v.insert(k)
+                srt = sorted(keys)
+                for x in range(-1, u):
+                    if x >= 0:
+                        self.assertEqual(v.member(x), x in keys)
+                    i = bisect.bisect_right(srt, x)
+                    self.assertEqual(v.successor(x), srt[i] if i < len(srt) else None)
+
+
 if __name__ == "__main__":
     unittest.main()

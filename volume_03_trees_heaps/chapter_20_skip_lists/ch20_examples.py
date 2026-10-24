@@ -113,6 +113,61 @@ class SkipList:
         return out
 
 
+class VEB:
+    """Van Emde Boas tree over the whole numbers 0 .. u - 1 (u a power of 2): insert, member and successor in
+    O(log log u). Each node keeps its min and max apart and splits the rest into sqrt(u) clusters plus a summary
+    saying which clusters are non-empty."""
+
+    def __init__(self, u: int):
+        self.u, self.min, self.max = u, None, None
+        if u > 2:
+            bits = (u.bit_length() - 1)
+            self.lo = 1 << (bits // 2)                  # cluster size
+            self.hi = u // self.lo                      # number of clusters
+            self.summary, self.cluster = None, {}
+
+    def member(self, x: int) -> bool:
+        if x == self.min or x == self.max:
+            return True
+        if self.u <= 2 or self.min is None:
+            return False
+        c = self.cluster.get(x // self.lo)
+        return c is not None and c.member(x % self.lo)
+
+    def insert(self, x: int) -> None:
+        if self.min is None:
+            self.min = self.max = x
+            return
+        if x == self.min or x == self.max:
+            return
+        if x < self.min:
+            x, self.min = self.min, x                   # the new minimum stays here; push the old one down
+        if self.u > 2:
+            h, l = x // self.lo, x % self.lo
+            if h not in self.cluster:
+                self.cluster[h] = VEB(self.lo)
+                if self.summary is None:
+                    self.summary = VEB(self.hi)
+                self.summary.insert(h)
+            self.cluster[h].insert(l)
+        self.max = max(self.max, x)
+
+    def successor(self, x: int):
+        """The smallest member greater than x, or None."""
+        if self.min is not None and x < self.min:
+            return self.min
+        if self.u <= 2:
+            return self.max if self.max is not None and x < self.max else None
+        h, l = x // self.lo, x % self.lo
+        c = self.cluster.get(h)
+        if c is not None and c.max is not None and l < c.max:
+            return h * self.lo + c.successor(l)
+        nh = self.summary.successor(h) if self.summary else None
+        if nh is None:
+            return None
+        return nh * self.lo + self.cluster[nh].min
+
+
 if __name__ == "__main__":
     levels = {12: 1, 25: 3, 31: 1, 47: 2, 58: 4, 63: 1, 70: 2, 84: 3, 91: 1}
     s = SkipList(fixed_levels=levels)
