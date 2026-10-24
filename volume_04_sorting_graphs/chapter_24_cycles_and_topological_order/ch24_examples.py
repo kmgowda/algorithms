@@ -74,6 +74,32 @@ def is_valid_order(g: dict, order: list) -> bool:
     return len(order) == len(g) and all(pos[a] < pos[b] for a in g for b in g[a])
 
 
+def closure(g: dict) -> dict:
+    """Transitive closure: for every task, the set of tasks that must come after it, by one walk from each task.
+    O(V × (V + E)) in all."""
+    after = {}
+    for start in g:
+        seen, stack = set(), [start]
+        while stack:
+            for w in g[stack.pop()]:
+                if w not in seen:
+                    seen.add(w)
+                    stack.append(w)
+        after[start] = seen
+    return after
+
+
+def closure_in_order(g: dict, order: list) -> dict:
+    """The same closure on a graph without cycles, using a topological order backwards: a task is followed by its
+    direct followers and everything that follows them, already known."""
+    after = {}
+    for v in reversed(order):
+        after[v] = set()
+        for w in g[v]:
+            after[v] |= {w} | after[w]
+    return after
+
+
 if __name__ == "__main__":
     g = graph()
     log = []
@@ -83,3 +109,5 @@ if __name__ == "__main__":
     print(dfs_order(g))
     bad = graph(needs=NEEDS + [("Label", "Clean pages")])
     print(kahn(bad), dfs_order(bad))
+    c = closure(graph())
+    print({t: len(v) for t, v in c.items()}, sum(len(v) for v in c.values()))

@@ -39,5 +39,29 @@ class TestChapter27(unittest.TestCase):
         self.assertEqual(ex.kahn({}), [])
 
 
+    def test_closure(self) -> None:
+        import random
+        g = ex.graph()
+        c = ex.closure(g)
+        self.assertEqual(len(c["Remove cover"]), 7)
+        self.assertEqual(c["Label"], set())
+        self.assertEqual(c["Dry pages"], {"Resew spine", "Glue spine", "New cover", "Label"})
+        self.assertNotIn("Dry pages", c["Mend tears"])
+        self.assertEqual(sum(len(v) for v in c.values()), 27)
+        self.assertEqual(ex.closure_in_order(g, ex.kahn(g)), c)
+        r = random.Random(24)
+        for _ in range(100):
+            n = r.randint(1, 7)
+            h = {k: [b for b in range(n) if b > k and r.random() < 0.3] for k in range(n)}
+            reach = {k: set() for k in range(n)}
+            for k in reversed(range(n)):          # direct definition: follow arrows step by step
+                frontier = set(h[k])
+                while frontier:
+                    reach[k] |= frontier
+                    frontier = {w for v in frontier for w in h[v]} - reach[k]
+            self.assertEqual(ex.closure(h), reach)
+            self.assertEqual(ex.closure_in_order(h, list(range(n))), reach)
+
+
 if __name__ == "__main__":
     unittest.main()
