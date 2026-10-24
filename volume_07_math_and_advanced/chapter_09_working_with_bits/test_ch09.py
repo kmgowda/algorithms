@@ -69,5 +69,27 @@ class TestDepth(unittest.TestCase):
         self.assertEqual(ex.fewest_branches_covering(0b1000000), ([], 32))
 
 
+    def test_nim_and_grundy(self) -> None:
+        from functools import lru_cache
+        import itertools
+        self.assertEqual(ex.nim_winner([3, 4, 5]), (True, [0, 1]))
+        self.assertEqual(ex.nim_winner([1, 2, 3])[0], False)
+        self.assertEqual([ex.grundy(n, [1, 2, 3]) for n in range(9)], [0, 1, 2, 3, 0, 1, 2, 3, 0])
+
+        @lru_cache(None)
+        def wins(state, moves):                  # plain game search: can the mover force the last move?
+            for i, p in enumerate(state):
+                for m in moves:
+                    if m <= p:
+                        nxt = tuple(sorted(state[:i] + (p - m,) + state[i + 1:]))
+                        if not wins(nxt, moves):
+                            return True
+            return False
+        for piles in itertools.product(range(5), repeat=3):
+            st = tuple(sorted(piles))
+            self.assertEqual(ex.nim_winner(list(piles))[0], wins(st, (1, 2, 3, 4)))
+            self.assertEqual(ex.sum_winner(list(piles), [1, 3, 4]), wins(st, (1, 3, 4)))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -115,6 +115,43 @@ def fewest_branches_covering(target: int, branches: dict = BRANCHES) -> tuple[li
     return [n for i, n in enumerate(names) if best >> i & 1], tried
 
 
+def nim_winner(piles: list) -> tuple[bool, list]:
+    """Nim: take any number of books from one pile; whoever takes the last book wins. The player to move wins
+    exactly when the XOR of the pile sizes is not 0 (Bouton, 1901). Returns (mover wins?, a winning move
+    (pile index, new size) or [])."""
+    x = 0
+    for p in piles:
+        x ^= p
+    if x == 0:
+        return False, []
+    for i, p in enumerate(piles):
+        if p ^ x < p:
+            return True, [i, p ^ x]
+    return True, []
+
+
+def grundy(n: int, moves: list, memo: dict | None = None) -> int:
+    """Grundy number of a pile of n when a move removes any amount in `moves`: the smallest whole number not
+    among the Grundy numbers of the positions one move away (Sprague and Grundy, 1930s)."""
+    memo = {} if memo is None else memo
+    if n not in memo:
+        reach = {grundy(n - m, moves, memo) for m in moves if m <= n}
+        g = 0
+        while g in reach:
+            g += 1
+        memo[n] = g
+    return memo[n]
+
+
+def sum_winner(piles: list, moves: list) -> bool:
+    """A sum of games (several piles, each with the same move rule): the mover wins exactly when the XOR of
+    the piles' Grundy numbers is not 0."""
+    x = 0
+    for p in piles:
+        x ^= grundy(p, moves)
+    return x != 0
+
+
 if __name__ == "__main__":
     print(to_binary(5), to_binary(84), to_binary(255))
     a, b = make_set(["large print", "audio", "kids"]), make_set(["audio", "e-book", "kids"])
@@ -130,3 +167,4 @@ if __name__ == "__main__":
     print(bs.count(), other.count(), bs.intersection(other).count(), bs.union(other).count(), len(bs.words), 77 in bs.intersection(other))
     print(fewest_branches_covering(0b111111), fewest_branches_covering(make_set(["braille", "local history"])))
     print(84 - 1, to_binary(84), to_binary(83), to_binary(84 & 83))
+    print(nim_winner([3, 4, 5]), [grundy(n, [1, 2, 3]) for n in range(9)], sum_winner([5, 7], [1, 3, 4]))
