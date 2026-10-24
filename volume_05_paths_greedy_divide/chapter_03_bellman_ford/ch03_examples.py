@@ -117,9 +117,30 @@ def cheapest_within(vertices: list, edges: list, start, k: int) -> dict:
     return dist
 
 
+# Difference constraints (Section 3.6): "later - earlier <= limit", in minutes after the festival opens
+FESTIVAL = [("Talk", "Setup", -30),     # Setup - Talk <= -30: the talk starts at least 30 after setup
+            ("Setup", "Quiz", 60),      # Quiz - Setup <= 60: the quiz starts at most 60 after setup
+            ("Quiz", "Talk", -20),      # Talk - Quiz <= -20: the quiz starts at least 20 after the talk
+            ("Lunch", "Quiz", -15),     # Quiz - Lunch <= -15: lunch at least 15 after the quiz
+            ("Setup", "Lunch", 90)]     # Lunch - Setup <= 90: lunch at most 90 after setup
+
+
+def difference_constraints(rules: list) -> dict | None:
+    """Each rule (i, j, w) means x[j] - x[i] <= w, an arrow i -> j of length w. Add a start joined to every event
+    by length 0 and run Bellman-Ford: the distances satisfy every rule, and a negative cycle means none can."""
+    events = sorted({r[0] for r in rules} | {r[1] for r in rules})
+    edges = [("start", e, 0) for e in events] + list(rules)
+    dist, _, cycle = bellman_ford(["start"] + events, edges, "start")
+    if cycle:
+        return None
+    shift = -min(dist[e] for e in events)                 # move every time so the earliest is 0
+    return {e: dist[e] + shift for e in events}
+
+
 if __name__ == "__main__":
     log = []
     dist, parent, cycle = bellman_ford(DEPOTS, LEGS, "A", log)
     for rnd, d in log:
         print(rnd, d)
     print(dist, cycle, route(parent, "D"), route(parent, "E"))
+    print(difference_constraints(FESTIVAL), difference_constraints(FESTIVAL[:1] + [("Setup", "Quiz", 40)] + FESTIVAL[2:]))

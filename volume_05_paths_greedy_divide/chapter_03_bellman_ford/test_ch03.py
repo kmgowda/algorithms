@@ -55,5 +55,26 @@ class TestChapter3(unittest.TestCase):
         self.assertEqual(ex.cheapest_within(ex.DEPOTS, ex.LEGS, "A", 0)["B"], float("inf"))
         self.assertEqual(ex.cheapest_within(ex.DEPOTS, ex.LEGS, "A", 4), ex.bellman_ford(ex.DEPOTS, ex.LEGS, "A")[0])
 
+    def test_difference_constraints(self) -> None:
+        import itertools
+        import random
+        x = ex.difference_constraints(ex.FESTIVAL)
+        self.assertTrue(all(x[j] - x[i] <= w for i, j, w in ex.FESTIVAL))
+        self.assertEqual(x, {"Lunch": 65, "Quiz": 50, "Setup": 0, "Talk": 30})
+        tight = ex.FESTIVAL[:1] + [("Setup", "Quiz", 40)] + ex.FESTIVAL[2:]
+        self.assertIsNone(ex.difference_constraints(tight))
+        r = random.Random(3)
+        names = ["a", "b", "c"]
+        for _ in range(200):
+            rules = [(r.choice(names), r.choice(names), r.randint(-4, 4)) for _ in range(r.randint(1, 5))]
+            got = ex.difference_constraints(rules)
+            used = sorted({a for a, _, _ in rules} | {b for _, b, _ in rules})
+            brute = any(all(dict(zip(used, v))[j] - dict(zip(used, v))[i] <= w for i, j, w in rules)
+                        for v in itertools.product(range(-12, 13), repeat=len(used)))
+            self.assertEqual(got is not None, brute)
+            if got:
+                self.assertTrue(all(got[j] - got[i] <= w for i, j, w in rules))
+
+
 if __name__ == "__main__":
     unittest.main()
