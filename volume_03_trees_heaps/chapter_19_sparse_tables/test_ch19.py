@@ -34,5 +34,34 @@ class TestChapter59(unittest.TestCase):
         self.assertEqual(len(ex.SparseTable(list(range(100))).table), 7)
 
 
+    def test_lca(self) -> None:
+        import random
+        lca = ex.LCA(ex.SECTIONS, "Library")
+        self.assertEqual(len(lca.tour), 2 * 11 - 1)
+        self.assertEqual(lca.query("Algebra", "Physics"), "Science")
+        self.assertEqual(lca.query("Mystery", "Geometry"), "Library")
+        self.assertEqual(lca.query("Maths", "Geometry"), "Maths")
+        self.assertEqual(lca.query("Fantasy", "Fantasy"), "Fantasy")
+        r = random.Random(19)
+        for _ in range(100):
+            n = r.randint(1, 15)
+            parent = {k: r.randrange(k) for k in range(1, n)}
+            ch = {}
+            for k, p in parent.items():
+                ch.setdefault(p, []).append(k)
+            lc = ex.LCA(ch, 0)
+
+            def up(x):
+                path = [x]
+                while x in parent:
+                    x = parent[x]
+                    path.append(x)
+                return path
+            for _ in range(10):
+                u, v = r.randrange(n), r.randrange(n)
+                pu = up(u)
+                self.assertEqual(lc.query(u, v), next(x for x in up(v) if x in pu))
+
+
 if __name__ == "__main__":
     unittest.main()

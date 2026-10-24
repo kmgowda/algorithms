@@ -31,6 +31,34 @@ class SparseTable:
         return sum(len(row) for row in self.table)
 
 
+SECTIONS = {"Library": ["Fiction", "Science", "History"], "Fiction": ["Mystery", "Fantasy"],
+            "Science": ["Physics", "Biology", "Maths"], "Maths": ["Algebra", "Geometry"]}   # Volume 3, Chapter 1
+
+
+class LCA:
+    """Lowest common ancestor in O(1) per question: walk the tree once (an Euler tour, writing a node every time
+    the walk is at it), then the shallowest node between two nodes' first visits is their meeting point."""
+
+    def __init__(self, children: dict, root):
+        self.tour, self.depth, self.first = [], [], {}
+        stack = [(root, 0, 0)]
+        while stack:
+            node, d, k = stack.pop()
+            self.first.setdefault(node, len(self.tour))
+            self.tour.append(node)
+            self.depth.append(d)
+            kids = children.get(node, [])
+            if k < len(kids):
+                stack.append((node, d, k + 1))           # come back to node after this child
+                stack.append((kids[k], d + 1, 0))
+        self.rmq = SparseTable([(d, i) for i, d in enumerate(self.depth)])
+
+    def query(self, u, v):
+        a, b = sorted((self.first[u], self.first[v]))
+        (_, i), _, _ = self.rmq.query(a, b)
+        return self.tour[i]
+
+
 if __name__ == "__main__":
     st = SparseTable(NOISE)
     for row in st.table:
@@ -38,3 +66,5 @@ if __name__ == "__main__":
     print(st.query(1, 6), st.query(2, 4), st.query(0, 7), st.cells())
     big = SparseTable(list(range(1_000_000)))
     print(len(big.table), big.cells())
+    lca = LCA(SECTIONS, "Library")
+    print(len(lca.tour), lca.query("Algebra", "Physics"), lca.query("Mystery", "Geometry"))
