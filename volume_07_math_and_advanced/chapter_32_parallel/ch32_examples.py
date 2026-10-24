@@ -23,7 +23,7 @@ def tree_sum(values: list) -> tuple[int, int, int]:
 
 
 def prefix_sums_parallel(values: list) -> tuple[list, int, int]:
-    """Hillis-Steele scan (Figure 32.2): in round r, every position adds the value 2^r places to its left.
+    """Hillis-Steele scan (Figure 32.4): in round r, every position adds the value 2^r places to its left.
     Returns (running totals, additions, rounds)."""
     a, work, rounds, step = list(values), 0, 0, 1
     while step < len(a):
@@ -40,7 +40,7 @@ def time_with_helpers(work: int, span: int, helpers: int) -> float:
 
 
 def amdahl(parallel_share: float, helpers: int) -> float:
-    """Speed-up when only part of a job can be shared out (Figure 32.3)."""
+    """Speed-up when only part of a job can be shared out (Figure 32.7)."""
     return 1 / ((1 - parallel_share) + parallel_share / helpers)
 
 
@@ -95,7 +95,7 @@ def greedy_schedule(deps: dict, p: int) -> int:
 
 def race_outcomes(increments_per_helper: int = 1, helpers: int = 2) -> dict:
     """Every interleaving of 'read counter, then write counter + 1' by several helpers on a shared counter that starts
-    at 0: how often each final value occurs (Figure 32.4)."""
+    at 0: how often each final value occurs (Figure 32.3)."""
     from collections import Counter
     import itertools
     steps = [(h, k, part) for h in range(helpers) for k in range(increments_per_helper) for part in ("read", "write")]

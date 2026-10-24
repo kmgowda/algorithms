@@ -30,7 +30,7 @@ def naive_sum(values: list) -> float:
 
 
 def kahan_sum(values: list) -> float:
-    """Compensated summation (Figure 11.3): carry the rounding error forward."""
+    """Compensated summation (Figure 11.6): carry the rounding error forward."""
     total, lost = 0.0, 0.0
     for v in values:
         y = v - lost
@@ -91,7 +91,7 @@ def shift_right_logical(n: int, k: int, bits: int = 8) -> int:
 
 
 def float_parts(x: float) -> tuple[int, int, int]:
-    """(sign bit, stored exponent, 52-bit fraction) of a 64-bit IEEE 754 double (Figure 11.4)."""
+    """(sign bit, stored exponent, 52-bit fraction) of a 64-bit IEEE 754 double (Figure 11.3)."""
     import struct
     raw = struct.unpack(">Q", struct.pack(">d", x))[0]
     return raw >> 63, (raw >> 52) & 0x7FF, raw & ((1 << 52) - 1)
