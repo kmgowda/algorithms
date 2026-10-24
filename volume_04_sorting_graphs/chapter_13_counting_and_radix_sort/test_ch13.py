@@ -57,5 +57,21 @@ class TestChapter16(unittest.TestCase):
         self.assertTrue(ex.sorted_by_last_digits([], 1) and ex.sorted_by_last_digits([5], 1))
 
 
+    def test_string_sorts(self) -> None:
+        import random
+        looks = [0]
+        self.assertEqual(ex.msd_strings(ex.TITLES, 0, looks), sorted(ex.TITLES))
+        self.assertEqual(looks[0], 29)
+        self.assertEqual(ex.msd_strings([]), [])
+        self.assertEqual(ex.msd_strings(["a", "", "a"]), ["", "a", "a"])
+        self.assertEqual(ex.lsd_strings(["cab", "abc", "bca", "acb"], 3), ["abc", "acb", "bca", "cab"])
+        r = random.Random(13)
+        for _ in range(200):
+            ws = ["".join(r.choice("abc") for _ in range(r.randint(0, 4))) for _ in range(r.randint(0, 12))]
+            self.assertEqual(ex.msd_strings(ws), sorted(ws))
+            fixed = ["".join(r.choice("abcd") for _ in range(3)) for _ in range(r.randint(0, 12))]
+            self.assertEqual(ex.lsd_strings(fixed, 3), sorted(fixed))
+
+
 if __name__ == "__main__":
     unittest.main()

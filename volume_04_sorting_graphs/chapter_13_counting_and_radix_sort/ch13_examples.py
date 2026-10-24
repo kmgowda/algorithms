@@ -104,8 +104,39 @@ def timing(n: int = 1_000_000, seed: int = 1) -> dict:
     return {k: round(v) for k, v in out.items()}
 
 
+TITLES = ["maps", "map", "mars", "atlas", "art", "maze", "arts", "ant", "mat"]   # Section 13.6
+
+
+def lsd_strings(words: list, width: int) -> list:
+    """Sort strings that all have the same length by counting sort on each position, last to first."""
+    for pos in range(width - 1, -1, -1):
+        words = counting_sort(words, 256, key=lambda w: ord(w[pos]))
+    return words
+
+
+def msd_strings(words: list, pos: int = 0, looks: list | None = None) -> list:
+    """Most significant digit first: split by the letter at pos (words that have ended go first), then sort each
+    group on the next letter. Words of any length; each letter is looked at only while it still matters."""
+    if len(words) <= 1:
+        return list(words)
+    ended, groups = [], {}
+    for w in words:
+        if looks is not None:
+            looks[0] += 1
+        if len(w) == pos:
+            ended.append(w)
+        else:
+            groups.setdefault(w[pos], []).append(w)
+    out = ended
+    for letter in sorted(groups):
+        out += msd_strings(groups[letter], pos + 1, looks)
+    return out
+
+
 if __name__ == "__main__":
     print(counting_sort(GRADES, 5), group_ends(GRADES, 5))
     p = []
     print(radix_sort(PILE, 2, passes=p), p)
     print(timing())
+    looks = [0]
+    print(msd_strings(TITLES, 0, looks), looks[0], lsd_strings(["cab", "abc", "bca", "acb"], 3))
