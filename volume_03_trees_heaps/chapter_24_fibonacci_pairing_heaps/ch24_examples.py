@@ -473,6 +473,57 @@ def degree_experiment(n: int = 2000, ops: int = 20_000, seed: int = 3):
     return worst
 
 
+# Leftist and skew heaps (Section 24.9): a heap is None or a tuple (key, left, right[, rank])
+
+def leftist_meld(a, b):
+    """Meld two leftist heaps (key, left, right, rank). Rank = length of the rightmost path; every node keeps its
+    left child's rank at least its right child's, so the right spine has at most log2(n + 1) nodes."""
+    if a is None:
+        return b
+    if b is None:
+        return a
+    if b[0] < a[0]:
+        a, b = b, a
+    key, left, right, _ = a
+    right = leftist_meld(right, b)
+    rank = lambda h: h[3] if h else 0
+    if rank(left) < rank(right):
+        left, right = right, left
+    return (key, left, right, rank(right) + 1)
+
+
+def skew_meld(a, b):
+    """Meld two skew heaps (key, left, right): like leftist, but always swap the children, keeping no ranks.
+    O(log n) amortized (Sleator and Tarjan, 1986)."""
+    if a is None:
+        return b
+    if b is None:
+        return a
+    if b[0] < a[0]:
+        a, b = b, a
+    key, left, right = a
+    return (key, skew_meld(right, b), left)
+
+
+def meld_sort(meld, items: list, leaf) -> list:
+    """Insert every item by melding a one-node heap, then pop the minimum (meld the root's two children)."""
+    h = None
+    for x in items:
+        h = meld(h, leaf(x))
+    out = []
+    while h is not None:
+        out.append(h[0])
+        h = meld(h[1], h[2])
+    return out
+
+
+def right_spine(h) -> int:
+    n = 0
+    while h is not None:
+        n, h = n + 1, h[2]
+    return n
+
+
 if __name__ == "__main__":
     steps, h = reservation_story()
     for name, forest, phi in steps:

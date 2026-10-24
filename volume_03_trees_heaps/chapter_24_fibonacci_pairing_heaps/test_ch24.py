@@ -194,5 +194,22 @@ class TestDijkstra(unittest.TestCase):
         self.assertEqual(r["heapq"], {"push": 19528, "pop": 19528, "stale": 9528, "largest heap": 12401})
 
 
+    def test_leftist_and_skew(self) -> None:
+        import math
+        import random
+        pile = [58, 25, 91, 12, 70, 47, 84, 31, 63]
+        self.assertEqual(ex.meld_sort(ex.leftist_meld, pile, lambda x: (x, None, None, 1)), sorted(pile))
+        self.assertEqual(ex.meld_sort(ex.skew_meld, pile, lambda x: (x, None, None)), sorted(pile))
+        r = random.Random(24)
+        for _ in range(100):
+            xs = [r.randint(0, 50) for _ in range(r.randint(0, 40))]
+            self.assertEqual(ex.meld_sort(ex.leftist_meld, xs, lambda x: (x, None, None, 1)), sorted(xs))
+            self.assertEqual(ex.meld_sort(ex.skew_meld, xs, lambda x: (x, None, None)), sorted(xs))
+            h = None
+            for x in xs:
+                h = ex.leftist_meld(h, (x, None, None, 1))
+            self.assertLessEqual(ex.right_spine(h), math.log2(len(xs) + 1) + 1e-9)
+
+
 if __name__ == "__main__":
     unittest.main()
