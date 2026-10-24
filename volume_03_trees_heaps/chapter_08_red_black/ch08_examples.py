@@ -256,6 +256,65 @@ def random_deletions(n: int = 10_000, seed: int = 1):
     return t.rotations - start, most, seen
 
 
+# AA trees (Arne Andersson, 1993): a node is [key, level, left, right]; a red node is a right child on the same level
+
+def aa_skew(t):
+    """A left child on the same level is not allowed: rotate right."""
+    if t and t[2] and t[2][1] == t[1]:
+        left = t[2]
+        t[2], left[3] = left[3], t
+        return left
+    return t
+
+
+def aa_split(t):
+    """Two right children in a row on the same level are not allowed: rotate left and raise the middle node."""
+    if t and t[3] and t[3][3] and t[3][3][1] == t[1]:
+        right = t[3]
+        t[3], right[2] = right[2], t
+        right[1] += 1
+        return right
+    return t
+
+
+def aa_insert(t, key):
+    """Insert as in a plain search tree, then skew and split on the way back up."""
+    if t is None:
+        return [key, 1, None, None]
+    if key < t[0]:
+        t[2] = aa_insert(t[2], key)
+    elif key > t[0]:
+        t[3] = aa_insert(t[3], key)
+    return aa_split(aa_skew(t))
+
+
+def aa_valid(t) -> bool:
+    """The AA rules: leaves at level 1; a left child one level down; a right child at most one level down;
+    a right grandchild strictly below its grandparent; nodes above level 1 have two children."""
+    if t is None:
+        return True
+    key, lv, l, r = t
+    if l is None and r is None and lv != 1:
+        return False
+    if l and l[1] != lv - 1:
+        return False
+    if r and not (lv - 1 <= r[1] <= lv):
+        return False
+    if r and r[3] and r[3][1] >= lv:
+        return False
+    if lv > 1 and not (l and r):
+        return False
+    return aa_valid(l) and aa_valid(r)
+
+
+def aa_height(t) -> int:
+    return -1 if t is None else 1 + max(aa_height(t[2]), aa_height(t[3]))
+
+
+def aa_inorder(t) -> list:
+    return [] if t is None else aa_inorder(t[2]) + [t[0]] + aa_inorder(t[3])
+
+
 if __name__ == "__main__":
     for k in range(1, 8):
         t = RedBlackTree([12, 25, 31, 47, 58, 63, 70][:k])

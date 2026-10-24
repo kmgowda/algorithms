@@ -109,5 +109,26 @@ class TestChapter19(unittest.TestCase):
             self.assertEqual(t.inorder(), sorted(set(keys)))
 
 
+    def test_aa_tree(self) -> None:
+        import math
+        import random
+        t = None
+        for k in [12, 25, 31, 47, 58, 63, 70, 84, 91]:
+            t = ex.aa_insert(t, k)
+            self.assertTrue(ex.aa_valid(t))
+        self.assertEqual(ex.aa_inorder(t), [12, 25, 31, 47, 58, 63, 70, 84, 91])
+        self.assertEqual(t[0], 47)
+        r = random.Random(8)
+        for _ in range(50):
+            keys = r.sample(range(1000), r.randint(0, 200))
+            t = None
+            for k in keys:
+                t = ex.aa_insert(t, k)
+            self.assertTrue(ex.aa_valid(t))
+            self.assertEqual(ex.aa_inorder(t), sorted(keys))
+            if keys:
+                self.assertLessEqual(ex.aa_height(t) + 1, 2 * math.log2(len(keys) + 1) + 1e-9)
+
+
 if __name__ == "__main__":
     unittest.main()
