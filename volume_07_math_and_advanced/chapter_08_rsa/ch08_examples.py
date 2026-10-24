@@ -96,6 +96,41 @@ def bits_of_work(exponent: int) -> int:
     return exponent.bit_length()
 
 
+def diffie_hellman(p: int, g: int, a: int, b: int) -> tuple[int, int, int, int]:
+    """Two people agree a secret over an open line: Maya sends A = g^a mod p, Leo sends B = g^b mod p, and each
+    raises what they receive to their own secret. Returns (A, B, Maya's key B^a, Leo's key A^b)."""
+    A, B = pow(g, a, p), pow(g, b, p)
+    return A, B, pow(B, a, p), pow(A, b, p)
+
+
+def discrete_log_brute(g: int, h: int, p: int) -> tuple[int | None, int]:
+    """The eavesdropper's problem: find x with g^x = h (mod p) by trying x = 0, 1, 2, ... Returns (x, tries)."""
+    v = 1
+    for x in range(p - 1):
+        if v == h:
+            return x, x + 1
+        v = v * g % p
+    return None, p - 1
+
+
+def baby_step_giant_step(g: int, h: int, p: int) -> tuple[int | None, int]:
+    """Shanks: write x = i m + j with m about sqrt(p); store g^j for every j, then step h * g^(-m) i times.
+    About 2 sqrt(p) multiplications instead of p. Returns (x, multiplications)."""
+    import math
+    m = math.isqrt(p - 1) + 1
+    table, v = {}, 1
+    for j in range(m):
+        table.setdefault(v, j)
+        v = v * g % p
+    step = pow(g, -m, p)
+    y, work = h, m
+    for i in range(m):
+        if y in table:
+            return i * m + table[y], work + i
+        y = y * step % p
+    return None, work + m
+
+
 if __name__ == "__main__":
     public, private = make_keys(61, 53)
     print(public, private)
@@ -112,3 +147,4 @@ if __name__ == "__main__":
     print(pub3, c3, 97 ** 3, integer_cube_root(c3))
     print(encrypt(2, public) * encrypt(65, public) % 3233, encrypt(130, public))
     print(fermat_factor(3233), fermat_factor(1019 * 1031), bits_of_work(2753), bits_of_work(53), bits_of_work(49))
+    print(diffie_hellman(23, 5, 6, 15), discrete_log_brute(5, 8, 23), baby_step_giant_step(5, 8, 23))

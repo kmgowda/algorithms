@@ -54,5 +54,20 @@ class TestDepth(unittest.TestCase):
         self.assertEqual([ex.integer_cube_root(x) for x in (0, 1, 7, 8, 26, 27, 10 ** 30)], [0, 1, 1, 2, 2, 3, 10 ** 10])
 
 
+    def test_diffie_hellman(self) -> None:
+        import random
+        self.assertEqual(ex.diffie_hellman(23, 5, 6, 15), (8, 19, 2, 2))
+        self.assertEqual(ex.discrete_log_brute(5, 8, 23)[0], 6)
+        self.assertEqual(ex.baby_step_giant_step(5, 8, 23)[0], 6)
+        r = random.Random(8)
+        p, g = 1_000_003, 2
+        for _ in range(20):
+            x = r.randrange(p - 1)
+            h = pow(g, x, p)
+            got, work = ex.baby_step_giant_step(g, h, p)
+            self.assertEqual(pow(g, got, p), h)
+            self.assertLessEqual(work, 2 * 1001 + 2)
+
+
 if __name__ == "__main__":
     unittest.main()
