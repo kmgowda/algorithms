@@ -217,6 +217,62 @@ def min_cost_flow(nodes: list, edges: list, s, t, need: int) -> tuple[int, int, 
     return flow, cost, rounds
 
 
+def dinic(nodes: list, edges: list, s, t) -> tuple[int, int]:
+    """Dinic's method: BFS levels from s, then push a blocking flow using only arcs one level down, repeated until t
+    is out of reach. Returns (max flow, number of phases)."""
+    from collections import deque
+    room, adj = {}, {v: [] for v in nodes}
+    for a, b, c in edges:
+        if (a, b) not in room and (b, a) not in room:
+            adj[a].append(b)
+            adj[b].append(a)
+        room[(a, b)] = room.get((a, b), 0) + c
+        room.setdefault((b, a), 0)
+    flow, phases = 0, 0
+    while True:
+        level, q = {s: 0}, deque([s])
+        while q:
+            v = q.popleft()
+            for w in adj[v]:
+                if w not in level and room[(v, w)] > 0:
+                    level[w] = level[v] + 1
+                    q.append(w)
+        if t not in level:
+            return flow, phases
+        phases += 1
+        nxt = {v: 0 for v in nodes}                     # the next arc to try at each place
+
+        def push(v, limit):
+            if v == t:
+                return limit
+            while nxt[v] < len(adj[v]):
+                w = adj[v][nxt[v]]
+                if level.get(w) == level[v] + 1 and room[(v, w)] > 0:
+                    got = push(w, min(limit, room[(v, w)]))
+                    if got:
+                        room[(v, w)] -= got
+                        room[(w, v)] += got
+                        return got
+                nxt[v] += 1
+            return 0
+        while True:
+            got = push(s, float("inf"))
+            if not got:
+                break
+            flow += got
+
+
+def circulation(nodes: list, edges: list, demand: dict) -> bool:
+    """Can every place meet its demand (negative = supply) using the roads' capacities? Join a super-source to every
+    supplier and every customer to a super-sink, and ask whether the maximum flow uses all the supply."""
+    extra = [("source*", v, -d) for v, d in demand.items() if d < 0] + \
+            [(v, "sink*", d) for v, d in demand.items() if d > 0]
+    if sum(demand.values()) != 0:
+        return False
+    f, _ = max_flow(nodes + ["source*", "sink*"], edges + extra, "source*", "sink*")
+    return f == sum(d for d in demand.values() if d > 0)
+
+
 # Project selection: each project earns money but needs some equipment, and each piece of equipment costs money.
 PROJECTS = {"Reading app": 8, "Coding club": 6, "Film night": 2}
 EQUIPMENT = {"Wi-Fi": 5, "Tablets": 6, "Projector": 3}
@@ -256,3 +312,4 @@ if __name__ == "__main__":
     print(flow)
     print(min_cut(NODES, PIPES, "Warehouse", "Library"))
     print(min_cost_flow(NODES, COSTED, "Warehouse", "Library", 13))
+    print(dinic(NODES, PIPES, "Warehouse", "Library"))

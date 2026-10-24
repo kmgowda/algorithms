@@ -103,5 +103,18 @@ class TestChapter9(unittest.TestCase):
                 self.assertIsNone(brute(nodes, edges, "s", "t", need))
 
 
+    def test_dinic_and_circulation(self) -> None:
+        import random
+        self.assertEqual(ex.dinic(ex.NODES, ex.PIPES, "Warehouse", "Library"), (13, 2))
+        r = random.Random(19)
+        nodes = list(range(6))
+        for _ in range(200):
+            edges = [(a, b, r.randint(1, 9)) for a in nodes for b in nodes if a != b and r.random() < 0.35]
+            self.assertEqual(ex.dinic(nodes, edges, 0, 5)[0], ex.max_flow(nodes, edges, 0, 5)[0])
+        self.assertTrue(ex.circulation(ex.NODES, ex.PIPES, {"Warehouse": -8, "Docks": -3, "Library": 7, "Square": 4}))
+        self.assertFalse(ex.circulation(ex.NODES, ex.PIPES, {"Warehouse": -14, "Library": 14}))
+        self.assertFalse(ex.circulation(ex.NODES, ex.PIPES, {"Warehouse": -5, "Library": 4}))
+
+
 if __name__ == "__main__":
     unittest.main()
