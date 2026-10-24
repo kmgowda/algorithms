@@ -47,5 +47,22 @@ class TestChapter19(unittest.TestCase):
             self.assertEqual(ex.matrix_chain(d)[0], ex.chain_brute(d))
 
 
+    def test_game_margin(self) -> None:
+        import random
+        from functools import lru_cache
+        self.assertEqual(ex.game_margin(ex.TOKENS)[0], 7)
+        self.assertEqual(ex.game_margin([])[0], 0)
+        r = random.Random(19)
+        for _ in range(200):
+            row = tuple(r.randint(0, 9) for _ in range(r.randint(1, 9)))
+
+            @lru_cache(None)
+            def best(i, j):                    # plain minimax over every line of play
+                if i > j:
+                    return 0
+                return max(row[i] - best(i + 1, j), row[j] - best(i, j - 1))
+            self.assertEqual(ex.game_margin(list(row))[0], best(0, len(row) - 1))
+
+
 if __name__ == "__main__":
     unittest.main()

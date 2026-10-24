@@ -144,9 +144,29 @@ def brute(stacks: list) -> int:
     return best
 
 
+TOKENS = [3, 9, 1, 2]      # book tokens in a row; players take one from either end (Section 19.7)
+
+
+def game_margin(row: list) -> tuple[int, list]:
+    """Two players take turns removing a token from either end of the row; each wants the most points.
+    margin[i][j] = the most the player to move can win by (their points minus the other's) on row[i..j].
+    Returns (margin for the first player, table)."""
+    n = len(row)
+    margin = [[0] * n for _ in range(n)]
+    for length in range(1, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            if i == j:
+                margin[i][j] = row[i]
+            else:
+                margin[i][j] = max(row[i] - margin[i + 1][j], row[j] - margin[i][j - 1])
+    return (margin[0][n - 1] if n else 0), margin
+
+
 if __name__ == "__main__":
     cost, table, plan = merge_cost(STACKS)
     print(cost, plan)
     for row in table:
         print(row)
     print(greedy_smallest_pair(STACKS), brute(STACKS))
+    print(game_margin(TOKENS)[0])
