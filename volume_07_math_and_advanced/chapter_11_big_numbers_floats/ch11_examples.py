@@ -30,7 +30,7 @@ def naive_sum(values: list) -> float:
 
 
 def kahan_sum(values: list) -> float:
-    """Compensated summation (Figure 11.6): carry the rounding error forward."""
+    """Compensated summation: carry the rounding error forward."""
     total, lost = 0.0, 0.0
     for v in values:
         y = v - lost

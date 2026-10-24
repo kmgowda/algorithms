@@ -11,7 +11,7 @@ TITLES = ["treasure island", "the treasure map", "trees of britain", "a tale of 
 
 
 def wildcard(pattern: str, text: str) -> tuple[bool, list]:
-    """M[i][j]: does pattern[:i] match text[:j]? (Figure 36.2). Returns (answer, table)."""
+    """M[i][j]: does pattern[:i] match text[:j]? (Figure 36.1). Returns (answer, table)."""
     n, m = len(pattern), len(text)
     M = [[False] * (m + 1) for _ in range(n + 1)]
     M[0][0] = True

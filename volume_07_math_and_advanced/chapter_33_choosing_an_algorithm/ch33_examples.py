@@ -14,7 +14,7 @@ GROWTH = {"n": lambda n: n, "n log n": lambda n: n * math.log2(max(n, 2)), "n^2"
 
 
 def largest_input(rate: str, budget: int) -> int:
-    """The largest n whose cost fits the budget of steps (Figure 33.1), by doubling then binary search."""
+    """The largest n whose cost fits the budget of steps, by doubling then binary search."""
     f = GROWTH[rate]
     if f(1) > budget:
         return 0

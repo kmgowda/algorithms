@@ -27,7 +27,7 @@ def lcs_full(a: str, b: str) -> tuple[int, str, int]:
 
 
 def lcs_two_rows(a: str, b: str) -> tuple[int, int]:
-    """Length only, keeping two rows (Figure 23.2). Returns (length, cells stored)."""
+    """Length only, keeping two rows (Figure 23.1). Returns (length, cells stored)."""
     prev = [0] * (len(b) + 1)
     for i in range(1, len(a) + 1):
         cur = [0] * (len(b) + 1)
@@ -48,7 +48,7 @@ def last_row(a: str, b: str) -> list:
 
 
 def hirschberg(a: str, b: str) -> str:
-    """An LCS in little memory (Figure 23.3): split a in half, find where the best path crosses the middle using two
+    """An LCS in little memory (Figure 23.2): split a in half, find where the best path crosses the middle using two
     length-only passes (forwards and backwards), and solve the two halves separately."""
     if not a or not b:
         return ""
@@ -62,7 +62,7 @@ def hirschberg(a: str, b: str) -> str:
 
 
 def crossing(a: str, b: str) -> tuple[int, list, list, list]:
-    """The middle step of Hirschberg's method (Figure 23.3): split a at mid; forward[j] = LCS of a's left half with
+    """The middle step of Hirschberg's method (Figure 23.2): split a at mid; forward[j] = LCS of a's left half with
     b[:j]; backward[j] = LCS of a's right half with b[j:]. Returns (best split k, forward, backward, their sums)."""
     mid = len(a) // 2
     forward = last_row(a[:mid], b)

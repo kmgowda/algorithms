@@ -14,7 +14,7 @@ ROADS = [("Library", "School"), ("Library", "Park"), ("School", "Market"), ("Par
 
 
 def satisfiable(clauses: list, n_vars: int) -> tuple[dict | None, int]:
-    """Satisfiability: clauses are lists of +v / -v; try every true/false setting (Figure 22.1)."""
+    """Satisfiability: clauses are lists of +v / -v; try every true/false setting."""
     tried = 0
     for bits in itertools.product([False, True], repeat=n_vars):
         tried += 1
@@ -51,7 +51,7 @@ def bin_packing(sizes: list, capacity: int, bins: int) -> list | None:
     return None
 
 
-# ---------------------------------------------------------------- 3-SAT -> independent set (Figure 22.3)
+# ---------------------------------------------------------------- 3-SAT -> independent set (Figure 22.2)
 
 def sat_to_independent_set(clauses: list) -> tuple[list, list, int]:
     """One triangle per clause (a vertex per literal), plus an edge between every pair of opposite literals.
@@ -98,7 +98,7 @@ def complement_edges(vertices: list, edges: list) -> list:
     return [(a, b) for a, b in itertools.combinations(vertices, 2) if frozenset((a, b)) not in have]
 
 
-# ---------------------------------------------------------------- 3-SAT -> 3-colouring (Figure 22.4)
+# ---------------------------------------------------------------- 3-SAT -> 3-colouring (Figure 22.3)
 
 def sat_to_colouring(clauses: list, n_vars: int) -> tuple[list, list]:
     """The palette triangle TRUE, FALSE, BASE; for each variable a pair x, not-x joined to each other and to BASE;

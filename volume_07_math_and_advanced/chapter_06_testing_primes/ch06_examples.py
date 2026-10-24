@@ -12,12 +12,12 @@ EXACT_BELOW = 318_665_857_834_031_151_167_461                # Sorenson and Webs
 
 
 def fermat(n: int, a: int) -> bool:
-    """Passes if a^(n-1) mod n = 1, as every prime does (Figure 6.1)."""
+    """Passes if a^(n-1) mod n = 1, as every prime does."""
     return pow(a, n - 1, n) == 1
 
 
 def miller_rabin(n: int, bases=BASES) -> bool:
-    """Write n - 1 = 2^s * d; for each base, a^d must be 1, or reach n - 1 while squaring (Figure 6.3)."""
+    """Write n - 1 = 2^s * d; for each base, a^d must be 1, or reach n - 1 while squaring (Figure 6.2)."""
     if n < 2:
         return False
     for p in BASES:
@@ -59,7 +59,7 @@ def verdict(n: int) -> str:
 
 
 def squaring_chain(n: int, a: int) -> list:
-    """a^d, a^(2d), ..., a^(2^s d) mod n for n - 1 = 2^s * d (Figure 6.3)."""
+    """a^d, a^(2d), ..., a^(2^s d) mod n for n - 1 = 2^s * d (Figure 6.2)."""
     d, s = n - 1, 0
     while d % 2 == 0:
         d //= 2

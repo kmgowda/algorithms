@@ -59,7 +59,7 @@ def popcount_by_table(n: int) -> tuple[int, int]:
 
 
 class Bitset:
-    """A set of the numbers 0..size-1 packed 64 to a word (Figure 9.4)."""
+    """A set of the numbers 0..size-1 packed 64 to a word."""
 
     def __init__(self, size: int) -> None:
         if size < 0:

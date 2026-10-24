@@ -30,7 +30,7 @@ ast = _load("chapter_06_a_star", "ch06_examples")
 
 
 def town_answers() -> dict:
-    """Library-to-Harbour minutes from every method (Figure 7.1)."""
+    """Library-to-Harbour minutes from every method."""
     adj = dij.weighted_adjacency()
     edges = [(a, b, w) for a, b, w in dij.ROADS] + [(b, a, w) for a, b, w in dij.ROADS]
     s = ast.speed_limit()
@@ -70,7 +70,7 @@ def timings(n: int, m: int, seed: int = 1) -> dict:
 
 
 def one_source(n: int, m: int, seed: int = 1) -> dict:
-    """Milliseconds for one start: Dijkstra against Bellman-Ford (Figure 7.3)."""
+    """Milliseconds for one start: Dijkstra against Bellman-Ford (Figure 7.1)."""
     adj, edges = random_map(n, m, seed)
     t = time.perf_counter(); a = dij.dijkstra(adj, 0)[0]; td = (time.perf_counter() - t) * 1000
     t = time.perf_counter(); b = bf.bellman_ford(list(range(n)), edges, 0)[0]; tb = (time.perf_counter() - t) * 1000
@@ -79,7 +79,7 @@ def one_source(n: int, m: int, seed: int = 1) -> dict:
 
 
 def all_pairs(n: int, m: int, seed: int = 1) -> dict:
-    """Milliseconds for every pair: Dijkstra from each place against Floyd-Warshall (Figure 7.3)."""
+    """Milliseconds for every pair: Dijkstra from each place against Floyd-Warshall (Figure 7.1)."""
     adj, edges = random_map(n, m, seed)
     t = time.perf_counter(); rows = [dij.dijkstra(adj, s)[0] for s in range(n)]; td = (time.perf_counter() - t) * 1000
     t = time.perf_counter(); d = fw.floyd_warshall(n, edges, directed=True)[0]; tf = (time.perf_counter() - t) * 1000
@@ -134,7 +134,7 @@ def dijkstra_to_goal(adj: dict, start, goal) -> tuple[float, int]:
     return float("inf"), len(done)
 
 
-# Figure 7.4: the first place settled by both searches (U) is not on the shortest route S, A, B, T.
+# Figure 7.2: the first place settled by both searches (U) is not on the shortest route S, A, B, T.
 TRICK = {"S": {"A": 3, "U": 5}, "A": {"S": 3, "B": 3}, "B": {"A": 3, "T": 3}, "U": {"S": 5, "T": 5},
          "T": {"B": 3, "U": 5}}
 

@@ -16,7 +16,7 @@ REQUESTS, SHELF = ch18.REQUESTS, ch18.SHELF
 
 
 def ski_rental(days: int, rent: int, buy: int) -> int:
-    """Rent until the rent paid would reach the price, then buy (Figure 19.2). Cost for a season of `days` days."""
+    """Rent until the rent paid would reach the price, then buy. Cost for a season of `days` days."""
     if rent <= 0 or buy <= 0:
         raise ValueError("prices must be positive")
     threshold = -(-buy // rent) - 1          # rent this many days, buy on the next

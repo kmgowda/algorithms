@@ -86,7 +86,7 @@ SHELF = 3
 
 
 def farthest_in_future(requests: list, k: int, log: list | None = None) -> int:
-    """Belady's rule (Figure 18.4): on a miss with a full shelf, remove the book whose next request is farthest away
+    """Belady's rule (Figure 18.3): on a miss with a full shelf, remove the book whose next request is farthest away
     (or never comes). Returns the number of misses; log gets (request, hit or miss, book removed or None)."""
     shelf, misses = [], 0
     for i, book in enumerate(requests):

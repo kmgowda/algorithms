@@ -19,7 +19,7 @@ def fingerprint(s: str, mod: int, base: int = BASE) -> int:
 
 
 def rabin_karp(text: str, pattern: str, mod: int = 1_000_000_007, base: int = BASE) -> tuple[list, int, int]:
-    """Slide a rolling fingerprint along the text (Figure 27.2). Returns (positions, fingerprint matches checked
+    """Slide a rolling fingerprint along the text. Returns (positions, fingerprint matches checked
     letter by letter, false alarms)."""
     n, m = len(text), len(pattern)
     if m == 0:

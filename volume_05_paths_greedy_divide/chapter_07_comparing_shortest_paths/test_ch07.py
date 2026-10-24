@@ -35,7 +35,7 @@ class TestChapter7(unittest.TestCase):
         one, two = ex.one_vs_two_ends(2000, 6000, trials=10)                                  # answers asserted inside
         self.assertLess(two, one)
         self.assertEqual((ex.one_vs_two_ends(10000, 30000), ex.one_vs_two_ends(0, 0, grid=100)),
-                         ((2591, 107), (5339, 3671)))                                          # Figure 7.4
+                         ((2591, 107), (5339, 3671)))                                          # Figure 7.2
         self.assertEqual(ex.inflated_guess(), [(1, 61, 669), (2, 61, 338), (5, 61, 222)])
         one, two = ex.one_vs_two_ends(0, 0, trials=10, grid=30)
         self.assertLess(two, one)

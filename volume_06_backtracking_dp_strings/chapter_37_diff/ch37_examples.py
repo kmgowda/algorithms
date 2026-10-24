@@ -12,7 +12,7 @@ NEW = ["Welcome to the library", "Opening hours: 9 to 6", "Reading club on Monda
 
 
 def diff(old: list, new: list) -> list:
-    """Lines as ('  ', kept), ('- ', deleted), ('+ ', added), from the LCS table of the two files (Figure 37.2)."""
+    """Lines as ('  ', kept), ('- ', deleted), ('+ ', added), from the LCS table of the two files (Figure 37.1)."""
     n, m = len(old), len(new)
     L = [[0] * (m + 1) for _ in range(n + 1)]
     for i in range(n - 1, -1, -1):                    # filled from the end, so the walk can go forwards

@@ -34,7 +34,7 @@ class CountMin:
 
 def sized_for(eps: float, delta: float) -> tuple[int, int]:
     """Width e/eps and depth ln(1/delta), rounded up: then each estimate is at most true + eps x N with
-    probability at least 1 - delta (Figure 30.3)."""
+    probability at least 1 - delta."""
     import math
     return math.ceil(math.e / eps), math.ceil(math.log(1 / delta))
 
@@ -67,7 +67,7 @@ class CountMinConservative(CountMin):
 
 
 class CountSketch:
-    """Charikar, Chen and Farach-Colton's Count sketch (Figure 30.4): each row also gives the item a random sign +1 or
+    """Charikar, Chen and Farach-Colton's Count sketch (Figure 30.3): each row also gives the item a random sign +1 or
     -1; add the sign to the item's counter, and estimate by the median over rows of sign x counter. Unbiased, and it
     allows removals (negative counts)."""
 

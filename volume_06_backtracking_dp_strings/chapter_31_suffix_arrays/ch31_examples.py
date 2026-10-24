@@ -14,7 +14,7 @@ def suffix_array_simple(text: str) -> list:
 
 
 def suffix_array_doubling(text: str) -> tuple[list, int]:
-    """Prefix doubling (Figure 31.3): sort by the first 1, 2, 4, ... letters using ranks from the previous round.
+    """Prefix doubling (Figure 31.2): sort by the first 1, 2, 4, ... letters using ranks from the previous round.
     Returns (suffix array, rounds)."""
     n = len(text)
     if n == 0:
@@ -35,7 +35,7 @@ def suffix_array_doubling(text: str) -> tuple[list, int]:
 
 
 def doubling_trace(text: str) -> list:
-    """Prefix doubling round by round (Figure 31.3). Each entry is (k, the pair (rank[i], rank[i + k]) for every
+    """Prefix doubling round by round (Figure 31.2). Each entry is (k, the pair (rank[i], rank[i + k]) for every
     position i, the new ranks), starting from ranks of single letters (a = 0, b = 1, ...); -1 means "past the end"."""
     n = len(text)
     letters = sorted(set(text))
@@ -87,7 +87,7 @@ def suffix_array_radix(text: str) -> tuple[list, int]:
 
 def find_all(text: str, sa: list, pattern: str) -> tuple[list, int]:
     """Every occurrence: the suffixes starting with pattern form one block of the array, found by two binary
-    searches (Figure 31.2). Returns (sorted positions, suffix comparisons)."""
+    searches. Returns (sorted positions, suffix comparisons)."""
     if not pattern:
         return list(range(len(text) + 1)), 0         # the same convention as Chapter 25
     comparisons = [0]

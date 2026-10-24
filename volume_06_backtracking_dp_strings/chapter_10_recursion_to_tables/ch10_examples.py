@@ -26,7 +26,7 @@ def ways_two_numbers(n: int) -> int:
 
 
 def least_effort(effort: list) -> tuple[int, list, list]:
-    """Least total effort to reach the top (one past the last step), moving up 1 or 2 steps (Figure 10.3).
+    """Least total effort to reach the top (one past the last step), moving up 1 or 2 steps (Figure 10.2).
     Returns (total, table, steps stood on)."""
     n = len(effort)
     best = [0] * (n + 2)                              # best[i]: least effort to stand on step i (0 = ground)

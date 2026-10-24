@@ -11,7 +11,7 @@ PRICES = [12, 7, 15, 9, 4, 11, 6, 13, 8, 5]           # book prices; can some of
 
 
 def check_subset(prices: list, chosen: list, target: int) -> bool:
-    """Checking a proposed answer (a certificate) is fast: add it up (Figure 21.1)."""
+    """Checking a proposed answer (a certificate) is fast: add it up."""
     return len(set(chosen)) == len(chosen) and all(0 <= i < len(prices) for i in chosen) and sum(prices[i] for i in chosen) == target
 
 
@@ -50,7 +50,7 @@ ROADS = {("Library", "School"), ("Library", "Park"), ("School", "Market"), ("Par
 # ---------------------------------------------------------------- decision versus optimisation
 
 def largest_independent_set(vertices: list, edges: set) -> tuple[int, int]:
-    """Solve the optimisation problem with the yes/no version as a black box: binary search on k (Figure 21.3).
+    """Solve the optimisation problem with the yes/no version as a black box: binary search on k.
     Returns (largest k with a 'yes', yes/no questions asked)."""
     lo, hi, asked = 0, len(vertices), 0
     while lo < hi:
@@ -66,7 +66,7 @@ def largest_independent_set(vertices: list, edges: set) -> tuple[int, int]:
 # ---------------------------------------------------------------- the Cook-Levin idea: circuits become clauses
 
 # A circuit is a list of gates; each gate is (name, kind, inputs) with kind "in", "not", "and", "or".
-# The last gate is the output. Figure 21.6 shows the gate rules as clauses.
+# The last gate is the output. Figure 21.4 shows the gate rules as clauses.
 
 def evaluate(circuit: list, inputs: dict) -> bool:
     val = {}

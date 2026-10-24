@@ -62,7 +62,7 @@ def longest_repeat(s: str) -> str:
 
 
 def collisions(n_strings: int, mod: int, seed: int = 26) -> int:
-    """How many pairs of different random 8-letter words share a hash, for a given modulus (Figure 34.3)."""
+    """How many pairs of different random 8-letter words share a hash, for a given modulus."""
     r = random.Random(seed)
     words = {"".join(r.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(8)) for _ in range(n_strings)}
     seen, pairs = {}, 0

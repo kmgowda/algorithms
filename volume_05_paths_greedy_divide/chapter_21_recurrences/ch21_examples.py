@@ -102,7 +102,7 @@ def solve(n: int, terms: list, f, base: float = 1.0, memo: dict | None = None) -
 
 
 def uneven_levels(n: int) -> list:
-    """Work at each level of T(n) = T(n/3) + T(2n/3) + n (Figure 21.5), splitting a size s into s // 3 and s - s // 3,
+    """Work at each level of T(n) = T(n/3) + T(2n/3) + n (Figure 21.4), splitting a size s into s // 3 and s - s // 3,
     with sizes below 3 as leaves of constant work."""
     levels, sizes = [], [n]
     while sizes:
