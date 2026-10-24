@@ -190,6 +190,30 @@ def compare(n: int = 4000, seed: int = 1) -> dict:
     return out
 
 
+def fisher_yates(a: list, rng=random) -> list:
+    """Shuffle in place so that all n! orders are equally likely: for i from the end down to 1, swap a[i] with a
+    position chosen uniformly from 0..i (Fisher and Yates, 1938; Durstenfeld's in-place form, 1964)."""
+    for i in range(len(a) - 1, 0, -1):
+        j = rng.randint(0, i)
+        a[i], a[j] = a[j], a[i]
+    return a
+
+
+def shuffle_outcomes(n: int, naive: bool = False) -> dict:
+    """Count how often each order appears over every possible sequence of choices: Fisher-Yates (j from 0..i)
+    against the naive shuffle (every position i swapped with any j from 0..n-1)."""
+    import itertools
+    steps = list(range(n)) if naive else list(range(n - 1, 0, -1))
+    ranges = [range(n) if naive else range(i + 1) for i in steps]
+    counts = {}
+    for choice in itertools.product(*ranges):
+        a = list(range(n))
+        for i, j in zip(steps, choice):
+            a[i], a[j] = a[j], a[i]
+        counts[tuple(a)] = counts.get(tuple(a), 0) + 1
+    return counts
+
+
 if __name__ == "__main__":
     sys.setrecursionlimit(20_000)
     a = list(PILE)
@@ -198,3 +222,4 @@ if __name__ == "__main__":
     print(partition3(b, 0, 7), b)
     for k, v in compare().items():
         print(k, v)
+    print(fisher_yates(list(PILE), random.Random(10)), shuffle_outcomes(3, naive=True))

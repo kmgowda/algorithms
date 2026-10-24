@@ -65,5 +65,19 @@ class TestChapter13(unittest.TestCase):
         self.assertEqual(ex.lomuto_counts(list(ex.PILE)), {"comparisons": 17, "swaps": 16})
 
 
+    def test_fisher_yates(self) -> None:
+        import random
+        for n in range(1, 6):
+            counts = ex.shuffle_outcomes(n)
+            self.assertEqual(len(counts), len(set(counts)))
+            self.assertEqual(set(counts.values()), {1})
+        naive = ex.shuffle_outcomes(3, naive=True)
+        self.assertEqual(sum(naive.values()), 27)
+        self.assertEqual(sorted(naive.values()), [4, 4, 4, 5, 5, 5])
+        a = ex.fisher_yates(list(ex.PILE), random.Random(10))
+        self.assertEqual(sorted(a), sorted(ex.PILE))
+        self.assertEqual(ex.fisher_yates([]), [])
+
+
 if __name__ == "__main__":
     unittest.main()
