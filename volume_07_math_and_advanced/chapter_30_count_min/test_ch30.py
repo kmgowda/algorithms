@@ -72,5 +72,22 @@ class TestDepth(unittest.TestCase):
             ex.merge(ex.CountMin(10, 2), ex.CountMin(11, 2))
 
 
+    def test_minhash_lsh(self) -> None:
+        import random
+        sh = {k: ex.shingles(v) for k, v in ex.REVIEWS.items()}
+        self.assertAlmostEqual(ex.jaccard(sh["A"], sh["B"]), 3 / 7)
+        self.assertEqual(ex.jaccard(sh["A"], sh["C"]), 0.0)
+        sig = {k: ex.minhash(v) for k, v in sh.items()}
+        self.assertAlmostEqual(ex.estimate(sig["A"], sig["B"]), 0.475)
+        self.assertEqual(ex.estimate(sig["A"], sig["C"]), 0.0)
+        r = random.Random(30)
+        for _ in range(20):
+            a = set(r.sample(range(60), 30))
+            b = set(r.sample(range(60), 30))
+            self.assertLess(abs(ex.estimate(ex.minhash(a, 400), ex.minhash(b, 400)) - ex.jaccard(a, b)), 0.12)
+        self.assertAlmostEqual(ex.lsh_candidate_chance(0.8, 20, 10), 0.8966, places=3)
+        self.assertLess(ex.lsh_candidate_chance(0.3, 20, 10), 0.001)
+
+
 if __name__ == "__main__":
     unittest.main()

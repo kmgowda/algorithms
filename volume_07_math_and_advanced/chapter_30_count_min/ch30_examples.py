@@ -139,6 +139,41 @@ def experiment(width: int, depth: int, seed: int = 27) -> tuple[int, int, float]
     return cm.estimate("dragons") - true["dragons"], max(over), round(sum(over) / len(over), 2)
 
 
+REVIEWS = {"A": "the dragon quest is a fine fantasy read for winter evenings",
+           "B": "a fine fantasy read: the dragon quest for long winter evenings",
+           "C": "a short history of maps and the people who drew them"}
+
+
+def shingles(text: str, k: int = 2) -> set:
+    """The set of k-word pieces of a text."""
+    words = text.replace(":", "").split()
+    return {" ".join(words[i:i + k]) for i in range(len(words) - k + 1)}
+
+
+def jaccard(a: set, b: set) -> float:
+    return len(a & b) / len(a | b) if a | b else 1.0
+
+
+def minhash(s: set, num: int = 200, seed: int = 30) -> list:
+    """MinHash signature: for each of num random hash functions, the smallest hash of any element. Two sets agree
+    in one position with chance exactly their Jaccard similarity (Broder, 1997)."""
+    import random
+    import zlib
+    r = random.Random(seed)
+    salts = [r.getrandbits(32) for _ in range(num)]
+    return [min(zlib.crc32(f"{salt}|{x}".encode()) for x in s) for salt in salts]
+
+
+def estimate(sig_a: list, sig_b: list) -> float:
+    return sum(x == y for x, y in zip(sig_a, sig_b)) / len(sig_a)
+
+
+def lsh_candidate_chance(sim: float, bands: int, rows: int) -> float:
+    """Locality-sensitive hashing: cut signatures into bands of rows; two items become candidates if any band
+    agrees completely. Chance 1 - (1 - sim^rows)^bands."""
+    return 1 - (1 - sim ** rows) ** bands
+
+
 if __name__ == "__main__":
     for w, d in ((100, 1), (100, 4), (1000, 4)):
         print(w, d, experiment(w, d))
@@ -154,3 +189,7 @@ if __name__ == "__main__":
     for w in ("x", "z"):
         b.add(w)
     print(merge(a, b).estimate("x"))
+    sh = {k: shingles(v) for k, v in REVIEWS.items()}
+    sig = {k: minhash(v) for k, v in sh.items()}
+    print(jaccard(sh["A"], sh["B"]), estimate(sig["A"], sig["B"]), jaccard(sh["A"], sh["C"]), estimate(sig["A"], sig["C"]))
+    print([round(lsh_candidate_chance(x, 20, 10), 3) for x in (0.3, 0.5, 0.7, 0.8, 0.9)])
