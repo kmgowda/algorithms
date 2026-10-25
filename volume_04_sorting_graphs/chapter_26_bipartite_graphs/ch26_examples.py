@@ -51,8 +51,8 @@ def odd_cycle(parent: dict, a, b) -> list:
     while x is not None:
         pa.append(x)
         x = parent[x]
-    pb, x = [], b
-    while x not in pa:
+    pb, x, on_a = [], b, set(pa)              # a set: each membership test is O(1)
+    while x not in on_a:
         pb.append(x)
         x = parent[x]
     top = pa.index(x)

@@ -1,6 +1,6 @@
 """Volume 4, Chapter 3 - Choosing a Data Structure.
 
-The five questions of Figure 3.3 written as a small function.
+The five questions of Figure 3.2 written as a small function.
 Run:  python3 ch03_examples.py
 """
 
