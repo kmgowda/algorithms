@@ -32,7 +32,7 @@ class SparseTable:
 
 
 SECTIONS = {"Library": ["Fiction", "Science", "History"], "Fiction": ["Mystery", "Fantasy"],
-            "Science": ["Physics", "Biology", "Maths"], "Maths": ["Algebra", "Geometry"]}   # Volume 3, Chapter 1
+            "Science": ["Physics", "Biology", "Maths"], "History": ["Ancient"], "Maths": ["Algebra", "Geometry"]}  # Chapter 1
 
 
 class LCA:

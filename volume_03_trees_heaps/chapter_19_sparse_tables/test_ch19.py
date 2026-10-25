@@ -37,7 +37,7 @@ class TestChapter59(unittest.TestCase):
     def test_lca(self) -> None:
         import random
         lca = ex.LCA(ex.SECTIONS, "Library")
-        self.assertEqual(len(lca.tour), 2 * 11 - 1)
+        self.assertEqual(len(lca.tour), 2 * 12 - 1)
         self.assertEqual(lca.query("Algebra", "Physics"), "Science")
         self.assertEqual(lca.query("Mystery", "Geometry"), "Library")
         self.assertEqual(lca.query("Maths", "Geometry"), "Maths")
