@@ -13,7 +13,7 @@ MESSAGE = "LIBRARY BOOK SALE"
 
 
 def huffman_codes(text: str, log: list | None = None) -> dict:
-    """Repeatedly join the two rarest groups (Figure 17.2); the joins form a tree whose paths are the codes."""
+    """Repeatedly join the two rarest groups (Figure 17.1); the joins form a tree whose paths are the codes."""
     counts = Counter(text)
     if not counts:
         return {}                                     # nothing to encode
