@@ -7,7 +7,7 @@ from __future__ import annotations
 
 
 def z_array(s: str) -> tuple[list, int]:
-    """z[i] = length of the longest common prefix of s and s[i:] (Figure 28.2); z[0] = len(s) by convention.
+    """z[i] = length of the longest common prefix of s and s[i:] (Figure 28.1); z[0] = len(s) by convention.
     Reuses the rightmost match box [left, right) found so far. Returns (z, letter comparisons)."""
     n = len(s)
     z = [0] * n

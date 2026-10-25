@@ -11,7 +11,7 @@ def suffix_array(text: str) -> list:
 
 
 def lcp_kasai(text: str, sa: list) -> list:
-    """lcp[r] = letters shared by the suffixes in rows r-1 and r of the array (lcp[0] = 0) (Figure 32.1).
+    """lcp[r] = letters shared by the suffixes in rows r-1 and r of the array (lcp[0] = 0).
     Kasai's method: walk the text in order; each next suffix shares at least one letter fewer than the last."""
     n = len(text)
     rank = [0] * n
@@ -80,7 +80,7 @@ class LCPQuery:
 
 
 def longest_repeat(text: str) -> str:
-    """The longest substring occurring at least twice: the largest LCP value (Figure 32.2)."""
+    """The longest substring occurring at least twice: the largest LCP value (Figure 32.1)."""
     if len(text) < 2:
         return ""
     sa = suffix_array(text)

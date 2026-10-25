@@ -7,7 +7,7 @@ from __future__ import annotations
 
 
 def expand_around_centres(s: str) -> tuple[str, int]:
-    """Try every centre (a letter or a gap) and grow outwards while the ends match (Figure 33.2).
+    """Try every centre (a letter or a gap) and grow outwards while the ends match.
     Returns (longest palindrome, letter comparisons)."""
     best, comparisons = "", 0
     for c in range(2 * len(s) - 1):
@@ -24,7 +24,7 @@ def expand_around_centres(s: str) -> tuple[str, int]:
 
 def manacher(s: str) -> tuple[str, list, int]:
     """Radii of palindromes around every centre of s with '#' between letters, reusing the mirror inside the
-    rightmost palindrome found (Figure 33.3). Returns (longest palindrome, radii, comparisons)."""
+    rightmost palindrome found (Figure 33.2). Returns (longest palindrome, radii, comparisons)."""
     t = "#" + "#".join(s) + "#" if s else "#"
     n = len(t)
     radius = [0] * n

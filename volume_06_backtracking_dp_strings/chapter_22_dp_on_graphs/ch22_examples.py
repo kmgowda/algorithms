@@ -27,7 +27,7 @@ def adjacency(places=PLACES, roads=ROADS) -> dict:
 
 
 def count_quickest(adj: dict, start) -> tuple[dict, dict]:
-    """Dijkstra, plus ways[v] = number of quickest routes to v (Figure 22.2). Places are settled in time order,
+    """Dijkstra, plus ways[v] = number of quickest routes to v. Places are settled in time order,
     so every quickest route into v comes from an already-settled place."""
     dist, ways, done = {start: 0}, {start: 1}, set()
     heap = [(0, start)]
@@ -46,7 +46,7 @@ def count_quickest(adj: dict, start) -> tuple[dict, dict]:
 
 
 def at_most_k(vertices: list, edges: list, start, k: int) -> list:
-    """best[i][v] = cheapest cost to v using at most i legs (Figure 22.3): Bellman-Ford as a table."""
+    """best[i][v] = cheapest cost to v using at most i legs (Figure 22.2): Bellman-Ford as a table."""
     inf = float("inf")
     rows = [{v: (0 if v == start else inf) for v in vertices}]
     for _ in range(k):

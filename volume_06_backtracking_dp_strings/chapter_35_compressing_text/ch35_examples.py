@@ -9,7 +9,7 @@ import random
 
 
 def rle_encode(s: str, longest: int = 255) -> list:
-    """Runs of the same letter as (letter, count) pairs (Figure 35.1). A count is stored in one byte, so a run
+    """Runs of the same letter as (letter, count) pairs. A count is stored in one byte, so a run
     longer than 255 is split into several pairs."""
     out = []
     for ch in s:
@@ -26,7 +26,7 @@ def rle_decode(runs: list) -> str:
 
 def lz77_encode(s: str, window: int = 255, longest: int = 255) -> list:
     """Each step outputs (distance back, length to copy, next letter): the longest earlier match within the window,
-    then one new letter (Figure 35.2). Matches may overlap the text being produced. Distance and length each fit in
+    then one new letter (Figure 35.1). Matches may overlap the text being produced. Distance and length each fit in
     one byte."""
     out, i = [], 0
     while i < len(s):

@@ -9,12 +9,12 @@ import bisect
 
 
 def suffix_array_simple(text: str) -> list:
-    """Sort the starting positions by the suffixes they begin (Figure 31.1): simple, about n^2 log n."""
+    """Sort the starting positions by the suffixes they begin: simple, about n^2 log n."""
     return sorted(range(len(text)), key=lambda i: text[i:])
 
 
 def suffix_array_doubling(text: str) -> tuple[list, int]:
-    """Prefix doubling (Figure 31.2): sort by the first 1, 2, 4, ... letters using ranks from the previous round.
+    """Prefix doubling (Figure 31.1): sort by the first 1, 2, 4, ... letters using ranks from the previous round.
     Returns (suffix array, rounds)."""
     n = len(text)
     if n == 0:
@@ -35,7 +35,7 @@ def suffix_array_doubling(text: str) -> tuple[list, int]:
 
 
 def doubling_trace(text: str) -> list:
-    """Prefix doubling round by round (Figure 31.2). Each entry is (k, the pair (rank[i], rank[i + k]) for every
+    """Prefix doubling round by round (Figure 31.1). Each entry is (k, the pair (rank[i], rank[i + k]) for every
     position i, the new ranks), starting from ranks of single letters (a = 0, b = 1, ...); -1 means "past the end"."""
     n = len(text)
     letters = sorted(set(text))
