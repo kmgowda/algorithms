@@ -13,7 +13,7 @@ BOOKS = [("Atlas", 9, 6), ("Novel", 6, 4), ("Poems", 5, 6), ("Comic", 5, 2), ("C
 
 
 def fractional(books: list, budget) -> tuple[Fraction, list]:
-    """Fill the budget in order of votes per pound, taking part of the last item (Figure 15.2)."""
+    """Fill the budget in order of votes per pound, taking part of the last item."""
     left, votes, taken = Fraction(budget), Fraction(0), []
     for name, price, v in sorted(books, key=lambda b: Fraction(b[2], b[1]), reverse=True):
         if left <= 0:
@@ -26,7 +26,7 @@ def fractional(books: list, budget) -> tuple[Fraction, list]:
 
 
 def exchange_gain(books: list, plan: dict, budget) -> list:
-    """Every swap of spending from a lower-ratio item to a higher-ratio item, with the votes it gains (Figure 15.3)."""
+    """Every swap of spending from a lower-ratio item to a higher-ratio item, with the votes it gains (Figure 15.2)."""
     ratio = {n: Fraction(v, p) for n, p, v in books}
     price = {n: p for n, p, _ in books}
     out = []
@@ -67,7 +67,7 @@ def total_lateness(order: list) -> int:
 
 
 def earliest_deadline_first(jobs: list) -> list:
-    """Greedy: do the job that is due soonest first (Figure 15.4). Ties keep the input order."""
+    """Greedy: do the job that is due soonest first (Figure 15.3). Ties keep the input order."""
     return sorted(jobs, key=lambda j: j[2])
 
 
@@ -77,7 +77,7 @@ def inversions(order: list) -> int:
 
 
 def remove_inversions(order: list) -> list:
-    """The exchange argument as a procedure (Figure 15.5): swap neighbouring jobs that are due in the wrong order,
+    """The exchange argument as a procedure (Figure 15.4): swap neighbouring jobs that are due in the wrong order,
     one swap at a time, recording (order, largest lateness) after each swap. The lateness never goes up."""
     order, steps = list(order), [(list(order), lateness(order)[0])]
     swapped = True
