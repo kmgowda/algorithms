@@ -6,10 +6,20 @@ import sys
 from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.join(HERE, "..", "chapter_29_counting_stream"))
-import ch29_examples as c29   # noqa: E402
-import ch30_examples as c30   # noqa: E402
+
+
+def _load(folder: str, module: str):
+    """Load a sibling chapter's module from its file under a unique name: module names repeat across volumes
+    (every volume has a ch06_examples), so a plain import could pick up the wrong one."""
+    import importlib.util
+    path = os.path.join(HERE, "..", folder, module + ".py")
+    spec = importlib.util.spec_from_file_location(f"{os.path.basename(os.path.dirname(HERE))}.{folder}.{module}", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+c29 = _load("chapter_29_counting_stream", "ch29_examples")
+c30 = _load("chapter_30_count_min", "ch30_examples")
 
 
 def searches(seed: int = 27) -> list:

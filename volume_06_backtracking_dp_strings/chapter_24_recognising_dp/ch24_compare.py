@@ -5,15 +5,22 @@ import sys
 from itertools import combinations
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "chapter_12_one_dimensional_dp"))
-sys.path.insert(0, os.path.join(HERE, "..", "chapter_14_knapsack"))
-sys.path.insert(0, os.path.join(HERE, "..", "chapter_06_branch_and_bound"))
-sys.path.insert(0, HERE)
 
-import ch12_examples as c12   # noqa: E402
-import ch14_examples as c14   # noqa: E402
-import ch06_examples as c06   # noqa: E402
-import ch24_examples as c24   # noqa: E402
+
+def _load(folder: str, module: str):
+    """Load a sibling chapter's module from its file under a unique name: module names repeat across volumes
+    (every volume has a ch06_examples), so a plain import could pick up the wrong one."""
+    import importlib.util
+    path = os.path.join(HERE, "..", folder, module + ".py")
+    spec = importlib.util.spec_from_file_location(f"{os.path.basename(os.path.dirname(HERE))}.{folder}.{module}", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+c12 = _load("chapter_12_one_dimensional_dp", "ch12_examples")
+c14 = _load("chapter_14_knapsack", "ch14_examples")
+c06 = _load("chapter_06_branch_and_bound", "ch06_examples")
+c24 = _load("chapter_24_recognising_dp", "ch24_examples")
 
 COINS, AMOUNT = c12.ODD, 6          # coins 4p, 3p, 1p; make 6p
 

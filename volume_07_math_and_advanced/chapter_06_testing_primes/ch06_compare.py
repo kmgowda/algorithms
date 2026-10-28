@@ -1,12 +1,23 @@
-"""Chapter 6, Section 6.10: every way to test a prime, side by side. Counts the basic steps each method needs for
+"""Chapter 6, Section 6.11: every way to test a prime, side by side. Counts the basic steps each method needs for
 primes of growing size, and shows which methods a Carmichael number fools."""
 import os
 import sys
 from math import isqrt
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "chapter_02_primes_sieve"))
-import ch06_examples as c06   # noqa: E402
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def _load(folder: str, module: str):
+    """Load a sibling chapter's module from its file under a unique name: module names repeat across volumes
+    (every volume has a ch06_examples), so a plain import could pick up the wrong one."""
+    import importlib.util
+    path = os.path.join(HERE, "..", folder, module + ".py")
+    spec = importlib.util.spec_from_file_location(f"{os.path.basename(os.path.dirname(HERE))}.{folder}.{module}", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+c06 = _load("chapter_06_testing_primes", "ch06_examples")
 
 DIGITS = [4, 6, 8, 10, 12, 16, 20, 30]
 

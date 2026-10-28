@@ -6,12 +6,21 @@ import sys
 from fractions import Fraction
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-for d in ("chapter_25_duality_rounding", "chapter_26_approximation", "chapter_28_exact_hard"):
-    sys.path.insert(0, os.path.join(HERE, "..", d))
 
-import ch25_examples as c25   # noqa: E402
-import ch26_examples as c26   # noqa: E402
-import ch28_examples as c28   # noqa: E402
+
+def _load(folder: str, module: str):
+    """Load a sibling chapter's module from its file under a unique name: module names repeat across volumes
+    (every volume has a ch06_examples), so a plain import could pick up the wrong one."""
+    import importlib.util
+    path = os.path.join(HERE, "..", folder, module + ".py")
+    spec = importlib.util.spec_from_file_location(f"{os.path.basename(os.path.dirname(HERE))}.{folder}.{module}", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+c25 = _load("chapter_25_duality_rounding", "ch25_examples")
+c26 = _load("chapter_26_approximation", "ch26_examples")
+c28 = _load("chapter_28_exact_hard", "ch28_examples")
 
 TOWN, ROADS = c26.TOWN, c26.ROADS
 
